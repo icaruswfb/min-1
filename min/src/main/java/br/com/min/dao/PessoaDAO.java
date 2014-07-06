@@ -13,23 +13,23 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import br.com.min.entity.Cliente;
+import br.com.min.entity.Pessoa;
 
 @Repository
-public class ClienteDAO {
+public class PessoaDAO {
 	
 	@Autowired
 	private SessionFactory sessionFactory;
 	
-	public void persist(Cliente cliente){
+	public void persist(Pessoa cliente){
 		Session session = sessionFactory.openSession();
 		session.merge(cliente);
 		session.flush();
 	}
 	
-	public List<Cliente> findCliente(Cliente cliente){
+	public List<Pessoa> findPessoa(Pessoa cliente){
 		Session session = sessionFactory.openSession();
-		Criteria criteria = session.createCriteria(Cliente.class);
+		Criteria criteria = session.createCriteria(Pessoa.class);
 		if(cliente != null){
 			List<Criterion> predicates = new ArrayList<>();
 			if(cliente.getId() != null){
@@ -41,15 +41,18 @@ public class ClienteDAO {
 			if(StringUtils.isNotBlank(cliente.getEmail())){
 				predicates.add(Restrictions.ilike("email", cliente.getEmail(), MatchMode.ANYWHERE));
 			}
+			if(cliente.getFuncionario() != null){
+				predicates.add(Restrictions.eq("funcionario", cliente.getFuncionario()));
+			}
 			Criterion[] predicatesArray = new Criterion[predicates.size()];
 			predicatesArray = predicates.toArray(predicatesArray);
 			criteria = criteria.add(Restrictions.or(predicatesArray));
 		}
-		List<Cliente> clientes = criteria.list();
+		List<Pessoa> clientes = criteria.list();
 		return clientes;
 	}
 
-	public void delete(Cliente cliente) {
+	public void delete(Pessoa cliente) {
 		Session session = sessionFactory.openSession();
 		session.delete(cliente);
 		session.flush();

@@ -14,20 +14,20 @@ import br.com.min.entity.Pessoa;
 import br.com.min.service.PessoaService;
 
 @Controller("")
-@RequestMapping("/clientes")
-public class ClienteController {
+@RequestMapping("/funcionarios")
+public class FuncionarioController {
 	
 	@Autowired
 	private PessoaService pessoaService;
 	
 	@RequestMapping("/")
 	public ModelAndView listar(){
-		return list(pessoaService.listarClientes(), null);
+		return list(pessoaService.listarFuncionarios(), null);
 	}
 	
 	private ModelAndView list(List<Pessoa> lista, String pesquisa){
-		ModelAndView mv = new ModelAndView("clientes");
-		mv.addObject("clientes", lista);
+		ModelAndView mv = new ModelAndView("funcionarios");
+		mv.addObject("funcionarios", lista);
 		mv.addObject("pesquisa", pesquisa);
 		return mv;
 	}
@@ -39,23 +39,23 @@ public class ClienteController {
 	
 	@RequestMapping(value="/editar/{id}", method=RequestMethod.GET)
 	public ModelAndView editar(@PathVariable("id") Long id){
-		ModelAndView mv = new ModelAndView("cliente");
+		ModelAndView mv = new ModelAndView("funcionario");
 		
-		Pessoa cliente;
+		Pessoa funcionario;
 		if(id == null){
-			cliente = new Pessoa();
+			funcionario = new Pessoa();
 		}else{
-			cliente = pessoaService.findById(id);
+			funcionario = pessoaService.findById(id);
 		}
-		mv.addObject("cliente", cliente);
+		mv.addObject("funcionario", funcionario);
 		
 		return mv;
 	}
 	
 	@RequestMapping(value="/salvar", method=RequestMethod.POST)
-	public ModelAndView salvar(@ModelAttribute("cliente") Pessoa cliente){
-		cliente.setFuncionario(false);
-		pessoaService.persist(cliente);
+	public ModelAndView salvar(@ModelAttribute("funcionario") Pessoa funcionario){
+		funcionario.setFuncionario(true);
+		pessoaService.persist(funcionario);
 		return listar();
 	}
 	

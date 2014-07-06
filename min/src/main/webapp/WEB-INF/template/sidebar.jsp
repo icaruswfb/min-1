@@ -89,16 +89,16 @@
 
 	<!-- Side Menu -->
 	<ul class="list-unstyled side-menu">
-		<li id="home-menu"><a class="sa-side-home" href="/min/web/">
+		<li id="home-menu"><a class="sa-side-home" href="<spring:url value='/web/' />">
 				<span class="menu-item">Home</span>
 		</a></li>
-		<li  id="clientes-menu" ><a class="sa-side-form" href="/min/web/clientes/"> <span
+		<li  id="clientes-menu" ><a class="sa-side-form" href="<spring:url value='/web/clientes/' />"> <span
 				class="menu-item">Clientes</span>
 		</a></li>
-		<li id="employee-menu"><a class="sa-side-folder" href="file-manager.html"> <span
+		<li id="employee-menu"><a class="sa-side-folder" href="<spring:url value='/web/funcionarios/' />"> <span
 				class="menu-item">Funcionários</span>
 		</a></li>
-		<li id="agenda-menu"><a class="sa-side-calendar" href="calendar.html"> <span
+		<li id="agenda-menu"><a class="sa-side-calendar" href="<spring:url value='/web/agenda/' />"> <span
 				class="menu-item">Agenda</span>
 		</a></li>
 	</ul>

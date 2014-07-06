@@ -2286,4 +2286,14 @@ a.list-group-item.active > .badge,
     }
 }
 
+.custom-select{
+	
+}
+.custom-select button{
+	height: 33px !important;
+}
+.custom-select .filter-option{
+	font-size: 14px;
+}
+
 

@@ -20,10 +20,10 @@
 		<!-- Content -->
 		<section id="content" class="container">
 
-			<h4 class="page-title">CLIENTES</h4>
+			<h4 class="page-title">FUNCIONÁRIOS</h4>
 			<div class="block-area" id="buttons">
-                 <a href="<spring:url value='/web/clientes/novo/p' />">
-	                 <button class="btn m-r-5" >Novo cliente</button>
+                 <a href="<spring:url value='/web/funcionarios/novo/p' />">
+	                 <button class="btn m-r-5" >Novo funcionário</button>
                  </a>
              </div>
 			 <!-- Table Hover -->
@@ -34,6 +34,7 @@
                                 <tr>
                                     <th style="width: 70px">ID</th>
                                     <th>Nome</th>
+                                    <th>Função Principal</th>
                                     <th>Telefones</th>
                                     <th>Aniversário</th>
                                     <th>E-mail</th>
@@ -41,14 +42,15 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            	<c:forEach var="cliente" items="${ clientes }">
+                            	<c:forEach var="funcionario" items="${ funcionarios }">
 	                                <tr>
-	                                    <td><a href="<spring:url value='/web/clientes/editar/${cliente.id}' />">${ cliente.id }</a></td>
-	                                    <td><a href="<spring:url value='/web/clientes/editar/${cliente.id}' />">${ cliente.nome }</a></td>
-	                                    <td>${ cliente.telefone }</td>
-	                                    <td><fmt:formatDate value="${ cliente.aniversario }" pattern="dd/MM" /></td>
-	                                    <td>${ cliente.email }</td>
-	                                    <td><a href="<spring:url value='/web/clientes/delete/${ cliente.id }' />" onclick="return confirm('Tem certeza que deseja excluir?');"><img src='<spring:url value="/img/icon/delete.png" />' /></a></td>
+	                                    <td><a href="<spring:url value='/web/funcionarios/editar/${funcionario.id}' />">${ funcionario.id }</a></td>
+	                                    <td><a href="<spring:url value='/web/funcionarios/editar/${funcionario.id}' />">${ funcionario.nome }</a></td>
+	                                    <td>${ funcionario.funcaoPrincipal }</td>
+	                                    <td>${ funcionario.telefone }</td>
+	                                    <td><fmt:formatDate value="${ funcionario.aniversario }" pattern="dd/MM" /></td>
+	                                    <td>${ funcionario.email }</td>
+	                                    <td><a href="<spring:url value='/web/funcionarios/delete/${ funcionario.id }' />" onclick="return confirm('Tem certeza que deseja excluir?');"><img src='<spring:url value="/img/icon/delete.png" />' /></a></td>
 	                                </tr>
                             	</c:forEach>
                             </tbody>
@@ -73,7 +75,7 @@
 	<jsp:include page="template/scripts.jsp"></jsp:include>
 	
 	<script type="text/javascript">
-		$("#clientes-menu").addClass("active");
+		$("#employee-menu").addClass("active");
 	</script>
 	
 </body>

@@ -15,7 +15,7 @@
 					<a data-drawer="messages" class="drawer-toggle" href=""> <i
 						class="sa-top-message"></i> <!-- 
                             <i class="n-count animated">0</i>
-                             --> <span>Messages</span>
+                             --> <span>Mensagens</span>
 					</a>
 				</div>
 
@@ -25,7 +25,9 @@
 				</div>
 
 				<div class="media-body">
-					<input type="text" class="main-search">
+					<form action="<spring:url value='/web/pesquisar' />" method="post">
+						<input type="text" class="main-search" name="pesquisa">
+					</form>
 				</div>
 			</div>
 		</div>

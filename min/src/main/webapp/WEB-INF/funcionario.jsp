@@ -20,29 +20,37 @@
 		<!-- Content -->
 		<section id="content" class="container">
 
-			<h4 class="page-title">CLIENTE</h4>
-            <form:form method="post" action="../salvar" commandName="cliente">
+			<h4 class="page-title">FUNCIONÁRIO</h4>
+            <form:form method="post" action="../salvar" commandName="funcionario">
             	<form:hidden path="id" />
 				<div class="block-area" id="buttons">
 	                 <button class="btn m-r-5" type="submit">Salvar</button>
-	                 <a href="<spring:url value='/web/clientes/' />" >
+	                 <a href="<spring:url value='/web/funcionarios/' />" >
 		                 <button class="btn btn-alt m-r-5" type="button">Cancelar</button>
 	                 </a>
 	             </div>
 			 	<!-- Table Hover -->
                 <div class="block-area" id="text-input">
-                	<p>Preencha os dados do cliente e clique em Salvar</p>
+                	<p>Preencha os dados do funcionário e clique em Salvar</p>
                 </div>
                  <div class="col-lg-12">
                  	<form:input path="nome" cssClass="form-control input-lg m-b-10" placeholder="Nome"/>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-3">
+                	<form:select path="funcaoPrincipal" cssClass="select custom-select">
+                         <form:option value="Recepcionista">Recepcionista</form:option>
+                         <form:option value="Manicure">Manicure</form:option>
+                         <form:option value="Cabelereira">Cabelereira</form:option>
+                         <form:option value="Maquiadora">Maquiadora</form:option>
+                	</form:select>
+                </div>
+                <div class="col-lg-3">
                  	<form:input path="telefone" cssClass="form-control m-b-10" placeholder="Telefones"/>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-3">
                  	<form:input path="aniversarioStr" cssClass="form-control m-b-10 mask-date validate[required,custom[date]]" placeholder="Aniversário (dd/MM)"/>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-3">
                  	<form:input path="email" cssClass="form-control m-b-10" placeholder="E-mail"/>
                 </div>
                 
@@ -59,7 +67,7 @@
              </form:form>
               <div class="clearfix"></div>
             <br /><br />
-            <c:if test="${ cliente.id ne null }">
+            <c:if test="${ funcionario.id ne null }">
 	            <div class="block-area">
 					<div class="row">
 						<div class="col-md-9">
@@ -179,7 +187,7 @@
 	<jsp:include page="template/scripts.jsp"></jsp:include>
 	
 	<script type="text/javascript">
-		$("#clientes-menu").addClass("active");
+		$("#employee-menu").addClass("active");
 
 		$(document).ready(function(){
              $('.mask-date').mask('00/00');

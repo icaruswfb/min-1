@@ -5,13 +5,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Transient;
 
 
 @Entity
-public class Cliente {
+public class Pessoa {
 	
 	@Transient
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM");
@@ -24,6 +26,8 @@ public class Cliente {
 	private String endereco;
 	private String cep;
 	private String cidade;
+	private Funcao funcaoPrincipal;
+	private Boolean funcionario;
 
 	@Id
 	@GeneratedValue
@@ -88,6 +92,19 @@ public class Cliente {
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	@Enumerated(EnumType.STRING)
+	public Funcao getFuncaoPrincipal() {
+		return funcaoPrincipal;
+	}
+	public void setFuncaoPrincipal(Funcao funcaoPrincipal) {
+		this.funcaoPrincipal = funcaoPrincipal;
+	}
+	public Boolean getFuncionario() {
+		return funcionario;
+	}
+	public void setFuncionario(Boolean funcionario) {
+		this.funcionario = funcionario;
 	}
 	
 }
