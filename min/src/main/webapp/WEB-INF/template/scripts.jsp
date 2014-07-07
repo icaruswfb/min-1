@@ -74,8 +74,29 @@
 
 	<!-- All JS functions -->
 	<script src="<spring:url value='/js/functions.js' />"></script>
+	
+	<script type="text/javascript">
+		var skins = [
+								"skin-blur-violate",
+								"skin-blur-blue",
+								"skin-blur-chrome",
+								"skin-blur-city",
+								"skin-blur-greenish",
+								"skin-blur-kiwi",
+								"skin-blur-lights",
+								"skin-blur-night",
+								"skin-blur-ocean",
+								"skin-blur-sunny",
+								"skin-blur-sunset",
+								"skin-blur-yellow",
+								"skin-cloth",
+								"skin-tectile"
+		     		];
+		$("body").attr("id",skins[Math.floor(Math.random() * skins.length)]);
+	</script>
+	
 <!-- Older IE Message -->
-		<!--[if lt IE 9]>
+		<!--[if
                 <div class="ie-block">
                     <h1 class="Ops">Ooops!</h1>
                     <p>You are using an outdated version of Internet Explorer, upgrade to any of the following web browser in order to access the maximum functionality of this website. </p>
