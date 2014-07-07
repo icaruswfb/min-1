@@ -1,5 +1,6 @@
 package br.com.min.entity;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,7 +14,7 @@ import javax.persistence.Transient;
 
 
 @Entity
-public class Pessoa {
+public class Pessoa implements Serializable{
 	
 	@Transient
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM");

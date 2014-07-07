@@ -1,3 +1,31 @@
+function addHorario(){
+	var clienteId = $("#cliente-select").val();
+	var clienteNome = $("#cliente-select option[value="+clienteId+"]").text().split("[")[0];
+	var funcionarioId = $("#funcionario-select").val();
+	var funcionarioNome = $("#funcionario-select option[value="+funcionarioId+"]").text();
+	var dataStr = $("#dia-agenda").val().split("/");
+	var dia = dataStr[0];
+	var mes = dataStr[1];
+	var ano = dataStr[2];
+	
+	var horarioInicio = $("#horario-inicio-agenda").val().split(":");
+	var inicioHora = horarioInicio[0];
+	var inicioMin = horarioInicio[1];
+	
+	var horarioInicio = $("#horario-fim-agenda").val().split(":");
+	var fimHora = horarioInicio[0];
+	var fimMin = horarioInicio[1];
+	
+	var dataInicio = new Date(ano, mes-1, dia, inicioHora, inicioMin);
+	var dataFim = new Date(ano, mes-1, dia, fimHora, fimMin);
+	$('#calendar').fullCalendar('renderEvent', {
+				title:clienteNome + " com " + funcionarioNome, 
+				start: dataInicio, 
+				end: dataFim, 
+				allDay: false
+			});
+}
+
 $(document).ready(function(){
     
     /* --------------------------------------------------------

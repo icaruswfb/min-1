@@ -29,31 +29,36 @@
 
 					<!-- Novo horário -->
 						<div class="block-area" >
-			                 <button class="btn m-r-5" type="submit">Salvar</button>
-			                 <a href="<spring:url value='/web/clientes/' />" >
-				                 <button class="btn btn-alt m-r-5" type="button">Limpar</button>
-			                 </a>
+			                 <button class="btn m-r-5" type="button" onclick="addHorario()">Salvar</button>
+				             <button class="btn btn-alt m-r-5" type="button">Limpar</button>
 			             </div>
 			             
 			              <div class="clearfix"></div>
 			            <br />
 			             <div class="col-lg-3" >
 			                 <label>Cliente</label>
-			                <input type="text" class="form-control input-sm" placeholder="Digite algo para pesquisar"/>
+			                 <select data-placeholder="Select Users..." class="tag-select-limited" multiple="multiple" id="cliente-select">
+			                 	<c:forEach var="cliente" items="${ pessoas }">
+			                 		<c:if test="${ cliente.funcionario eq false }">
+				                 		<option value="${ cliente.id }">${ cliente.nome } [${cliente.id }]</option>
+			                 		</c:if>
+			                 	</c:forEach>
+		                    </select>
 			             </div>
 			             <div class="col-lg-3" >
 			                 <label>Funcionário</label>
-			                <select class="select">
-		                         <option value="Recepcionista">Recepcionista</option>
-		                         <option value="Manicure">Manicure</option>
-		                         <option value="Cabelereira">Cabelereira</option>
-		                         <option value="Maquiadora">Maquiadora</option>
-		                	</select>
+			                  <select data-placeholder="Select Users..." class="tag-select-limited" multiple="multiple" id="funcionario-select">
+			                 	<c:forEach var="funcionario" items="${ pessoas }">
+			                 		<c:if test="${ funcionario.funcionario eq true }">
+				                 		<option value="${ funcionario.id }">${ funcionario.nome }</option>
+			                 		</c:if>
+			                 	</c:forEach>
+		                    </select>
 			             </div>
 			             <div class="col-lg-2" >
 			                 <label>Data</label>
 			                 <div class="input-icon datetime-pick date-only">
-                                <input data-format="dd/MM/yyyy" type="text" class="form-control input-sm" />
+                                <input data-format="dd/MM/yyyy" type="text" class="form-control input-sm"  id="dia-agenda"/>
                                 <span class="add-on">
                                     <i class="sa-plus"></i>
                                 </span>
@@ -62,7 +67,7 @@
 			             <div class="col-lg-2" >
 			                 <label>Horário</label>
 			                 <div class="input-icon datetime-pick time-only">
-                                <input data-format="hh:mm" type="text" class="form-control input-sm" />
+                                <input data-format="hh:mm" type="text" class="form-control input-sm" id="horario-inicio-agenda"/>
                                 <span class="add-on">
                                     <i class="sa-plus"></i>
                                 </span>
@@ -71,7 +76,7 @@
 			              <div class="col-lg-2" >
 			                 <label>Horário de término</label>
 			                 <div class="input-icon datetime-pick time-only">
-                                <input data-format="hh:mm" type="text" class="form-control input-sm" />
+                                <input data-format="hh:mm" type="text" class="form-control input-sm" id="horario-fim-agenda"/>
                                 <span class="add-on">
                                     <i class="sa-plus"></i>
                                 </span>
@@ -129,6 +134,17 @@
 	<script type="text/javascript">
 		$(document).ready(
 				function() {
+					/* Tag Select */
+	                (function(){
+	                    /* Limited */
+	                    $(".tag-select-limited").chosen({
+	                        max_selected_options: 1
+	                    });
+	                    
+	                    /* Overflow */
+	                    $('.overflow').niceScroll();
+	                })();
+	                
 					var date = new Date();
 					var d = date.getDate();
 					var m = date.getMonth();
@@ -217,6 +233,8 @@
 			//Custom scrollbar
 			var overflowRegular, overflowInvisible = false;
 			overflowRegular = $('.overflow').niceScroll();
+
+			
 		});
 	</script>
 	
