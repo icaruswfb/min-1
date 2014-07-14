@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -36,8 +37,10 @@ public class HomeController {
 		return list(pesquisar(pesquisa, null), pesquisa);
 	}
 	
+	
+	
 	@RequestMapping(value="/pesquisarest", method=RequestMethod.POST)
-	public @ResponseBody List<Pessoa> pesquisar(@PathVariable("pesquisa") String pesquisa, @PathVariable("isFuncionario") Boolean funcionario){
+	public @ResponseBody() List<Pessoa> pesquisar(String pesquisa, Boolean funcionario){
 		Pessoa pessoa = new Pessoa();
 		pessoa.setCep(pesquisa);
 		pessoa.setCidade(pesquisa);
@@ -46,6 +49,7 @@ public class HomeController {
 		pessoa.setNome(pesquisa);
 		pessoa.setTelefone(pesquisa);
 		pessoa.setFuncionario(funcionario);
+		pessoa.setDocumento(pesquisa);
 		List<Pessoa> pessoas = pessoaService.findPessoa(pessoa);
 		return pessoas;
 	}

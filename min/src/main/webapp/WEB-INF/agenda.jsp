@@ -7,7 +7,7 @@
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
 <jsp:include page="template/head.jsp"></jsp:include>
-<body id="skin-blur-greenish">
+<body id="skin-blur-violate">
 	
 	<jsp:include page="template/header.jsp"></jsp:include>
 
@@ -23,70 +23,78 @@
 
 		<!-- Content -->
 		<section id="content" class="container">
-
-			<h4 class="page-title">NOVO HORÁRIO</h4>
-				<form >
-
-					<!-- Novo horário -->
-						<div class="block-area" >
-			                 <button class="btn m-r-5" type="button" onclick="addHorario()">Salvar</button>
-				             <button class="btn btn-alt m-r-5" type="button">Limpar</button>
-			             </div>
-			             
-			              <div class="clearfix"></div>
-			            <br />
-			             <div class="col-lg-3" >
-			                 <label>Cliente</label>
-			                 <select data-placeholder="Select Users..." class="tag-select-limited" multiple="multiple" id="cliente-select">
-			                 	<c:forEach var="cliente" items="${ pessoas }">
-			                 		<c:if test="${ cliente.funcionario eq false }">
-				                 		<option value="${ cliente.id }">${ cliente.nome } [${cliente.id }]</option>
-			                 		</c:if>
-			                 	</c:forEach>
-		                    </select>
-			             </div>
-			             <div class="col-lg-3" >
-			                 <label>Funcionário</label>
-			                  <select data-placeholder="Select Users..." class="tag-select-limited" multiple="multiple" id="funcionario-select">
-			                 	<c:forEach var="funcionario" items="${ pessoas }">
-			                 		<c:if test="${ funcionario.funcionario eq true }">
-				                 		<option value="${ funcionario.id }">${ funcionario.nome }</option>
-			                 		</c:if>
-			                 	</c:forEach>
-		                    </select>
-			             </div>
-			             <div class="col-lg-2" >
-			                 <label>Data</label>
-			                 <div class="input-icon datetime-pick date-only">
-                                <input data-format="dd/MM/yyyy" type="text" class="form-control input-sm"  id="dia-agenda"/>
-                                <span class="add-on">
-                                    <i class="sa-plus"></i>
-                                </span>
+			
+			
+			<!-- Modal Wider -->	
+                    <div class="modal fade" id="modalWider" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog modal-sm">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                    <h4 class="modal-title">NOVO HORÁRIO</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form >
+					
+										<!-- Novo horário -->
+									                 <label>Data</label>
+					                                <input  type="text" readonly="readonly" disabled="disabled" class="form-control input-sm"  id="dia-agenda" value="${ dataStr }"/>
+					                                <input type="hidden" id="dia-agenda-millis" value="${ dataMillis }"/>
+					                                <br />
+									                 <label>Cliente</label>
+									                 <select data-placeholder="Selecionar cliente..." class="tag-select-limited" multiple="multiple" id="cliente-select">
+									                 	<c:forEach var="cliente" items="${ pessoas }">
+									                 		<c:if test="${ cliente.funcionario eq false }">
+										                 		<option value="${ cliente.id }">${ cliente.nome } [${cliente.id }]</option>
+									                 		</c:if>
+									                 	</c:forEach>
+								                    </select>
+									                 <label>Funcionário</label>
+									                  <select data-placeholder="Selecionar funcionário..." class="select custom-select" id="funcionario-select">
+									                 	<c:forEach var="funcionario" items="${ pessoas }">
+									                 		<c:if test="${ funcionario.funcionario eq true }">
+										                 		<option value="${ funcionario.id }">${ funcionario.nome }</option>
+									                 		</c:if>
+									                 	</c:forEach>
+								                    </select>
+								            
+								                 <label>Horário</label>
+								                 <div class="input-icon datetime-pick time-only">
+					                                <input data-format="hh:mm" type="text" class="form-control input-sm" id="horario-inicio-agenda"/>
+					                                <span class="add-on">
+					                                    <i class="sa-plus"></i>
+					                                </span>
+					                            </div>
+								                 <label>Serviços</label>
+								                  <select data-placeholder="Selecionar serviços..." class="tag-select" multiple="multiple" id="servico-select" onchange="Agenda.calcularHorario()">
+								                 	<c:forEach var="servico" items="${ servicos }">
+								                 		<option value="${ servico.id }">${ servico.nome }</option>
+								                 	</c:forEach>
+							                    </select>
+								                 <label>Horário de término</label>
+								                 <div class="input-icon datetime-pick time-only">
+					                                <input data-format="hh:mm" type="text" class="form-control input-sm" id="horario-fim-agenda"/>
+					                                <span class="add-on">
+					                                    <i class="sa-plus"></i>
+					                                </span>
+					                            </div>
+					                            
+							                    <label>Observações</label>
+							                    <textarea class="form-control overflow" rows="3"  id="observacao"></textarea>
+									</form>
+                                </div>
+                                <div class="modal-footer">
+                                	
+					                 <button class="btn " type="button" onclick="Agenda.addHorario()" data-dismiss="modal">Salvar</button>
+                                    <button type="button" class="btn btn-sm" data-dismiss="modal">Cancelar</button>
+                                </div>
                             </div>
-			             </div>
-			             <div class="col-lg-2" >
-			                 <label>Horário</label>
-			                 <div class="input-icon datetime-pick time-only">
-                                <input data-format="hh:mm" type="text" class="form-control input-sm" id="horario-inicio-agenda"/>
-                                <span class="add-on">
-                                    <i class="sa-plus"></i>
-                                </span>
-                            </div>
-			             </div>
-			              <div class="col-lg-2" >
-			                 <label>Horário de término</label>
-			                 <div class="input-icon datetime-pick time-only">
-                                <input data-format="hh:mm" type="text" class="form-control input-sm" id="horario-fim-agenda"/>
-                                <span class="add-on">
-                                    <i class="sa-plus"></i>
-                                </span>
-                            </div>
-			             </div>
-				</form>
-              <div class="clearfix"></div>
-            <br /><br />
-			<h4 class="page-title">AGENDA</h4>
+                        </div>
+                    </div>
+			
+			<h4 class="page-title">AGENDA - ${ dataStr }</h4>
 
+                            <a data-toggle="modal" href="#modalWider" style="display: none;" class="btn btn-sm">Modal - Wider</a>
 			<div class="block-area">
 				
 				<div class="row">
@@ -94,18 +102,6 @@
 					<div class="col-md-12 clearfix">
 
 						<div id="calendar" class="p-relative p-10 m-b-20">
-							<!-- Calendar Views -->
-							<ul class="calendar-actions list-inline clearfix">
-								<li class="p-r-0"><a data-view="month" href="#"
-									class="tooltips" title="Month"> <i class="sa-list-month"></i>
-								</a></li>
-								<li class="p-r-0"><a data-view="agendaWeek" href="#"
-									class="tooltips" title="Week"> <i class="sa-list-week"></i>
-								</a></li>
-								<li class="p-r-0"><a data-view="agendaDay" href="#"
-									class="tooltips" title="Day"> <i class="sa-list-day"></i>
-								</a></li>
-							</ul>
 						</div>
 					</div>
 
@@ -140,102 +136,25 @@
 	                    $(".tag-select-limited").chosen({
 	                        max_selected_options: 1
 	                    });
-	                    
 	                    /* Overflow */
 	                    $('.overflow').niceScroll();
 	                })();
+	                Agenda.criarCalendario();
+	                Agenda.findHorariosDoDia();
+	                $(window).load(function(){
+							Agenda.selecionarData();
+		                });
+
 	                
-					var date = new Date();
-					var d = date.getDate();
-					var m = date.getMonth();
-					var y = date.getFullYear();
-					$('#calendar').fullCalendar(
-							{
-								lang: 'pt-br',
-								header : {
-									center : 'title',
-									left : 'prev, next',
-									right : ''
-								},
-
-								selectable : true,
-								selectHelper : true,
-								editable : true,
-								events : [ {
-									title : 'Hangout with friends',
-									start : new Date(y, m, 1),
-									end : new Date(y, m, 2)
-								} ],
-
-								//On Day Select
-								select : function(start, end, allDay) {
-									$('#addNew-event').modal('show');
-									$('#addNew-event input:text').val('');
-									$('#getStart').val(start);
-									$('#getEnd').val(end);
-								},
-
-								eventResize : function(event, dayDelta,
-										minuteDelta, revertFunc) {
-									$('#editEvent').modal('show');
-
-									var info = "The end date of " + event.title
-											+ "has been moved " + dayDelta
-											+ " days and " + minuteDelta
-											+ " minutes.";
-
-									$('#eventInfo').html(info);
-
-									$('#editEvent #editCancel').click(
-											function() {
-												revertFunc();
-											})
-								}
-							});
-
-					$('body').on(
-							'click',
-							'#addEvent',
-							function() {
-								var eventForm = $(this).closest('.modal').find(
-										'.form-validation');
-								eventForm.validationEngine('validate');
-
-								if (!(eventForm).find('.formErrorContent')[0]) {
-
-									//Event Name
-									var eventName = $('#eventName').val();
-
-									//Render Event
-									$('#calendar').fullCalendar('renderEvent',
-											{
-												title : eventName,
-												start : $('#getStart').val(),
-												end : $('#getEnd').val(),
-												allDay : true,
-											}, true); //Stick the event
-
-									$('#addNew-event form')[0].reset()
-									$('#addNew-event').modal('hide');
-								}
-							});
-					$('#calendar').fullCalendar('changeView', 'agendaDay');
-					var overflowRegular, overflowInvisible = false;
-					overflowRegular = $('.overflow').niceScroll();
+	                <c:forEach var="servico" items="${ servicos }">
+	                	Agenda.servicos[${servico.id}] = {
+								id: ${servico.id},
+								nome: '${servico.nome}',
+								duracao: ${servico.duracao}
+							};
+	             	</c:forEach>
+	                
 				});
-
-		//Calendar views
-		$('body').on('click', '.calendar-actions > li > a', function(e) {
-			e.preventDefault();
-			var dataView = $(this).attr('data-view');
-			$('#calendar').fullCalendar('changeView', dataView);
-
-			//Custom scrollbar
-			var overflowRegular, overflowInvisible = false;
-			overflowRegular = $('.overflow').niceScroll();
-
-			
-		});
 	</script>
 	
 	<script type="text/javascript">

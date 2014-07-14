@@ -1679,6 +1679,13 @@ a.list-group-item.active > .badge,
     color: #bbb;
 }
 
+.text-muted a{
+    color: #bbb;
+}
+.text-muted a:hover{
+    color: #ffd600;
+    text-decoration: none;
+}
 .page-title {
     padding: 8px 15px 9px;
     font-size: 15px;
@@ -2277,6 +2284,16 @@ a.list-group-item.active > .badge,
         padding: 0px 5px;
         font-size: 11px;
     }
+}
+
+.custom-select{
+	
+}
+.custom-select button{
+	height: 33px !important;
+}
+.custom-select .filter-option{
+	font-size: 14px;
 }
 
 

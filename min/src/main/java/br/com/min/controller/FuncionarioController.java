@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import br.com.min.entity.Pessoa;
@@ -23,6 +24,11 @@ public class FuncionarioController {
 	@RequestMapping("/")
 	public ModelAndView listar(){
 		return list(pessoaService.listarFuncionarios(), null);
+	}
+	
+	@RequestMapping(value="/listar",method=RequestMethod.GET)
+	public @ResponseBody List<Pessoa> listarFuncionarios(){
+		return pessoaService.listarFuncionarios();
 	}
 	
 	private ModelAndView list(List<Pessoa> lista, String pesquisa){

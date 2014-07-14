@@ -41,12 +41,22 @@ public class PessoaDAO {
 			if(StringUtils.isNotBlank(cliente.getEmail())){
 				predicates.add(Restrictions.ilike("email", cliente.getEmail(), MatchMode.ANYWHERE));
 			}
-			if(cliente.getFuncionario() != null){
-				predicates.add(Restrictions.eq("funcionario", cliente.getFuncionario()));
+			if(StringUtils.isNotBlank(cliente.getDocumento())){
+				predicates.add(Restrictions.ilike("documento", cliente.getDocumento(), MatchMode.ANYWHERE));
+			}
+			if(StringUtils.isNotBlank(cliente.getEndereco())){
+				predicates.add(Restrictions.ilike("endereco", cliente.getEndereco(), MatchMode.ANYWHERE));
+			}
+			if(StringUtils.isNotBlank(cliente.getCidade())){
+				predicates.add(Restrictions.ilike("cidade", cliente.getCidade(), MatchMode.ANYWHERE));
 			}
 			Criterion[] predicatesArray = new Criterion[predicates.size()];
 			predicatesArray = predicates.toArray(predicatesArray);
 			criteria = criteria.add(Restrictions.or(predicatesArray));
+			if(cliente.getFuncionario() != null){
+				Criterion predicate = Restrictions.eq("funcionario", cliente.getFuncionario());
+				criteria = criteria.add(Restrictions.and(predicate));
+			}
 		}
 		List<Pessoa> clientes = criteria.list();
 		return clientes;

@@ -7,7 +7,7 @@
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
 <jsp:include page="template/head.jsp"></jsp:include>
-<body id="skin-blur-greenish">
+<body id="skin-blur-violate">
 	<jsp:include page="template/header.jsp"></jsp:include>
 
 	<div class="clearfix"></div>
@@ -22,7 +22,7 @@
 
 			<h4 class="page-title">CLIENTE</h4>
             <form:form method="post" action="../salvar" commandName="cliente">
-            	<form:hidden path="id" />
+            	<form:hidden path="id" id="cliente-id" />
 				<div class="block-area" id="buttons">
 	                 <button class="btn m-r-5" type="submit">Salvar</button>
 	                 <a href="<spring:url value='/web/clientes/' />" >
@@ -36,13 +36,16 @@
                  <div class="col-lg-12">
                  	<form:input path="nome" cssClass="form-control input-lg m-b-10" placeholder="Nome"/>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-3">
+                 	<form:input path="documento" cssClass="form-control m-b-10" placeholder="RG ou CPF"/>
+                </div>
+                <div class="col-lg-3">
                  	<form:input path="telefone" cssClass="form-control m-b-10" placeholder="Telefones"/>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-3">
                  	<form:input path="aniversarioStr" cssClass="form-control m-b-10 mask-date validate[required,custom[date]]" placeholder="Aniversário (dd/MM)"/>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-3">
                  	<form:input path="email" cssClass="form-control m-b-10" placeholder="E-mail"/>
                 </div>
                 
@@ -58,8 +61,18 @@
                 
              </form:form>
               <div class="clearfix"></div>
-            <br /><br />
+            <br />
             <c:if test="${ cliente.id ne null }">
+	            <div class="block-area">
+						<div id="comandas" class="row">
+							<form action="" method="post" id="comanda-form">
+								
+							</form>
+						</div>
+				</div>
+             	 <div class="clearfix"></div>
+           		 <br />
+				<h4 class="page-title">HISTÓRICO</h4>
 	            <div class="block-area">
 					<div class="row">
 						<div class="col-md-9">
@@ -107,55 +120,23 @@
 	
 					<div class="clearfix"></div>
 				</div>
-	            <div class="clearfix"></div>
-				<h4 class="page-title">HISTÓRICO</h4>
 				<div class="block-area" id="historico">
 					<div class="listview list-container">
-	                     <header class="listview-header media">
-	                        <input type="checkbox" class="pull-left list-parent-check" value="">
-	                        
-	                        <ul class="list-inline list-mass-actions pull-left">
-	                            <li>
-	                                <a data-toggle="modal" href="#compose-message" title="Add" class="tooltips">
-	                                    <i class="sa-list-add"></i>
-	                                </a>
-	                            </li>
-	                            <li>
-	                                <a href="" title="Refresh" class="tooltips">
-	                                    <i class="sa-list-refresh"></i>
-	                                </a>
-	                            </li>
-	                            <li class="show-on" style="display: none;">
-	                                <a href="" title="Delete" class="tooltips">
-	                                    <i class="sa-list-delete"></i>
-	                                </a>
-	                            </li>
-	                        </ul>
-	
-	                        <div class="clearfix"></div>
-	                    </header>                   
-	                    <div class="media">
-								<small class="text-muted">31/12/2013 18:30 com <a href="">Susy</a></small><br />
-	                        <input type="checkbox" class="pull-left list-check" value="">
-	                        <div class="media-body">
-	                            Per an error perpetua, fierent fastidii recteque ad pro. Mei id brute intellegam
-	                            <div class="list-options">
-	                                <button class="btn btn-sm">View</button>
-	                                <button class="btn btn-sm">Delete</button>
-	                            </div>
-	                        </div>
-	                    </div>
-	                    <div class="media">
-								<small class="text-muted">18:30 com <a href="">Susy</a></small><br />
-	                        <input type="checkbox" class="pull-left list-check" value="">
-	                        <div class="media-body">
-	                            Per an error perpetua, fierent fastidii recteque ad pro. Mei id brute intellegam
-	                            <div class="list-options">
-	                                <button class="btn btn-sm">View</button>
-	                                <button class="btn btn-sm">Delete</button>
-	                            </div>
-	                        </div>
-	                    </div>
+	                    <c:forEach var="historico" items="${ historicos }">
+		                    <div class="media">
+									<small class="text-muted">${historico.textoPequeno}</small><br />
+		                        <div class="media-body">
+		                        	<a href="/min/web/funcionarios/editar/${ historico.funcionario.id }">${ historico.funcionario.nome }</a>:
+		                            ${ historico.texto }
+		                            <!-- 
+		                            <div class="list-options">
+		                                <button class="btn btn-sm">View</button>
+		                                <button class="btn btn-sm">Delete</button>
+		                            </div>
+		                             -->
+		                        </div>
+		                    </div>
+	                    </c:forEach>           
 	                </div>
 				</div>
             </c:if>
@@ -185,7 +166,10 @@
              $('.mask-date').mask('00/00');
              $('.mask-cep').mask('00000-000');
 		});
-		
+		Comanda.init();
+        <c:if test="${ cliente.id ne null }">
+        	Comanda.findComandas();
+        </c:if>
 	</script>
 	
 </body>

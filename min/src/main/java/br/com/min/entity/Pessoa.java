@@ -29,6 +29,8 @@ public class Pessoa implements Serializable{
 	private String cidade;
 	private Funcao funcaoPrincipal;
 	private Boolean funcionario;
+	private String documento;
+	private String cor;
 
 	@Id
 	@GeneratedValue
@@ -89,6 +91,9 @@ public class Pessoa implements Serializable{
 	}
 	public void setAniversarioStr(String data){
 		try {
+			if(data == null || data.isEmpty()){
+				return;
+			}
 			aniversario = sdf.parse(data);
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
@@ -106,6 +111,18 @@ public class Pessoa implements Serializable{
 	}
 	public void setFuncionario(Boolean funcionario) {
 		this.funcionario = funcionario;
+	}
+	public String getDocumento() {
+		return documento;
+	}
+	public void setDocumento(String documento) {
+		this.documento = documento;
+	}
+	public String getCor() {
+		return cor;
+	}
+	public void setCor(String cor) {
+		this.cor = cor;
 	}
 	
 }

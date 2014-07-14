@@ -95,12 +95,22 @@
 		<li  id="clientes-menu" ><a class="sa-side-form" href="<spring:url value='/web/clientes/' />"> <span
 				class="menu-item">Clientes</span>
 		</a></li>
-		<li id="employee-menu"><a class="sa-side-folder" href="<spring:url value='/web/funcionarios/' />"> <span
-				class="menu-item">Funcionários</span>
-		</a></li>
 		<li id="agenda-menu"><a class="sa-side-calendar" href="<spring:url value='/web/agenda/' />"> <span
 				class="menu-item">Agenda</span>
 		</a></li>
+         <li class="dropdown" id="admin-menu">
+             <a class="sa-side-folder" href="">
+                 <span class="menu-item">Admin</span>
+             </a>
+             <ul class="list-unstyled menu-item">
+             	<li><a id="servicos-menu" href="<spring:url value='/web/servicos/' />">Serviços</a></li>
+				<li><a id="produtos-menu" href="<spring:url value='/web/produtos/' />">Produtos</a></li>
+				<li><a id="employee-menu" href="<spring:url value='/web/funcionarios/' />">Funcionários</a></li>
+             </ul>
+         </li>
+		
+		
+		
 	</ul>
 
 </aside>

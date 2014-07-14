@@ -7,7 +7,7 @@
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
 <jsp:include page="template/head.jsp"></jsp:include>
-<body id="skin-blur-greenish">
+<body id="skin-blur-violate">
 	<jsp:include page="template/header.jsp"></jsp:include>
 
 	<div class="clearfix"></div>
@@ -34,6 +34,7 @@
                                 <tr>
                                     <th style="width: 70px">ID</th>
                                     <th>Nome</th>
+                                    <th>Documento</th>
                                     <th>Telefones</th>
                                     <th>Aniversário</th>
                                     <th>E-mail</th>
@@ -45,6 +46,7 @@
 	                                <tr>
 	                                    <td><a href="<spring:url value='/web/clientes/editar/${cliente.id}' />">${ cliente.id }</a></td>
 	                                    <td><a href="<spring:url value='/web/clientes/editar/${cliente.id}' />">${ cliente.nome }</a></td>
+	                                    <td><a href="<spring:url value='/web/clientes/editar/${cliente.id}' />">${ cliente.documento }</a></td>
 	                                    <td>${ cliente.telefone }</td>
 	                                    <td><fmt:formatDate value="${ cliente.aniversario }" pattern="dd/MM" /></td>
 	                                    <td>${ cliente.email }</td>

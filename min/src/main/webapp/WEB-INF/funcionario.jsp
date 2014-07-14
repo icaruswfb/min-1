@@ -7,7 +7,7 @@
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
 <jsp:include page="template/head.jsp"></jsp:include>
-<body id="skin-blur-greenish">
+<body id="skin-blur-violate">
 	<jsp:include page="template/header.jsp"></jsp:include>
 
 	<div class="clearfix"></div>
@@ -25,9 +25,7 @@
             	<form:hidden path="id" />
 				<div class="block-area" id="buttons">
 	                 <button class="btn m-r-5" type="submit">Salvar</button>
-	                 <a href="<spring:url value='/web/funcionarios/' />" >
-		                 <button class="btn btn-alt m-r-5" type="button">Cancelar</button>
-	                 </a>
+	                 <a href="<spring:url value='/web/funcionarios/' />" class="btn btn-alt m-r-5" type="button">Cancelar</a>
 	             </div>
 			 	<!-- Table Hover -->
                 <div class="block-area" id="text-input">
@@ -62,6 +60,18 @@
                 </div>
                 <div class="col-lg-3">
                  	<form:input path="cidade" cssClass="form-control m-b-10" placeholder="Cidade"/>
+                </div>
+                <div class="col-lg-3">
+                 	<form:input path="documento" cssClass="form-control m-b-10" placeholder="RG ou CPF"/>
+                </div>
+                <div class="col-lg-3">
+                 	<div class="color-pick input-icon">
+                         <form:input path="cor" cssClass="form-control color-picker m-b-10" placeholder="Escolha uma cor..." />
+                         <span class="color-preview"></span>
+                         <span class="add-on">
+                             <i class="sa-plus"></i>
+                         </span>
+                     </div>
                 </div>
                 
              </form:form>
@@ -188,6 +198,7 @@
 	
 	<script type="text/javascript">
 		$("#employee-menu").addClass("active");
+		$("#admin-menu").addClass("active");
 
 		$(document).ready(function(){
              $('.mask-date').mask('00/00');

@@ -1,3 +1,31 @@
+function addHorario(){
+	var clienteId = $("#cliente-select").val();
+	var clienteNome = $("#cliente-select option[value="+clienteId+"]").text().split("[")[0];
+	var funcionarioId = $("#funcionario-select").val();
+	var funcionarioNome = $("#funcionario-select option[value="+funcionarioId+"]").text();
+	var dataStr = $("#dia-agenda").val().split("/");
+	var dia = dataStr[0];
+	var mes = dataStr[1];
+	var ano = dataStr[2];
+	
+	var horarioInicio = $("#horario-inicio-agenda").val().split(":");
+	var inicioHora = horarioInicio[0];
+	var inicioMin = horarioInicio[1];
+	
+	var horarioInicio = $("#horario-fim-agenda").val().split(":");
+	var fimHora = horarioInicio[0];
+	var fimMin = horarioInicio[1];
+	
+	var dataInicio = new Date(ano, mes-1, dia, inicioHora, inicioMin);
+	var dataFim = new Date(ano, mes-1, dia, fimHora, fimMin);
+	$('#calendar').fullCalendar('renderEvent', {
+				title:clienteNome + " com " + funcionarioNome, 
+				start: dataInicio, 
+				end: dataFim, 
+				allDay: false
+			});
+}
+
 $(document).ready(function(){
     
     /* --------------------------------------------------------
@@ -171,7 +199,8 @@ $(document).ready(function(){
                 events: [],
                 header: {
                     left: 'title'
-                }
+                },
+                lang: 'pt-br'
             });
         }
 
@@ -188,21 +217,6 @@ $(document).ready(function(){
                     {
                         title: 'All Day Event',
                         start: new Date(y, m, 1)
-                    },
-                    {
-                        title: 'Long Event',
-                        start: new Date(y, m, d-5),
-                        end: new Date(y, m, d-2)
-                    },
-                    {
-                        title: 'Repeat Event',
-                        start: new Date(y, m, 3),
-                        allDay: false
-                    },
-                    {
-                        title: 'Repeat Event',
-                        start: new Date(y, m, 4),
-                        allDay: false
                     }
                 ]
             });
@@ -216,7 +230,7 @@ $(document).ready(function(){
     (function(){
 	if($('#news-feed')[0]){
 	    $('#news-feed').FeedEk({
-		FeedUrl: 'http://rss.cnn.com/rss/edition.rss',
+		FeedUrl: 'http://rss.home.uol.com.br/index.xml',
 		MaxCount: 5,
 		ShowDesc: false,
 		ShowPubDate: true,

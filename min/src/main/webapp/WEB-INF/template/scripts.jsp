@@ -67,6 +67,8 @@
 
 	<!-- Other -->
 	<script src="<spring:url value='/js/calendar.min.js' />"></script>
+	<script src="<spring:url value='/js/agenda.js' />"></script>
+	<script src="<spring:url value='/js/utils.js' />"></script>
 	<!-- Calendar -->
 	<script src="<spring:url value='/js/feeds.min.js' />"></script>
 	<!-- News Feeds -->
@@ -74,6 +76,8 @@
 
 	<!-- All JS functions -->
 	<script src="<spring:url value='/js/functions.js' />"></script>
+	<script src="<spring:url value='/js/produto.js' />"></script>
+	<script src="<spring:url value='/js/comanda.js' />"></script>
 	
 	<script type="text/javascript">
 		var skins = [
@@ -92,7 +96,8 @@
 								"skin-cloth",
 								"skin-tectile"
 		     		];
-		$("body").attr("id",skins[Math.floor(Math.random() * skins.length)]);
+		//$("body").attr("id",skins[Math.floor(Math.random() * skins.length)]);
+		$("body").attr("id",skins[0]);
 	</script>
 	
 <!-- Older IE Message -->

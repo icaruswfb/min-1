@@ -14,26 +14,20 @@
 						   http://www.springframework.org/schema/tx
 						   http://www.springframework.org/schema/tx/spring-tx.xsd">
 
-	<context:component-scan base-package="br.com.dehalli" />
+	<context:component-scan base-package="br.com.min" />
 
 	<context:annotation-config />
-<!-- 
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-	        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-	        <property name="url" value="jdbc:mysql://localhost:3306/test" />
-	        <property name="username" value="root" />
-	        <property name="password" value="" />
-	    </bean>
-	    
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="url" value="jdbc:mysql://localhost:3306/min" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
+    </bean>
 	<bean id="sessionFactory"
 		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />
-		<property name="packagesToScan" value="br.com.dehalli.entity"></property>
-		<!-- 
-		<property name="configLocation">
-			<value>classpath:./hibernate.cfg.xml</value>
-		</property>
-		 -->
+		<property name="packagesToScan" value="br.com.min.entity"></property>
+
 		<property name="hibernateProperties">
 			<props>
 				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
@@ -43,11 +37,13 @@
 			</props>
 		</property>
 	</bean>
-	
 	<bean id="txManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
 	<tx:annotation-driven transaction-manager="txManager"/>
+<!-- 
+	    
+	
 	
 	<security:http auto-config="true"  use-expressions="true" access-denied-page="/login">
 		<security:intercept-url pattern="/**" access="hasRole('VENDEDOR')"/>

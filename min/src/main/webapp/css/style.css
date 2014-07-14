@@ -2296,4 +2296,117 @@ a.list-group-item.active > .badge,
 	font-size: 14px;
 }
 
+.cor-tabela{
+	height: 18px;
+	width: 26px;
+}
 
+.calendario-table{
+	
+}
+.calendario-table td, .calendario-table tr{
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+.calendario-table .first{
+	width: 50px;
+}
+.calendario-table .hora{
+}
+
+.calendario-table .horario:hover .tooltip-popup{
+	display: block;
+}
+.calendario-table .horario .tooltip-popup{
+	display: none;
+	background-color: rgba(0, 0, 0, 0.9);
+	position: absolute;
+	z-index: 1030;
+	visibility: visible;
+	font-size: 12px;
+	line-height: 1.4;
+	padding: 10px;
+	margin-top: -2px;
+}
+.calendario-table .horario .tooltip-popup:hover{
+	display: block;
+}
+.calendario-table .hora .first{
+	padding-right: 5px !important;
+}
+.calendario-table .hora .first .horario{
+	text-align: right !important;
+}
+.calendario-table .hora .first .horario:hover{
+	background: none !important;
+}
+.calendario-table .horario .hora-vaga{
+	display: none;
+	padding-left: 5px;
+	padding-top: 2px;
+}
+.calendario-table .horario:hover .hora-vaga{
+	display: block;
+}
+.calendario-table .horario{
+	height: 16px;
+	width: 100%;
+}
+
+.calendario-table .titulo-horario a{
+	color: #000000;
+}
+
+.calendario-table .titulo-horario a:hover{
+	color: #666;
+}
+
+.calendario-table .titulo-horario{
+	background-color: rgba(255,255,255,0.5);
+	padding-left: 5px;
+	border-top: 1px solid;
+	border-color: rgba(0,0,0,0.05) !important;
+	border-radius: 4px 4px 0 0 !important;
+}
+
+.calendario-table .horario:hover{
+    background: rgba(255,255,255,0.2);
+}
+.comanda-title{
+	font-size: 12px;
+	font-family: 'open-sans-light', sans-serif;
+	font-weight: normal;
+	float: left;
+	margin: 5px 10px 0 0;
+}
+
+.acaoLancamento{
+	float: left;
+	margin: 30px 10px 0 0;
+}
+
+.lancamento{
+	width: 100%;
+	border-bottom: 1px solid rgba(255,255,255,0.1);
+	margin-top: 0;
+	padding: 5px 10px;
+	float: left;
+}
+
+.lancamento:hover{
+	background-color: rgba(0,0,0,0.07);
+}
+
+#comandas .tile{
+	float: left;
+	width: 100%;
+}
+
+.comanda-fechada{
+	margin-top: 20px;
+	width: 100%;
+	border-top: 1px solid rgba(255, 255, 255, 0.15);
+	padding: 15px 0 0 15px;
+	float: left;
+}
