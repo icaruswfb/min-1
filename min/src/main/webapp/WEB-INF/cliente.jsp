@@ -74,7 +74,7 @@
                                 </div>
                                 <div class="modal-body">
                                     <form id="novo-pagamento-form">
-										<input type="hidden" value="comandaId" />
+										<input type="hidden" name="comandaId" />
 						                 <label>Forma de pagamento</label>
 						                 <select class="select custom-select" name="formaPagamento">
 						                 	<option value="Dinheiro">Dinheiro</option>
@@ -89,12 +89,12 @@
 						                 <br />
 						                 <br />
 						                 <label>Valor</label>
-		                                <input data-format="hh:mm" type="text" class="form-control input-sm" id="horario-inicio-agenda"/>
+		                                <input type="text" class="form-control input-sm" name="valor"/>
 									</form>
                                 </div>
                                 <div class="modal-footer">
                                 	
-					                 <button class="btn " type="button" onclick="Agenda.addHorario()" data-dismiss="modal">Salvar</button>
+					                 <button class="btn " type="button" onclick="Comanda.pagar()" data-dismiss="modal">Salvar</button>
                                     <button type="button" class="btn btn-sm" data-dismiss="modal">Cancelar</button>
                                 </div>
                             </div>

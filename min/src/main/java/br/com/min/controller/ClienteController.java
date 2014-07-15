@@ -21,9 +21,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import br.com.min.entity.Comanda;
+import br.com.min.entity.FormaPagamento;
 import br.com.min.entity.Historico;
 import br.com.min.entity.LancamentoProduto;
 import br.com.min.entity.LancamentoServico;
+import br.com.min.entity.Pagamento;
 import br.com.min.entity.Pessoa;
 import br.com.min.entity.Produto;
 import br.com.min.entity.Servico;
@@ -86,6 +88,32 @@ public class ClienteController {
 		
 		
 		return mv;
+	}
+	
+	@RequestMapping(value="/pagar", method=RequestMethod.POST)
+	public @ResponseBody Comanda pagar(Long comandaId, String formaPagamento, Double valor){
+		Pagamento pagamento = new Pagamento();
+		Comanda comanda = comandaService.findById(comandaId);
+		pagamento.setComanda(comanda);
+		pagamento.setData(new Date());
+		pagamento.setValor(valor);
+		pagamento.setFormaPagamento(FormaPagamento.valueOf(formaPagamento));
+		comanda.getPagamentos().add(pagamento);
+		comanda = comandaService.persist(comanda);
+		limparComandaJSON(comanda);
+		return comanda;
+	}
+
+	@RequestMapping(value="/deletarPagamento/{id}/{comandaId}", method=RequestMethod.GET)
+	public @ResponseBody String deletarPagamento(@PathVariable("id") Long id, @PathVariable("comandaId") Long comandaId){
+		comandaService.deletePagamento(id);
+		Comanda comanda = comandaService.findById(comandaId);
+		return "ok";
+	}
+	
+	
+	private void limarPagamentoJSON(Pagamento pagamento){
+		pagamento.setComanda(null);
 	}
 	
 	@RequestMapping(value="/salvar", method=RequestMethod.POST)
@@ -152,21 +180,7 @@ public class ClienteController {
 		Collection<LancamentoProduto> produtos = criarProdutos(request, comanda);
 		comanda.getProdutos().addAll(produtos);
 		
-		calcularTotais(comanda);
-		
 		return comanda;
-	}
-	
-	private void calcularTotais(Comanda comanda){
-		Double total = 0d;
-		for(LancamentoProduto produto : comanda.getProdutos()){
-			total += produto.getProduto().getPrecoRevenda() * produto.getQuantidadeUtilizada();
-		}
-		for(LancamentoServico servico : comanda.getServicos()){
-			total += servico.getServico().getPreco();
-		}
-		comanda.setValorCobrado(total - comanda.getDesconto());
-		comanda.setValorTotal(total);
 	}
 	
 	private Collection<LancamentoProduto> criarProdutos(HttpServletRequest request, Comanda comanda){
@@ -298,6 +312,9 @@ public class ClienteController {
 		}
 		for(LancamentoServico servico : comanda.getServicos()){
 			servico.setComanda(null);
+		}
+		for(Pagamento pagamento : comanda.getPagamentos()){
+			limarPagamentoJSON(pagamento);
 		}
 		return comanda;
 	}
