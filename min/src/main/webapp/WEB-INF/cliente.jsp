@@ -63,6 +63,47 @@
               <div class="clearfix"></div>
             <br />
             <c:if test="${ cliente.id ne null }">
+            
+            
+            <div class="modal fade" id="modalWider" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog modal-sm">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                    <h4 class="modal-title">NOVO PAGAMENTO</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="novo-pagamento-form">
+										<input type="hidden" value="comandaId" />
+						                 <label>Forma de pagamento</label>
+						                 <select class="select custom-select" name="formaPagamento">
+						                 	<option value="Dinheiro">Dinheiro</option>
+						                 	<option value="Visa">Visa</option>
+						                 	<option value="VisaElectron">Visa Electron</option>
+						                 	<option value="MasterCard">MasterCard</option>
+						                 	<option value="Maestro">Maestro</option>
+						                 	<option value="Diners">Diners</option>
+						                 	<option value="Amex">Amex</option>
+						                 	<option value="Cheque">Cheque</option>
+						                 </select>
+						                 <br />
+						                 <br />
+						                 <label>Valor</label>
+		                                <input data-format="hh:mm" type="text" class="form-control input-sm" id="horario-inicio-agenda"/>
+									</form>
+                                </div>
+                                <div class="modal-footer">
+                                	
+					                 <button class="btn " type="button" onclick="Agenda.addHorario()" data-dismiss="modal">Salvar</button>
+                                    <button type="button" class="btn btn-sm" data-dismiss="modal">Cancelar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a data-toggle="modal" href="#modalWider" style="display: none;" class="btn btn-sm">Modal - Wider</a>
+            
+            
+            
 	            <div class="block-area">
 						<div id="comandas" class="row">
 							<form action="" method="post" id="comanda-form">

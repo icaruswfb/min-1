@@ -2404,9 +2404,36 @@ a.list-group-item.active > .badge,
 }
 
 .comanda-fechada{
-	margin-top: 20px;
+	margin: 0 0 10px 7px;
 	width: 100%;
-	border-top: 1px solid rgba(255, 255, 255, 0.15);
-	padding: 15px 0 0 15px;
+	/* border-top: 1px solid rgba(255, 255, 255, 0.15); */
+	padding: 0;
 	float: left;
+}
+
+.comanda-fechada-block{
+	display: none;
+}
+
+#comandas-fechadas .comandaInfo:hover{
+	background-color: rgba(0,0,0,0.07);
+}
+
+#comandas-fechadas .comandaInfo{
+	border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+
+.descricao-comanda{
+	padding: 0px 0 0 10px;
+}
+
+#comandas-fechadas{
+	float: left;
+	width: 100%;
+	display: none;
+}
+
+#comandas .total{
+	float: right;
+	font-size: 20px;
 }

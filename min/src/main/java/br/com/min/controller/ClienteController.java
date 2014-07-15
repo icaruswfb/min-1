@@ -135,15 +135,16 @@ public class ClienteController {
 	public @ResponseBody Comanda fecharComanda(HttpServletRequest request){
 		Comanda comanda = criarComanda(request);
 		comanda.setFechamento(new Date());
-		comanda = comandaService.persist(comanda);
+		comanda = comandaService.persist(comanda, true);
 		limparComandaJSON(comanda);
 		return comanda;
 	}
 	
 	private Comanda criarComanda(HttpServletRequest request){
 		Long comandaId = Long.parseLong(request.getParameter("comandaId"));
+		Double descontos = Double.parseDouble(request.getParameter("descontos"));
 		Comanda comanda = comandaService.findById(comandaId);
-		
+		comanda.setDesconto(descontos);
 		comanda.getServicos().clear();
 		comanda.getProdutos().clear();
 		Collection<LancamentoServico> servicos = criarServicos(request, comanda);
@@ -151,7 +152,21 @@ public class ClienteController {
 		Collection<LancamentoProduto> produtos = criarProdutos(request, comanda);
 		comanda.getProdutos().addAll(produtos);
 		
+		calcularTotais(comanda);
+		
 		return comanda;
+	}
+	
+	private void calcularTotais(Comanda comanda){
+		Double total = 0d;
+		for(LancamentoProduto produto : comanda.getProdutos()){
+			total += produto.getProduto().getPrecoRevenda() * produto.getQuantidadeUtilizada();
+		}
+		for(LancamentoServico servico : comanda.getServicos()){
+			total += servico.getServico().getPreco();
+		}
+		comanda.setValorCobrado(total - comanda.getDesconto());
+		comanda.setValorTotal(total);
 	}
 	
 	private Collection<LancamentoProduto> criarProdutos(HttpServletRequest request, Comanda comanda){
@@ -163,7 +178,6 @@ public class ClienteController {
 		String[] produtosIds = request.getParameterValues("produtoId");
 		String[] vendedoresIds = request.getParameterValues("vendedorId");
 		String[] quantidades = request.getParameterValues("quantidadeProduto");
-		String[] valores = request.getParameterValues("valorProduto");
 		Map<String, LancamentoProduto> result = new LinkedHashMap<String, LancamentoProduto>();
 		for(int i = 0; i < ids.length; i++){
 			LancamentoProduto lancamentoProduto = new LancamentoProduto();
@@ -172,7 +186,6 @@ public class ClienteController {
 				lancamentoProduto.setComanda(comanda);
 				lancamentoProduto.setDataCriacao(Utils.dateTimeFormat.parse(datasCriacao[i]));
 				lancamentoProduto.setProduto(findProduto(Long.parseLong(produtosIds[i])));
-				lancamentoProduto.setValor(Double.parseDouble(valores[i]));
 				lancamentoProduto.setVendedor(findPessoa(Long.parseLong(vendedoresIds[i])));
 				preencherQuantidade(lancamentoProduto, quantidades[i]);
 			} catch (ParseException e) {
@@ -194,7 +207,7 @@ public class ClienteController {
 		String[] datasCriacao = request.getParameterValues("dataCriacaoServico");
 		String[] servicosIds = request.getParameterValues("servicoId");
 		String[] funcionariosIds = request.getParameterValues("funcionarioId");
-		String[] valores = request.getParameterValues("valorServico");
+		String[] assistentesIds = request.getParameterValues("assistenteId");
 		Map<String, LancamentoServico> result = new LinkedHashMap<>();
 		for(int i = 0; i < ids.length; i++){
 			String id = ids[i];
@@ -205,7 +218,7 @@ public class ClienteController {
 				lancamento.setDataCriacao(Utils.dateTimeFormat.parse(datasCriacao[i]));
 				lancamento.setFuncionario(findPessoa(Long.parseLong(funcionariosIds[i])));
 				lancamento.setServico(findServico(Long.parseLong(servicosIds[i])));
-				lancamento.setValor(Double.parseDouble(valores[i]));
+				lancamento.setAssistente(findPessoa(Long.parseLong(assistentesIds[i])));
 			} catch (ParseException e) {
 				throw new RuntimeException(e);
 			}
