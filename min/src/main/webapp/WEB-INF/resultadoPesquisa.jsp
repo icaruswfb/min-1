@@ -20,10 +20,9 @@
 		<!-- Content -->
 		<section id="content" class="container">
 
-			<h4 class="page-title">Pesquisa</h4>
+			<h4 class="page-title">PESQUISA</h4>
 			 <!-- Table Hover -->
                 <div class="block-area" id="tableHover">
-                    <div class="table-responsive overflow">
                         <table class="table table-hover tile">
                             <thead>
                                 <tr>
@@ -75,7 +74,6 @@
                             	</c:forEach>
                             </tbody>
                         </table>
-                    </div>
                 </div>
 
 		</section>

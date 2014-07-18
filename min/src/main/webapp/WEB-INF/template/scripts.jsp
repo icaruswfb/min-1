@@ -77,9 +77,13 @@
 	<!-- All JS functions -->
 	<script src="<spring:url value='/js/functions.js' />"></script>
 	<script src="<spring:url value='/js/produto.js' />"></script>
+	<script src="<spring:url value='/js/cliente.js' />"></script>
 	<script src="<spring:url value='/js/comanda.js' />"></script>
 	
 	<script type="text/javascript">
+		$(document).ready(function(){
+			Agenda.criarFeedAgenda();
+		});
 		var skins = [
 								"skin-blur-violate",
 								"skin-blur-blue",

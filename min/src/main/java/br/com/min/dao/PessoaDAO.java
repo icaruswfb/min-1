@@ -21,12 +21,6 @@ public class PessoaDAO {
 	@Autowired
 	private SessionFactory sessionFactory;
 	
-	public void persist(Pessoa cliente){
-		Session session = sessionFactory.openSession();
-		session.merge(cliente);
-		session.flush();
-	}
-	
 	public List<Pessoa> findPessoa(Pessoa cliente){
 		Session session = sessionFactory.openSession();
 		Criteria criteria = session.createCriteria(Pessoa.class);
@@ -62,10 +56,4 @@ public class PessoaDAO {
 		return clientes;
 	}
 
-	public void delete(Pessoa cliente) {
-		Session session = sessionFactory.openSession();
-		session.delete(cliente);
-		session.flush();
-	}
-	
 }

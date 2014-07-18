@@ -34,6 +34,13 @@
 			<div id="sidebar-calendar"></div>
 		</div>
 
+		<!-- Horários -->
+		<div class="s-widget m-b-25">
+			<h2 class="tile-title">Próximos horários</h2>
+
+			<div class="s-widget-body" id="feed-agenda">
+			</div>
+		</div>
 		<!-- Feeds -->
 		<div class="s-widget m-b-25">
 			<h2 class="tile-title">Notícias</h2>
@@ -43,48 +50,6 @@
 			</div>
 		</div>
 
-		<!-- Projects -->
-		<div class="s-widget m-b-25">
-			<h2 class="tile-title">Próximos horários</h2>
-
-			<div class="s-widget-body">
-				<div class="side-border">
-					<div class="media-body">
-						<small class="text-muted">14:30 com <a href="">Susy</a></small><br />
-						<a class="t-overflow" href="">Maria da Siva dos Santos</a>
-
-					</div>
-				</div>
-				<div class="side-border">
-					<div class="media-body">
-						<small class="text-muted">15:30 com <a href="">Rose</a></small><br />
-						<a class="t-overflow" href="">Márcia Clara Oliveira</a>
-
-					</div>
-				</div>
-				<div class="side-border">
-					<div class="media-body">
-						<small class="text-muted">16:00 com <a href="">Susy</a></small><br />
-						<a class="t-overflow" href="">Karia Olaf</a>
-
-					</div>
-				</div>
-				<div class="side-border">
-					<div class="media-body">
-						<small class="text-muted">17:30 com <a href="">Whoever</a></small><br />
-						<a class="t-overflow" href="">Paula Trás</a>
-
-					</div>
-				</div>
-				<div class="side-border">
-					<div class="media-body">
-						<small class="text-muted">18:30 com <a href="">Susy</a></small><br />
-						<a class="t-overflow" href="">Maria da Siva dos Santos</a>
-
-					</div>
-				</div>
-			</div>
-		</div>
 	</div>
 
 	<!-- Side Menu -->
@@ -98,6 +63,15 @@
 		<li id="agenda-menu"><a class="sa-side-calendar" href="<spring:url value='/web/agenda/' />"> <span
 				class="menu-item">Agenda</span>
 		</a></li>
+		<li class="dropdown" id="report-menu">
+             <a class="sa-side-chart" href="">
+                 <span class="menu-item">Relatórios</span>
+             </a>
+             <ul class="list-unstyled menu-item">
+             	<li><a id="fechamento-menu" href="<spring:url value='/web/report/fechamento' />">Fechamento</a></li>
+				<li><a id="fluxofinanceiro-menu" href="<spring:url value='/web/report/financeiro' />">Fluxo financeiro</a></li>
+             </ul>
+         </li>
          <li class="dropdown" id="admin-menu">
              <a class="sa-side-folder" href="">
                  <span class="menu-item">Admin</span>

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.min.dao.GenericDAO;
 import br.com.min.dao.PessoaDAO;
 import br.com.min.entity.Pessoa;
 
@@ -14,10 +15,12 @@ public class PessoaService {
 	
 	@Autowired
 	private PessoaDAO dao;
+	@Autowired
+	private GenericDAO genericDao;
 	
 	@Transactional
 	public void persist(Pessoa cliente){
-		dao.persist(cliente);
+		genericDao.persist(cliente);
 	}
 	
 	@Transactional
@@ -51,7 +54,7 @@ public class PessoaService {
 	public void delete(Long id) {
 		Pessoa cliente = new Pessoa();
 		cliente.setId(id);
-		dao.delete(cliente);
+		genericDao.delete(cliente);
 	}
 	
 }

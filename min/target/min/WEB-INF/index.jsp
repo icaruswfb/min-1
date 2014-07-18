@@ -7,7 +7,7 @@
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
 <jsp:include page="template/head.jsp"></jsp:include>
-<body id="skin-blur-greenish">
+<body id="skin-blur-violate">
 	
 	<jsp:include page="template/header.jsp"></jsp:include>
 

@@ -28,7 +28,6 @@
              </div>
 			 <!-- Table Hover -->
                 <div class="block-area" id="tableHover">
-                    <div class="table-responsive overflow">
                         <table class="table table-hover tile">
                             <thead>
                                 <tr>
@@ -55,7 +54,6 @@
                             	</c:forEach>
                             </tbody>
                         </table>
-                    </div>
                 </div>
 
 		</section>

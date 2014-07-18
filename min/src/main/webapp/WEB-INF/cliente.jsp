@@ -85,6 +85,7 @@
 						                 	<option value="Diners">Diners</option>
 						                 	<option value="Amex">Amex</option>
 						                 	<option value="Cheque">Cheque</option>
+						                 	<option value="Crédito">Crédito</option>
 						                 </select>
 						                 <br />
 						                 <br />
@@ -104,82 +105,42 @@
             
             
             
-	            <div class="block-area">
-						<div id="comandas" class="row">
-							<form action="" method="post" id="comanda-form">
-								
-							</form>
-						</div>
-				</div>
+					<div id="comandas" class="">
+						<form action="" method="post" id="comanda-form">
+							
+						</form>
+					</div>
              	 <div class="clearfix"></div>
            		 <br />
-				<h4 class="page-title">HISTÓRICO</h4>
-	            <div class="block-area">
-					<div class="row">
-						<div class="col-md-9">
-							<!-- Main Chart -->
-							<div class="tile">
-								<h2 class="tile-title">Visitas x Mês</h2>
-								<div class="p-10">
-									<div id="line-chart" class="main-chart" style="height: 100px"></div>
-	
+				<h4 class="page-title" id="historico-title"><a href="javascript:Cliente.exibirHistorico()" >HISTÓRICO <span id="historico-title-action">[+]</span></a></h4>
+				<div id="historico-block">
+		            <div class="block-area">
+						<div class="row">
+							<div class="col-md-9">
+								<!-- Main Chart -->
+								<div class="tile">
+									<h2 class="tile-title">Visitas x Mês</h2>
+									<div class="p-10">
+										<div id="grafico-frequencia" class="main-chart" style="height: 100px"></div>
+		
+									</div>
 								</div>
 							</div>
-						</div>
-						
-						<div class="col-md-3">
-							<div class="tile">
-	                            <h2 class="tile-title">DADOS COMPILADOS</h2>
-	                            <div class="listview narrow">
-	                                <div class="media p-l-5">
-	                                    <div class="media-body">
-	                                        <small class="text-muted">Total de visitas:</small><br/>
-	                                        10
-	                                    </div>
-	                                </div>
-	                            </div>
-	                            <div class="listview narrow">
-	                                <div class="media p-l-5">
-	                                    <div class="media-body">
-	                                        <small class="text-muted">Quantia total gasta:</small><br/>
-	                                        R$1.320,00
-	                                    </div>
-	                                </div>
-	                            </div>
-	                            <div class="listview narrow">
-	                                <div class="media p-l-5">
-	                                    <div class="media-body">
-	                                        <small class="text-muted">Quantia média gasta por visita:</small><br/>
-	                                        R$132,00
-	                                    </div>
-	                                </div>
-	                            </div>
-	                        </div>
-						</div>​
-						
-					</div>
-	
-					<div class="clearfix"></div>
-				</div>
-				<div class="block-area" id="historico">
-					<div class="listview list-container">
-	                    <c:forEach var="historico" items="${ historicos }">
-		                    <div class="media">
-									<small class="text-muted">${historico.textoPequeno}</small><br />
-		                        <div class="media-body">
-		                        	<a href="/min/web/funcionarios/editar/${ historico.funcionario.id }">${ historico.funcionario.nome }</a>:
-		                            ${ historico.texto }
-		                            <!-- 
-		                            <div class="list-options">
-		                                <button class="btn btn-sm">View</button>
-		                                <button class="btn btn-sm">Delete</button>
-		                            </div>
-		                             -->
+							<div class="col-md-3">
+								<div class="tile" id="dados-compilados">
+		                            <h2 class="tile-title">DADOS COMPILADOS</h2>
 		                        </div>
-		                    </div>
-	                    </c:forEach>           
-	                </div>
+							</div>​
+						</div>
+						<div class="clearfix"></div>
+					</div>
+					<div class="block-area" >
+						<div class="listview list-container" id="historico-list">
+		                </div>
+					</div>
 				</div>
+				
+	            <div class="clearfix"></div>
             </c:if>
             
 		</section>

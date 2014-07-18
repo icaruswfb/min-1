@@ -81,13 +81,16 @@ public class ClienteController {
 			cliente = new Pessoa();
 		}else{
 			cliente = pessoaService.findById(id);
-			List<Historico> historico = historicoService.findByClienteId(id);
-			mv.addObject("historicos", historico);
 		}
 		mv.addObject("cliente", cliente);
 		
 		
 		return mv;
+	}
+	
+	@RequestMapping(value="/historico/{id}", method=RequestMethod.GET)
+	public @ResponseBody List<Historico> listarHistorico(@PathVariable("id") Long id){
+		return historicoService.findByClienteId(id);
 	}
 	
 	@RequestMapping(value="/pagar", method=RequestMethod.POST)
@@ -96,8 +99,14 @@ public class ClienteController {
 		Comanda comanda = comandaService.findById(comandaId);
 		pagamento.setComanda(comanda);
 		pagamento.setData(new Date());
-		pagamento.setValor(valor);
 		pagamento.setFormaPagamento(FormaPagamento.valueOf(formaPagamento));
+		if(pagamento.getFormaPagamento().equals(FormaPagamento.Crédito)){
+			Double credito = comandaService.getCreditoCliente(comanda.getCliente().getId());
+			if(valor > credito){
+				valor = credito;
+			}
+		}
+		pagamento.setValor(valor);
 		comanda.getPagamentos().add(pagamento);
 		comanda = comandaService.persist(comanda);
 		limparComandaJSON(comanda);
@@ -105,10 +114,14 @@ public class ClienteController {
 	}
 
 	@RequestMapping(value="/deletarPagamento/{id}/{comandaId}", method=RequestMethod.GET)
-	public @ResponseBody String deletarPagamento(@PathVariable("id") Long id, @PathVariable("comandaId") Long comandaId){
-		comandaService.deletePagamento(id);
+	public @ResponseBody Comanda deletarPagamento(@PathVariable("id") Long id, @PathVariable("comandaId") Long comandaId){
 		Comanda comanda = comandaService.findById(comandaId);
-		return "ok";
+		Pagamento pagamento = new Pagamento();
+		pagamento.setId(id);
+		comanda.getPagamentos().remove(pagamento);
+		comanda = comandaService.persist(comanda);
+		limparComandaJSON(comanda);
+		return comanda;
 	}
 	
 	
@@ -146,6 +159,8 @@ public class ClienteController {
 		Pessoa cliente = pessoaService.findById(id);
 		comanda.setCliente(cliente);
 		comanda.setAbertura(new Date());
+		comanda.setCredito(comandaService.getCreditoCliente(id));
+		
 		comanda = comandaService.persist(comanda);
 		limparComandaJSON(comanda);
 		return comanda;
@@ -166,6 +181,14 @@ public class ClienteController {
 		comanda = comandaService.persist(comanda, true);
 		limparComandaJSON(comanda);
 		return comanda;
+	}
+	
+	@RequestMapping(value="/fecharComanda/{id}", method=RequestMethod.GET)
+	public @ResponseBody String fecharComanda(@PathVariable("id") Long id){
+		Comanda comanda = comandaService.findById(id);
+		comanda.setFechamento(new Date());
+		comandaService.persist(comanda, true);
+		return "ok";
 	}
 	
 	private Comanda criarComanda(HttpServletRequest request){
@@ -201,7 +224,7 @@ public class ClienteController {
 				lancamentoProduto.setDataCriacao(Utils.dateTimeFormat.parse(datasCriacao[i]));
 				lancamentoProduto.setProduto(findProduto(Long.parseLong(produtosIds[i])));
 				lancamentoProduto.setVendedor(findPessoa(Long.parseLong(vendedoresIds[i])));
-				preencherQuantidade(lancamentoProduto, quantidades[i]);
+				lancamentoProduto.setQuantidadeUtilizada(Long.parseLong(quantidades[i]));
 			} catch (ParseException e) {
 				throw new RuntimeException(e);
 			}
@@ -255,21 +278,12 @@ public class ClienteController {
 		for(int i = 0; i < ids.length; i++){
 			LancamentoProduto lancamentoProduto = new LancamentoProduto();
 			lancamentoProduto.setProduto(findProduto(Long.parseLong(produtodIds[i])));
+			lancamentoProduto.setQuantidadeUtilizada(Long.parseLong(quantidades[i]));
 			LancamentoServico lancamentoServico = lancamentos.get(ids[i]);
 			lancamentoServico.getProdutosUtilizados().add(lancamentoProduto);
-			preencherQuantidade(lancamentoProduto, quantidades[i]);
 		}
 		
 		return lancamentos;
-	}
-	
-	private void preencherQuantidade(LancamentoProduto lancamentoProduto, String quantidade){
-		if(quantidade.contains("ml")){
-			quantidade = quantidade.replaceAll("ml", "");
-			lancamentoProduto.setVolumagemUtilizada(Double.parseDouble(quantidade));
-		}else{
-			lancamentoProduto.setQuantidadeUtilizada(Integer.parseInt(quantidade));
-		}
 	}
 	
 	private Pessoa findPessoa(Long id){
@@ -313,6 +327,7 @@ public class ClienteController {
 		for(LancamentoServico servico : comanda.getServicos()){
 			servico.setComanda(null);
 		}
+		comanda.setEstoque(null);
 		for(Pagamento pagamento : comanda.getPagamentos()){
 			limarPagamentoJSON(pagamento);
 		}
