@@ -81,6 +81,10 @@ public class ComandaService {
 		return result;
 	}
 	
+	public Comanda findComandaAberta(Long clienteId){
+		return dao.findComandaAberta(clienteId);
+	}
+	
 	private List<Produto> calcularValores(Comanda comanda){
 		double valorPago = 0;
 		for(Pagamento pagamento : comanda.getPagamentos()){
@@ -97,6 +101,7 @@ public class ComandaService {
 			total += servico.getServico().getPreco();
 			for(LancamentoProduto produto : servico.getProdutosUtilizados()){
 				Produto p = produto.getProduto();
+				total += produto.getProduto().getPrecoRevenda() * produto.getQuantidadeUtilizada();
 				contarQuantidadeUtilizada(p, produto.getQuantidadeUtilizada(), produtosUtilizados);
 			}
 		}
@@ -194,8 +199,12 @@ public class ComandaService {
 	}
 	
 	@Transactional
+	public List<Comanda> find(Comanda entity, boolean fechadas){
+		return dao.find(entity, fechadas);
+	}
+	@Transactional
 	public List<Comanda> find(Comanda entity){
-		return dao.find(entity);
+		return dao.find(entity, null);
 	}
 	
 	public List<Comanda> findFechamento(){
@@ -208,13 +217,13 @@ public class ComandaService {
 	
 	public List<Comanda> listar(){
 		Comanda entity = new Comanda();
-		return dao.find(entity);
+		return dao.find(entity, null);
 	}
 	
 	public Comanda findById(Long id){
 		Comanda entity = new Comanda();
 		entity.setId(id);
-		List<Comanda> result = dao.find(entity);
+		List<Comanda> result = dao.find(entity, null);
 		if(result.isEmpty()){
 			return null;
 		}else{

@@ -5,13 +5,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +76,19 @@ public class ComandaDAO {
 		return entities;
 	}
 	
-	public List<Comanda> find(Comanda entity){
+	public Comanda findComandaAberta(Long clienteId){
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(Comanda.class);
+		criteria.add(Restrictions.eq("cliente.id", clienteId));
+		criteria.add(Restrictions.isNull("fechamento"));
+		List<Comanda> entities = criteria.list();
+		if(entities.isEmpty()){
+			return null;
+		}
+		return entities.get(0);
+	}
+	
+	public List<Comanda> find(Comanda entity, Boolean fechadas){
 		Session session = sessionFactory.openSession();
 		Criteria criteria = session.createCriteria(Comanda.class);
 		if(entity != null){
@@ -88,6 +98,9 @@ public class ComandaDAO {
 			}
 			if(entity.getCliente() != null){
 				criteria = criteria.add(Restrictions.eq("cliente", entity.getCliente()));
+			}
+			if(fechadas != null && fechadas){
+				criteria = criteria.add(Restrictions.isNotNull("fechamento"));
 			}
 			Criterion[] predicatesArray = new Criterion[predicates.size()];
 			predicatesArray = predicates.toArray(predicatesArray);

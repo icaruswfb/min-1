@@ -20,6 +20,8 @@ public class Produto {
 	private Long quantidadeAlerta;
 	@Enumerated(EnumType.STRING)
 	private SituacaoEstoque situacaoEstoque;
+	@Enumerated(EnumType.STRING)
+	private CategoriaProduto categoria;
 	
 	public Long getId() {
 		return id;
@@ -85,6 +87,12 @@ public class Produto {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
+	}
+	public CategoriaProduto getCategoria() {
+		return categoria;
+	}
+	public void setCategoria(CategoriaProduto categoria) {
+		this.categoria = categoria;
 	}
 	
 }

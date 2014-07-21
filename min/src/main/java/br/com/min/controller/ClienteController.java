@@ -152,6 +152,21 @@ public class ClienteController {
 		return comandas;
 	}
 	
+	@RequestMapping(value="/findComandasFechadas/{id}", method=RequestMethod.GET)
+	public @ResponseBody List<Comanda> findComandasFechadas(@PathVariable("id") Long id){
+		Comanda comanda = new Comanda();
+		Pessoa cliente = pessoaService.findById(id);
+		comanda.setCliente(cliente);
+		List<Comanda> comandas = comandaService.find(comanda, true);
+		limparComandasJSON(comandas);
+		return comandas;
+	}
+	
+	@RequestMapping(value="/findComandaAberta/{id}", method=RequestMethod.GET)
+	public @ResponseBody Comanda findComandaAberta(@PathVariable("id") Long id){
+		return limparComandaJSON(comandaService.findComandaAberta(id));
+	}
+	
 	
 	@RequestMapping(value="/abrirComanda/{id}", method=RequestMethod.GET)
 	public @ResponseBody Comanda abrirComanda(@PathVariable("id") Long id){
@@ -321,15 +336,17 @@ public class ClienteController {
 	}
 	
 	private Comanda limparComandaJSON(Comanda comanda){
-		for(LancamentoProduto produto : comanda.getProdutos()){
-			produto.setComanda(null);
-		}
-		for(LancamentoServico servico : comanda.getServicos()){
-			servico.setComanda(null);
-		}
-		comanda.setEstoque(null);
-		for(Pagamento pagamento : comanda.getPagamentos()){
-			limarPagamentoJSON(pagamento);
+		if(comanda != null){
+			for(LancamentoProduto produto : comanda.getProdutos()){
+				produto.setComanda(null);
+			}
+			for(LancamentoServico servico : comanda.getServicos()){
+				servico.setComanda(null);
+			}
+			comanda.setEstoque(null);
+			for(Pagamento pagamento : comanda.getPagamentos()){
+				limarPagamentoJSON(pagamento);
+			}
 		}
 		return comanda;
 	}

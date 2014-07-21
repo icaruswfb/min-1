@@ -35,29 +35,35 @@ Comanda = {
 		Comanda.findProdutos();
 		Comanda.findServicos();
 	},
-	
+	findComandaAberta:function(){
+
+		var id = $("#cliente-id").val();
+		$.ajax({
+			url: '/min/web/clientes/findComandaAberta/' + id,
+			type: 'GET',
+			success: function(comanda){
+				if(comanda == ""){
+					var divAcao = '<a class="btn btn-lg m-l-5 m-b-10" onclick="Comanda.abrirComanda()" >Abrir comanda</a>';
+					$("#comanda-form").prepend(divAcao);
+				}else{
+					Comanda.criarFormComanda(comanda);
+				}
+			}
+		});
+		
+	},
 	findComandas: function(){
 		var id = $("#cliente-id").val();
 		$.ajax({
-			url: '/min/web/clientes/findComandas/' + id,
+			url: '/min/web/clientes/findComandasFechadas/' + id,
 			type: 'GET',
 			success: function(comandas){
 				Comanda.comandas = comandas;
-				$("#comandas").html("<form id='comanda-form'></form><h4 class='page-title'>" +
-						"<br /><a href='javascript:Comanda.mostrarAntigas()'>COMANDAS ANTIGAS <span id='comandas-fechadas-acao'>[+]</span></a></h4>" +
-						"<div id='comandas-fechadas' class='block-area'></div>");
-				var hasComandaAberta = false;
 				for(var i = 0; i<comandas.length; i++){
 					var comanda = comandas[i];
-					if(comanda.fechamento == null){
-						hasComandaAberta = true;
-					}
 					Comanda.criarFormComanda(comanda);
 				}
-				if(!hasComandaAberta){
-					var divAcao = '<a class="btn btn-lg m-l-5" onclick="Comanda.abrirComanda()" >Abrir comanda</a>';
-					$("#comanda-form").prepend(divAcao);
-				}
+				Comanda.mostrarAntigas();
 			}
 		});
 	}	,
@@ -179,28 +185,29 @@ Comanda = {
 		return true;
 	},
 	
-	buscarValorProduto: function(id, comandaId){
-		var produtoId = $("#" + id + " select[name='produtoId']").val();
+	buscarValorProduto: function(id, servico){
+		servico = servico == null ? '' : servico;
+		var produtoId = $("#" + id + " select[name='produto"+servico+"Id']").val();
 		if(produtoId){
 			for(var i = 0; i < Comanda.produtos.length; i++){
 				var produto = Comanda.produtos[i];
 				if(produto.id == produtoId){
 					var quantidade;
-					if($("#" + id + " input[name='quantidadeProduto']").val() == ""){
+					if($("#" + id + " input[name='quantidadeProduto"+servico+"']").val() == ""){
 						quantidade = 1;
-						$("#" + id + " input[name='quantidadeProduto']").val(quantidade);
+						$("#" + id + " input[name='quantidadeProduto"+servico+"']").val(quantidade);
 					}else{
-						quantidade = $("#" + id + " input[name='quantidadeProduto']").val();
+						quantidade = $("#" + id + " input[name='quantidadeProduto"+servico+"']").val();
 					}
-					$("#" + id + " input[name='valorProduto']").val((produto.precoRevenda * quantidade));
-					$("#quantidade-" + id).html("Quantidade (" + produto.unidade + "):");
+					$("#" + id + " input[name='valorProduto"+servico+"']").val((produto.precoRevenda * quantidade));
+					$("#quantidade"+servico+"-" + id).html("Quantidade (" + produto.unidade + "):");
 					break;
 				}
 			}
 		}else{
 			$("#" + id + " input[name='valorProduto']").val("");
 		}
-		Comanda.preencherTotais(comandaId);
+		Comanda.preencherTotais($("#comanda-form input[name='comandaId']").val());
 		return true;
 	},
 	
@@ -215,6 +222,11 @@ Comanda = {
 		for(var i = 0; i < valoresProdutos.length; i++){
 			var valorProduto = $(valoresProdutos[i]).val();
 			total += new Number(valorProduto);
+		}
+		var valoresProdutosServico = $("#bloco-geral-comanda-"+comandaId+" input[name='valorProdutoServico']");
+		for(var i = 0; i < valoresProdutosServico.length; i++){
+			var valorProdutoServico = $(valoresProdutosServico[i]).val();
+			total += new Number(valorProdutoServico);
 		}
 		var desconto = $("#descontos-" + comandaId).val();
 		$("#valorTotal-" + comandaId).val(total);
@@ -236,10 +248,13 @@ Comanda = {
 		
 		form += "<div class='col-md-3'>";
 		form += "<p>Produto:</p>";
-		form += "<select name='produtoId' multiple='multiple' "+readOnly+" onchange='Comanda.buscarValorProduto(\""+id+"\", \""+comandaId+"\")' class='tag-select-limited' placeholder='Selecione um produto' >";
+		form += "<select name='produtoId' multiple='multiple' "+readOnly+" onchange='Comanda.buscarValorProduto(\""+id+"\")' class='tag-select-limited' placeholder='Selecione um produto' >";
 		var produtoSelecionado = null;
 		for(var s = 0; s < Comanda.produtos.length; s++){
 			var produto = Comanda.produtos[s];
+			if(produto.categoria != 'LOJA'){
+				continue;
+			}
 			var selected = "";
 			if(lancamentoProduto && lancamentoProduto.produto.id == produto.id){
 				selected = "selected='selected'";
@@ -263,7 +278,7 @@ Comanda = {
 			form += "(" + lancamentoProduto.produto.unidade + ")";
 		}
 		form += ":</p>";
-		form += "<input name='quantidadeProduto' class='form-control input-sm m-b-10 mask-number' "+readOnly+" onchange='Comanda.buscarValorProduto(\""+id+"\", \""+comandaId+"\")' ";
+		form += "<input name='quantidadeProduto' class='form-control input-sm m-b-10 mask-number' "+readOnly+" onchange='Comanda.buscarValorProduto(\""+id+"\")' ";
 		if(lancamentoProduto){
 			form+= "value='" + lancamentoProduto.quantidadeUtilizada + "' ";
 		}
@@ -272,7 +287,7 @@ Comanda = {
 		form += "<p>Valor (R$):</p>";
 		form += "<input name='valorProduto' class='form-control input-sm m-b-10' readonly='readonly' ";
 		if(produtoSelecionado){
-			form+= "value='" + (produtoSelecionado.precoRevenda * lancamentoProduto.quantidadeUtilizada) + "' ";
+			form+= "value='" + ((produtoSelecionado.precoRevenda * lancamentoProduto.quantidadeUtilizada).toFixed(2)) + "' ";
 		}
 		form += "/>";
 		form += "</div>";
@@ -532,12 +547,15 @@ Comanda = {
 	
 	criarProdutoAoServico: function(servicoId, produtoUtilizado){
 		var id = "produtoServico-" + Utils.guid();
-		var form = "<div class='' id='"+id+"'><div class='col-md-5'> <span class='icon' style='float: right;font-size: 20px;'>&#61807;</span></div><div class='col-md-4'>";
+		var form = "<div class='' id='"+id+"'><div class='col-md-4'> <span class='icon' style='float: right;font-size: 20px;'>&#61807;</span></div><div class='col-md-4'>";
 		form += "<input type='hidden' value='" + servicoId + "' name='guidProdutoServico' />";
 		form += "<p>Produto:</p>";
-		form += "<select name='produtoServicoId' multiple='multiple'  class='tag-select-limited' placeholder='Selecione um produto' onchange='Comanda.alterarLabelQuantidade(\"" + id + "\")' >";
+		form += "<select name='produtoServicoId' multiple='multiple'  class='tag-select-limited' placeholder='Selecione um produto' onchange='Comanda.buscarValorProduto(\"" + id + "\", \"Servico\")' >";
 		for(var s = 0; s < Comanda.produtos.length; s++){
 			var produto = Comanda.produtos[s];
+			if(produto.categoria != 'SALAO'){
+				continue;
+			}
 			var selected = produtoUtilizado ? (produtoUtilizado.produto.id == produto.id ? "selected='selected'" : "") : "";
 			form+="<option "+selected+" value='"+produto.id+"'>" +produto.nome+"</option>";
 		}
@@ -549,9 +567,17 @@ Comanda = {
 			form += " (" + produtoUtilizado.produto.unidade + ")";
 		}
 		form += ":</p>";
-		form += "<input name='quantidadeProdutoServico' class='form-control input-sm m-b-10'  ";
+		form += "<input name='quantidadeProdutoServico' class='form-control input-sm m-b-10'  onblur='Comanda.buscarValorProduto(\"" + id + "\", \"Servico\")' ";
 		if(produtoUtilizado){
 			form+= "value='" + (produtoUtilizado.quantidadeUtilizada)+ "' ";
+		}
+		form += "/>";
+		form += "</div>";
+		form += "<div class='col-md-1'>";
+		form += '<p>Valor (R$):</p>';
+		form += '<input name="valorProdutoServico" class="form-control input-sm m-b-10" ';
+		if(produtoUtilizado){
+			form+= "value='" + ((produtoUtilizado.produto.precoRevenda * produtoUtilizado.quantidadeUtilizada).toFixed(2))+ "' ";
 		}
 		form += "/>";
 		form += "</div>";
@@ -581,11 +607,12 @@ Comanda = {
 			type: 'POST',
 			data: $("#comanda-form" + (id ? id : '')).serialize(),
 			success: function(comanda){
+				;
 			}
 		});
 	},
 	
-	fecharComanda:function(id){
+	fecharComanda:function(){
 		if(confirm("Tem certeza que deseja fechar esta comanda?")){
 			$.ajax({
 				url: '/min/web/clientes/fecharComanda',
@@ -593,7 +620,10 @@ Comanda = {
 				data: $("#comanda-form").serialize(),
 				success: function(comanda){
 					$("#comanda-form").html("");
-					Comanda.findComandas();
+					if($("#comandas-fechadas").css('display') == 'block'){
+						Comanda.findComandas();
+					}
+					Comanda.findComandaAberta();
 				}
 			});
 		}

@@ -109,6 +109,8 @@
 						<form action="" method="post" id="comanda-form">
 							
 						</form>
+						<h4 class='page-title'><a href='javascript:Comanda.findComandas()'>COMANDAS ANTIGAS <span id='comandas-fechadas-acao'>[+]</span></a></h4>
+						<div id='comandas-fechadas' class='block-area'></div>
 					</div>
              	 <div class="clearfix"></div>
            		 <br />
@@ -167,11 +169,11 @@
 		$(document).ready(function(){
              $('.mask-date').mask('00/00');
              $('.mask-cep').mask('00000-000');
+            <c:if test="${ cliente.id ne null }">
+	     		Comanda.init();
+            	Comanda.findComandaAberta();
+            </c:if>
 		});
-		Comanda.init();
-        <c:if test="${ cliente.id ne null }">
-        	Comanda.findComandas();
-        </c:if>
 	</script>
 	
 </body>

@@ -35,6 +35,13 @@
                  	<form:input path="nome" cssClass="form-control input-lg m-b-10" placeholder="Nome"/>
                 </div>
                 <div class="col-lg-2">
+                 	<p>Categoria</p>
+                	<form:select path="categoria" cssClass="select custom-select" placeholder="Categoria">
+                		<form:option value="LOJA">Loja</form:option>
+                		<form:option value="SALAO">Salão</form:option>
+                	</form:select>
+                </div>
+                <div class="col-lg-2">
                  	<p>Custo unitário (R$)</p>
                  	<form:input path="custoUnitario" cssClass="form-control m-b-10 validate[required,custom[number]]" placeholder="Custo unitário" />
                 </div>

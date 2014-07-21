@@ -48,7 +48,7 @@ Produto = {
 				type: 'POST',
 				data: $("#novo-lancamento-form").serialize(),
 				success: function(){
-					Produto.findEstoque();
+					location.reload();
 				}
 			});
 		}

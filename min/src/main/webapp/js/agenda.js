@@ -3,6 +3,10 @@ Agenda = {
 			calcularHorario: function(){
 				var values = $("#servico-select").val();
 				var totalMillis = 0;
+				if( values == null ){
+					$("#horario-fim-agenda").val("");
+					return true;
+				}
 				for(var i = 0; i < values.length; i++){
 					var servico = Agenda.servicos[values[i]];
 					totalMillis += servico.duracao;
@@ -41,7 +45,6 @@ Agenda = {
 				minutoStr += minuto;
 				$("#horario-inicio-agenda").val(horaStr + ":" + minutoStr);
 				$("#horario-fim-agenda").val("");
-				
 				
 				var funcionario = Agenda.funcionarios[funcionarioIndex];
 				$("#funcionario-select").val(funcionario.id).change();

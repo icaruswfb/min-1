@@ -33,9 +33,10 @@
                                 <tr>
                                     <th style="width: 70px">ID</th>
                                     <th>Nome</th>
+                                    <th>Categoria</th>
                                     <th>Unidade</th>
+                                    <th>Preço da unidade</th>
                                     <th>Situação do estoque</th>
-                                    <th>Preço</th>
                                     <th style="width: 50px"></th>
                                 </tr>
                             </thead>
@@ -44,8 +45,9 @@
 	                                <tr>
 	                                    <td><a href="<spring:url value='/web/produtos/editar/${produto.id}' />">${ produto.id }</a></td>
 	                                    <td><a href="<spring:url value='/web/produtos/editar/${produto.id}' />">${ produto.nome }</a></td>
-	                                    <td>${ produto.unidade }</td>
+	                                    <td>${ produto.categoria.descricao }</td>
 	                                    <td>${ produto.situacaoEstoque.nome }</td>
+	                                    <td>${ produto.unidade }</td>
 	                                    <td> <fmt:formatNumber currencySymbol="R$" minFractionDigits="2" maxFractionDigits="2" value="${ produto.precoRevenda}" /></td>
 	                                    <td><a href="<spring:url value='/web/produtos/delete/${ produto.id }' />" onclick="return confirm('Tem certeza que deseja excluir?');"><img src='<spring:url value="/img/icon/delete.png" />' /></a></td>
 	                                </tr>
