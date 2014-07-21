@@ -10,6 +10,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -38,10 +39,14 @@ public class HorarioDAO {
 			if(horario.getFuncionario() != null ){
 				andPredicates.add(Restrictions.eq("funcionario", horario.getFuncionario()));
 			}
+			if(horario.getCliente() != null){
+				andPredicates.add(Restrictions.eq("cliente.id", horario.getCliente().getId()));
+			}
 			Criterion[] orPredicatesArray = new Criterion[orPredicates.size()];
 			orPredicatesArray = orPredicates.toArray(orPredicatesArray);
 			Criterion[] andPredicatesArray = new Criterion[andPredicates.size()];
 			andPredicatesArray = orPredicates.toArray(andPredicatesArray);
+			criteria.addOrder(Order.asc("inicio"));
 			criteria = criteria.add(Restrictions.and(andPredicatesArray));
 		}
 		List<Horario> clientes = criteria.list();

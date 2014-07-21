@@ -151,6 +151,14 @@ public class ClienteController {
 		limparComandasJSON(comandas);
 		return comandas;
 	}
+
+	@RequestMapping(value="/findComanda/{id}", method=RequestMethod.GET)
+	public @ResponseBody Comanda findComanda(@PathVariable("id") Long id){
+		Comanda comanda = comandaService.findById(id);
+		comanda = limparComandaJSON(comanda);
+		return comanda;
+	}
+	
 	
 	@RequestMapping(value="/findComandasFechadas/{id}", method=RequestMethod.GET)
 	public @ResponseBody List<Comanda> findComandasFechadas(@PathVariable("id") Long id){
@@ -158,7 +166,7 @@ public class ClienteController {
 		Pessoa cliente = pessoaService.findById(id);
 		comanda.setCliente(cliente);
 		List<Comanda> comandas = comandaService.find(comanda, true);
-		limparComandasJSON(comandas);
+		limparComandasSimplificadaJSON(comandas);
 		return comandas;
 	}
 	
@@ -333,6 +341,23 @@ public class ClienteController {
 			limparComandaJSON(comanda);
 		}
 		return comandas;
+	}
+	private List<Comanda> limparComandasSimplificadaJSON(List<Comanda> comandas){
+		for(Comanda comanda : comandas){
+			limparComandaSimplificadaJSON(comanda);
+		}
+		return comandas;
+	}
+	private Comanda limparComandaSimplificadaJSON(Comanda comanda){
+		if(comanda != null){
+			comanda.setProdutos(null);
+			comanda.setServicos(null);
+			comanda.setEstoque(null);
+			comanda.setCliente(null);
+			comanda.setCriador(null);
+			comanda.setPagamentos(null);
+		}
+		return comanda;
 	}
 	
 	private Comanda limparComandaJSON(Comanda comanda){

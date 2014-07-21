@@ -223,7 +223,7 @@ $(function(){
                         width: 0,
                         
                     },
-                    /*label: {
+                    label: {
                         show: true,
                         radius: 3/4,
                         formatter: function(label, series){
@@ -233,7 +233,7 @@ $(function(){
                             opacity: 0.5,
                             color: '#000'
                         }
-                    }*/
+                    }
                 }
             }
         });

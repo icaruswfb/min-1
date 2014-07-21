@@ -47,10 +47,21 @@ Comanda = {
 					$("#comanda-form").prepend(divAcao);
 				}else{
 					Comanda.criarFormComanda(comanda);
+					Comanda.preencherDadosComanda(comanda);
 				}
 			}
 		});
 		
+	},
+	expandirComandasAntigas:function(){
+		if($("#comandas-fechadas").css('display') == 'block'){
+			$("#comandas-fechadas").hide(300);
+			$("#comandas-fechadas-acao").hide(100);
+			$("#comandas-fechadas-acao").html("[+]");
+			$("#comandas-fechadas-acao").show(100);
+		}else{
+			Comanda.findComandas();
+		}
 	},
 	findComandas: function(){
 		var id = $("#cliente-id").val();
@@ -68,20 +79,13 @@ Comanda = {
 		});
 	}	,
 	mostrarAntigas: function(){
-		if($("#comandas-fechadas").css('display') == 'block'){
-			$("#comandas-fechadas").hide(300);
-			$("#comandas-fechadas-acao").hide(100);
-			$("#comandas-fechadas-acao").html("[+]");
-			$("#comandas-fechadas-acao").show(100);
-		}else{
-			$("#comandas-fechadas").show(300);
-			$("#comandas-fechadas-acao").hide(100);
-			$("#comandas-fechadas-acao").html("[-]");
-			$("#comandas-fechadas-acao").show(100);
-		}
+		$("#comandas-fechadas").show(300);
+		$("#comandas-fechadas-acao").hide(100);
+		$("#comandas-fechadas-acao").html("[-]");
+		$("#comandas-fechadas-acao").show(100);
 	},
 	appendLinhaServico:function(linha, id){
-		id = id == undefined ? '' : id;
+		id = id == undefined ? "#comanda-form" : id;
 		$(id + " .bloco-servicos").append(linha);
 		$(id + " .bloco-servicos select").chosen({
             max_selected_options: 1
@@ -151,9 +155,9 @@ Comanda = {
 		form += "/>";
 		form += "</div>";
 		form += "<div class='col-md-1'>";
-		form += '<a href="javascript:Comanda.adicionarProdutoAoServico(\''+id+'\')" title="" class="tooltips acaoLancamento" >';
-		form += '<i class="sa-list-add"></i></a>';
 		if(readOnly == ""){
+			form += '<a href="javascript:Comanda.adicionarProdutoAoServico(\''+id+'\')" title="" class="tooltips acaoLancamento" >';
+			form += '<i class="sa-list-add"></i></a>';
 			form += '<a href="javascript:Comanda.deletarLancamento(\''+id+'\')" title="" class="tooltips acaoLancamento" >';
 			form += '<i class="sa-list-delete"></i></a>';
 		}
@@ -161,7 +165,7 @@ Comanda = {
 		
 		if(lancamentoServico){
 			for(var i = 0; i < lancamentoServico.produtosUtilizados.length; i++){
-				form += Comanda.criarProdutoAoServico(id, lancamentoServico.produtosUtilizados[i]);
+				form += Comanda.criarProdutoAoServico(id, lancamentoServico.produtosUtilizados[i], readOnly);
 			}
 		}
 		
@@ -234,7 +238,7 @@ Comanda = {
 	},
 	
 	criarLinhaProduto: function(lancamentoProduto, readOnly, comandaId){
-		readOnly = readOnly == undefined ? "" : readOnly;
+		readOnly = readOnly == null ? "" : readOnly;
 		var id = "produto-" + Utils.guid();
 		var form = "<div id='" +id+ "' class='lancamento'>";
 		form += "<input type='hidden' value='" + id + "' name='guidProduto' />";
@@ -313,7 +317,6 @@ Comanda = {
 			info += "<form id='comanda-form"+comanda.id+"' >";
 			botoes += "<div class='comanda-fechada-block' id='bloco-"+comanda.id+"'>";
 			botoes += "<div class='comanda-fechada'>";
-			botoes += '<a class="btn btn-sm m-r-5" onclick="Comanda.salvarComanda('+comanda.id+')">Salvar comanda</a>';
 			botoes += '</div>';
 		}
 		
@@ -482,16 +485,30 @@ Comanda = {
 		$("#novo-pagamento-form input[name='valor']").val(valor);
 		$("a[href='#modalWider']").click();
 	},
-	
+	comandasDetalhadas : {},
 	mostrarComandaFechada: function(id){
 		if($("#bloco-" + id).css('display') == 'block'){
 			$('#bloco-'+id).hide(300);
 			$('#abrirComanda-'+id).show(300);
 			$('#fecharComanda-'+id).hide(300);
 		}else{
-			$('#bloco-'+id).show(300);
-			$('#abrirComanda-'+id).hide(300);
-			$('#fecharComanda-'+id).show(300);
+			if( Comanda.comandasDetalhadas[id]){
+				$('#bloco-'+id).show(300);
+				$('#abrirComanda-'+id).hide(300);
+				$('#fecharComanda-'+id).show(300);
+			} else{
+				$.ajax({
+					url: '/min/web/clientes/findComanda/' + id,
+					type: 'GET',
+					success: function(comanda){
+						Comanda.comandasDetalhadas[comanda.id] = comanda;
+						Comanda.preencherDadosComanda(comanda);
+						$('#bloco-'+id).show(300);
+						$('#abrirComanda-'+id).hide(300);
+						$('#fecharComanda-'+id).show(300);
+					}
+				});
+			}
 		}
 	},
 	
@@ -511,15 +528,18 @@ Comanda = {
 		
 		content += Comanda.criarDivInfoComanda(comanda);
 		
-		var readonly = "";
-		var comandaFormId = "";
 		if(isComandaAberta){
 			$("#comanda-form").html(content);
 		}else{
 			$("#comandas-fechadas").append(content);
 			readonly = "readonly='readonly'";
-			comandaFormId = "#comanda-form"+comanda.id;
 		}
+		
+	},
+	preencherDadosComanda:function(comanda){
+		var isComandaAberta = comanda.fechamento == null ? true : false;
+		var readonly = isComandaAberta ? "" : "readonly";
+		var comandaFormId = isComandaAberta ? '' : ("#comanda-form"+comanda.id);
 		for(var j = 0; j < comanda.servicos.length; j++){
 			var lancamentoServico = comanda.servicos[j];
 			Comanda.appendLinhaServico(Comanda.criarLinhaServico(lancamentoServico, readonly, comanda.id), comandaFormId);
@@ -545,12 +565,13 @@ Comanda = {
 		$(".mask-number").mask("##########0");
 	},
 	
-	criarProdutoAoServico: function(servicoId, produtoUtilizado){
+	criarProdutoAoServico: function(servicoId, produtoUtilizado, readonly){
+		readonly = readonly ? readonly : '';
 		var id = "produtoServico-" + Utils.guid();
 		var form = "<div class='' id='"+id+"'><div class='col-md-4'> <span class='icon' style='float: right;font-size: 20px;'>&#61807;</span></div><div class='col-md-4'>";
 		form += "<input type='hidden' value='" + servicoId + "' name='guidProdutoServico' />";
 		form += "<p>Produto:</p>";
-		form += "<select name='produtoServicoId' multiple='multiple'  class='tag-select-limited' placeholder='Selecione um produto' onchange='Comanda.buscarValorProduto(\"" + id + "\", \"Servico\")' >";
+		form += "<select name='produtoServicoId' multiple='multiple'  class='tag-select-limited' "+readonly+" placeholder='Selecione um produto' onchange='Comanda.buscarValorProduto(\"" + id + "\", \"Servico\")' >";
 		for(var s = 0; s < Comanda.produtos.length; s++){
 			var produto = Comanda.produtos[s];
 			if(produto.categoria != 'SALAO'){
@@ -567,7 +588,7 @@ Comanda = {
 			form += " (" + produtoUtilizado.produto.unidade + ")";
 		}
 		form += ":</p>";
-		form += "<input name='quantidadeProdutoServico' class='form-control input-sm m-b-10'  onblur='Comanda.buscarValorProduto(\"" + id + "\", \"Servico\")' ";
+		form += "<input name='quantidadeProdutoServico' class='form-control input-sm m-b-10' "+readonly+"  onblur='Comanda.buscarValorProduto(\"" + id + "\", \"Servico\")' ";
 		if(produtoUtilizado){
 			form+= "value='" + (produtoUtilizado.quantidadeUtilizada)+ "' ";
 		}
@@ -575,15 +596,17 @@ Comanda = {
 		form += "</div>";
 		form += "<div class='col-md-1'>";
 		form += '<p>Valor (R$):</p>';
-		form += '<input name="valorProdutoServico" class="form-control input-sm m-b-10" ';
+		form += '<input name="valorProdutoServico" class="form-control input-sm m-b-10" readonly ';
 		if(produtoUtilizado){
 			form+= "value='" + ((produtoUtilizado.produto.precoRevenda * produtoUtilizado.quantidadeUtilizada).toFixed(2))+ "' ";
 		}
 		form += "/>";
 		form += "</div>";
 		form += "<div class='col-md-1'>";
-		form += '<a href="javascript:Comanda.deletarLancamento(\''+id+'\')" title="" class="tooltips acaoLancamento" >';
-		form += '<i class="sa-list-delete"></i></a>';
+		if(readonly == ''){
+			form += '<a href="javascript:Comanda.deletarLancamento(\''+id+'\')" title="" class="tooltips acaoLancamento" >';
+			form += '<i class="sa-list-delete"></i></a>';
+		}
 		form += "</div>";
 		
 		form += "</div>";

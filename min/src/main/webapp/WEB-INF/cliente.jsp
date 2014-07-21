@@ -109,36 +109,90 @@
 						<form action="" method="post" id="comanda-form">
 							
 						</form>
-						<h4 class='page-title'><a href='javascript:Comanda.findComandas()'>COMANDAS ANTIGAS <span id='comandas-fechadas-acao'>[+]</span></a></h4>
+						<h4 class='page-title'><a href='javascript:Comanda.expandirComandasAntigas()'>COMANDAS ANTIGAS <span id='comandas-fechadas-acao'>[+]</span></a></h4>
 						<div id='comandas-fechadas' class='block-area'></div>
 					</div>
              	 <div class="clearfix"></div>
-           		 <br />
-				<h4 class="page-title" id="historico-title"><a href="javascript:Cliente.exibirHistorico()" >HISTÓRICO <span id="historico-title-action">[+]</span></a></h4>
+             	 
+				<h4 class="page-title m-t-10" id="historico-title"><a href="javascript:Cliente.exibirHistorico()" >HISTÓRICO <span id="historico-title-action">[-]</span></a></h4>
 				<div id="historico-block">
 		            <div class="block-area">
 						<div class="row">
-							<div class="col-md-9">
-								<!-- Main Chart -->
-								<div class="tile">
-									<h2 class="tile-title">Visitas x Mês</h2>
-									<div class="p-10">
-										<div id="grafico-frequencia" class="main-chart" style="height: 100px"></div>
-		
+							<div class="col-md-6">
+								<div class="row">
+									<div id="calendar" class="p-relative p-10 m-b-20">
+										<!-- Calendar Views -->
+										<ul class="calendar-actions list-inline clearfix">
+											<li class="p-r-0"><a data-view="month" href="#"
+												class="tooltips" title="Month"> <i class="sa-list-month"></i>
+											</a></li>
+											<li class="p-r-0"><a data-view="agendaWeek" href="#"
+												class="tooltips" title="Week"> <i class="sa-list-week"></i>
+											</a></li>
+											<li class="p-r-0"><a data-view="agendaDay" href="#"
+												class="tooltips" title="Day"> <i class="sa-list-day"></i>
+											</a></li>
+										</ul>
 									</div>
 								</div>
 							</div>
-							<div class="col-md-3">
-								<div class="tile" id="dados-compilados">
-		                            <h2 class="tile-title">DADOS COMPILADOS</h2>
+							<div class="col-md-6">
+								<!-- Main Chart -->
+								
+		                        <div class="col-sm-12" >
+									<div class="tile m-b-20 w-100-p" id="dados-compilados">
+			                            <h2 class="tile-title">DADOS COMPILADOS</h2>
+			                        </div>
 		                        </div>
+		                        
+		                        <div class="col-sm-12" >
+									<div class="tile">
+										<h2 class="tile-title">Visitas x Mês</h2>
+										<div class="p-10">
+											<div id="grafico-frequencia" class="main-chart" style="height: 200px"></div>
+			
+										</div>
+									</div>
+								</div>
+								<div class="col-sm-12">
+			                        <div class="tile">
+		                                <h2 class="tile-title">Servicos</h2>
+		                                <div class="p-10">
+		                                    <div id="servicos-pizza" class="main-chart" style="height: 200px"></div>
+		                                </div>
+		                            </div>
+		                        </div>
+		                        <div class="col-sm-12">
+			                        <div class="tile">
+		                                <h2 class="tile-title">Atendimentos</h2>
+		                                <div class="p-10">
+		                                    <div id="funcionarios-pizza" class="main-chart" style="height: 200px"></div>
+		                                </div>
+		                            </div>
+		                        </div>
+		                        <div class="col-sm-12">
+									<a data-toggle="modal" href="#modalLog" onclick="Cliente.findHistorico();" class="btn btn-lg m-b-20">Ver histórico detalhado de atividades cliente</a>
+			                         <div class="modal fade" id="modalLog" tabindex="-1" role="dialog" aria-hidden="true">
+				                        <div class="modal-dialog modal-lg">
+				                            <div class="modal-content">
+				                                <div class="modal-header">
+				                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				                                    <h4 class="modal-title">Histórico detalhado de ${ cliente.nome }</h4>
+				                                </div>
+				                                <div class="modal-body">
+													<div class="listview list-container" id="historico-list">
+									                </div>
+				                                </div>
+				                                <div class="modal-footer">
+				                                    <button type="button" class="btn btn-sm" data-dismiss="modal">Fechar</button>
+				                                </div>
+				                            </div>
+				                        </div>
+				                    </div>
+                         		</div>
 							</div>​
 						</div>
 						<div class="clearfix"></div>
-					</div>
-					<div class="block-area" >
-						<div class="listview list-container" id="historico-list">
-		                </div>
 					</div>
 				</div>
 				
@@ -166,15 +220,58 @@
 	<script type="text/javascript">
 		$("#clientes-menu").addClass("active");
 
+		
 		$(document).ready(function(){
              $('.mask-date').mask('00/00');
              $('.mask-cep').mask('00000-000');
             <c:if test="${ cliente.id ne null }">
 	     		Comanda.init();
             	Comanda.findComandaAberta();
+            	//Histórico
+				Cliente.gerarDados();
+				Cliente.abrirAgendaCliente();
             </c:if>
 		});
 	</script>
+	<script type="text/javascript">
+			$(document).ready(
+					function() {
+						var date = new Date();
+						var d = date.getDate();
+						var m = date.getMonth();
+						var y = date.getFullYear();
+						$('#calendar').fullCalendar(
+								{
+									minTime: "08:00:00",
+									maxTime: "20:00:00",
+									lang: 'pt-br',
+									header : {
+										center : 'title',
+										left : 'prev, next',
+										right : ''
+									},
+									firstDay: 0,
+									selectable : true,
+									selectHelper : true,
+									editable : false,
+									events : [  ],
+									allDaySlot: false,
+									slotEventOverlap: false
+								});
 	
+						var overflowRegular, overflowInvisible = false;
+						overflowRegular = $('.overflow').niceScroll();
+					});
+	
+			//Calendar views
+			$('body').on('click', '.calendar-actions > li > a', function(e) {
+				e.preventDefault();
+				var dataView = $(this).attr('data-view');
+				$('#calendar').fullCalendar('changeView', dataView);
+				//Custom scrollbar
+				var overflowRegular, overflowInvisible = false;
+				overflowRegular = $('.overflow').niceScroll();
+			});
+		</script>
 </body>
 </html>

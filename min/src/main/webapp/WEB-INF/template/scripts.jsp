@@ -36,26 +36,20 @@
         <script src="<spring:url value='/js/markdown.min.js' />"></script> <!-- Markdown Editor -->
 	<!-- Charts -->
 	<script src="<spring:url value='/js/charts/jquery.flot.js' />"></script>
-	<!-- Flot Main -->
 	<script src="<spring:url value='/js/charts/jquery.flot.time.js' />"></script>
-	<!-- Flot sub -->
 	<script src="<spring:url value='/js/charts/jquery.flot.animator.min.js' />"></script>
-	<!-- Flot sub -->
 	<script src="<spring:url value='/js/charts/jquery.flot.resize.min.js' />"></script>
+    <script src="<spring:url value='/js/charts/jquery.flot.orderBar.js' />"></script> <!-- Flot Bar chart -->
+    <script src="<spring:url value='/js/charts/jquery.flot.pie.min.js' />"></script> <!-- Flot Pie chart -->
 	<!-- Flot sub - for repaint when resizing the screen -->
 
 	<script src="<spring:url value='/js/sparkline.min.js' />"></script>
-	<!-- Sparkline - Tiny charts -->
 	<script src="<spring:url value='/js/easypiechart.js' />"></script>
-	<!-- EasyPieChart - Animated Pie Charts -->
 	<script src="<spring:url value='/js/charts.js' />"></script>
 	<!-- All the above chart related functions -->
 
 	<!-- Map -->
 	<script src="<spring:url value='/js/maps/jvectormap.min.js' />"></script>
-	<!-- jVectorMap main library -->
-	<script src="<spring:url value='/js/maps/usa.js' />"></script>
-	<!-- USA Map for jVectorMap -->
 
 	<!--  Form Related -->
 	<script src="<spring:url value='/js/icheck.js' />"></script>

@@ -7,14 +7,11 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import br.com.min.controller.error.HorarioOcupadoException;
@@ -78,26 +75,44 @@ public class AgendaController {
 					@PathVariable("mes")Integer mes, 
 					@PathVariable("ano") Integer ano, 
 					@PathVariable("funcionariosId") String funcionariosId){
-		Horario horario  = criarHorarioPesquisa(dia, mes, ano, funcionariosId);
+		Horario horario  = criarHorarioPesquisa(dia, mes, ano, funcionariosId, null);
+		List<Horario> horarios = horarioService.findHorario(horario);
+		return horarios;
+	}
+	@RequestMapping(value="cliente/{id}/{dia}/{mes}/{ano}", method=RequestMethod.GET)
+	public @ResponseBody List<Horario> findHorariosCliente(
+					@PathVariable("dia") Integer dia, 
+					@PathVariable("mes")Integer mes, 
+					@PathVariable("ano") Integer ano, 
+					@PathVariable("id") Long clienteId){
+		Horario horario  = criarHorarioPesquisa(dia, mes, ano, null, clienteId);
 		List<Horario> horarios = horarioService.findHorario(horario);
 		return horarios;
 	}
 	
-	private Horario criarHorarioPesquisa(Integer dia, Integer mes, Integer ano, String funcionarios){
+	private Horario criarHorarioPesquisa(Integer dia, Integer mes, Integer ano, String funcionarios, Long clienteId){
 		Horario horario  = new Horario();
 		StringBuffer dataInicioStr = new StringBuffer();
 		StringBuffer dataTerminoStr = new StringBuffer();
 		if(dia == null || dia == -1){
 			if(mes == null || mes == -1){
-				dataInicioStr.append("01/01/").append(ano);
-				dataTerminoStr.append("31/12/").append(ano);
+				dataInicioStr.append("01/01/");
+				dataTerminoStr.append("31/12/");
 			}else{
-				dataInicioStr.append("01/").append(mes).append("/").append(ano);
-				dataTerminoStr.append("31/").append(mes).append("/").append(ano);
+				dataInicioStr.append("01/").append(mes).append("/");
+				dataTerminoStr.append("31/").append(mes).append("/");
 			}
 		}else{
-			dataInicioStr.append(dia).append("/").append(mes).append("/").append(ano);
-			dataTerminoStr.append(dia).append("/").append(mes).append("/").append(ano);
+			dataInicioStr.append(dia).append("/").append(mes).append("/");
+			dataTerminoStr.append(dia).append("/").append(mes).append("/");
+		}
+		if(ano == null || ano == -1){
+			Calendar calendar = Calendar.getInstance();
+			dataInicioStr.append(calendar.get(Calendar.YEAR) - 1);
+			dataTerminoStr.append(calendar.get(Calendar.YEAR) + 1);
+		}else{
+			dataInicioStr.append(ano);
+			dataTerminoStr.append(ano);
 		}
 		dataInicioStr.append(" 00:00");
 		dataTerminoStr.append(" 23:59");
@@ -107,6 +122,11 @@ public class AgendaController {
 			horario.setTermino(Utils.dateTimeFormat.parse(dataTerminoStr.toString()));
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
+		}
+		
+		if(clienteId != null){
+			horario.setCliente(new Pessoa());
+			horario.getCliente().setId(clienteId);
 		}
 		
 		return horario;

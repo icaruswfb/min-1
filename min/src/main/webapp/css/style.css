@@ -2326,11 +2326,21 @@ a.list-group-item.active > .badge,
 	visibility: visible;
 	font-size: 12px;
 	line-height: 1.4;
-	padding: 10px;
 	margin-top: -2px;
 	box-shadow: 2px 4px 5px #111111;
-	border: 1px solid rgba(255,255,255,0.7);
+	border-left: 1px solid rgba(255,255,255,0.7);
+	border-radius: 0 0 10px 10px !important;
+	border-right: 1px solid rgba(255,255,255,0.7);
+	border-bottom: 1px solid rgba(255,255,255,0.7);
 }
+
+.calendario-table .horarios-cliente{
+	float: left;
+	width: 100%;
+	padding: 10px;
+	border-top: 1px solid rgba(255,255,255,0.5);
+}
+
 .calendario-table .horario .tooltip-popup:hover{
 	display: block;
 }
@@ -2449,7 +2459,7 @@ a.list-group-item.active > .badge,
 }
 
 #historico-block{
-	display: none;
+	display: block;
 }
 
 #estoque-block{
@@ -2463,3 +2473,21 @@ a.list-group-item.active > .badge,
 .table tfoot td{
 	background-color: rgba(0,0,0,0.35);
 }
+
+ .w-50-p{
+ 	width: 50%;
+ 	float: left;
+ }
+ .w-100-p{
+ 	width: 100%;
+ 	float: left;
+ }
+ 
+ .main-chart .legend div{
+ 	background-color: transparent !important;
+ }
+.legendLabel{
+	font-size: 12px;
+	color: #fff;
+	padding: 1px 10px;
+} 

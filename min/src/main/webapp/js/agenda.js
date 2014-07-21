@@ -120,6 +120,7 @@ Agenda = {
 					type: "GET",
 					success: function (horarios){
 						Agenda.renderFeedAgenda(horarios);
+						Agenda.organizarHorariosPorCliente(horarios);
 						for(var i = 0; i < horarios.length; i++){
 							var data = horarios[i];
 							Agenda.renderHorario(data);
@@ -127,7 +128,19 @@ Agenda = {
 					}
 				});
 			},
-
+			horariosPorCliente: {},
+			organizarHorariosPorCliente: function(horarios){
+				Agenda.horariosPorCliente = {};
+				for(var i = 0; i < horarios.length; i++){
+					var horario = horarios[i];
+					var horariosCliente = Agenda.horariosPorCliente[horario.cliente.id];
+					if(!horariosCliente){
+						horariosCliente = [];
+					}
+					horariosCliente.push(horario);
+					Agenda.horariosPorCliente[horario.cliente.id] = horariosCliente;
+				}
+			},
 			criarFeedAgenda:function(){
 				var data = new Date();
 				var dia = data.getDate();
@@ -208,24 +221,8 @@ Agenda = {
 						var divHorario = $("." + classDivInicio);
 						divHorario.attr('onclick', '');
 						if(primeiro){
-							divHorario.attr('style', 'border-radius: 4px 4px 0 0 !important;');
-							var tooltip = "<div class='tooltip-popup t-"+classDivInicio+"' style='width:"+divHorario.width()+"px'><p>" + horario.cliente.nome + 
-									" (" + inicioHora + ":" + (inicioMin < 10 ? "0" + inicioMin : inicioMin) + " - " + terminoHora + ":" + (terminoMin < 10 ? "0" + terminoMin : terminoMin) + ")</p>";
-							tooltip += "<p>Fazendo: <br />";
-							for(var i = 0; i < horario.servicos.length; i++){
-								tooltip += "-" + horario.servicos[i].nome + "<br />";
-							}
-							tooltip += "</p>";
-							if(horario.observacao){
-								tooltip += "<p>" + horario.observacao + "</p>";
-								
-							}
-							tooltip += "<a href='javascript:Agenda.delelarHorario("+horario.id+")' style='float: right;margin-right: 5px;'><img src='/min/img/icon/delete.png' /></a>"+
-							"</div>";
-							var div = "<div class='titulo-horario'><a href='/min/web/clientes/editar/"+horario.cliente.id+"'>" + horario.cliente.nome + 
-											"</a></div>";
-							divHorario.html(div);
-							divHorario.append(tooltip);
+							Agenda.criarTooltip(horario, divHorario);
+							
 							primeiro = false;
 						}else{
 							divHorario.css("background-color", Agenda.funcionarios[indexFuncionario].cor);
@@ -236,6 +233,46 @@ Agenda = {
 					setMinInicio = false;
 				}
 				
+			},
+			criarTooltip:function(horario, divHorario){
+				divHorario.attr('style', 'border-radius: 4px 4px 0 0 !important;');
+				var div = "<div class='titulo-horario'><a href='/min/web/clientes/editar/"+horario.cliente.id+"'>" + horario.cliente.nome + 
+									"</a></div>";
+				divHorario.html(div);
+				var tooltip = "<div class='tooltip-popup' style='width:"+divHorario.width()+"px'>";
+				var horariosCliente = Agenda.horariosPorCliente[horario.cliente.id];
+				for(var x = 0; x < horariosCliente.length; x++){
+					tooltip += "<div class='horarios-cliente'>";
+						var horarioCliente = horariosCliente[x];
+
+						var inicioData = new Date(horarioCliente.inicio);
+						var terminoDate = new Date(horarioCliente.termino);
+						
+						var inicioHora = inicioData.getHours();
+						var inicioMin = inicioData.getMinutes();
+						var terminoHora = terminoDate.getHours();
+						var terminoMin = terminoDate.getMinutes();
+
+						tooltip += '<div style="height: 10px; width: 100%; margin-bottom: 10px; background-color: '+horarioCliente.funcionario.cor+';"></div>';
+						tooltip += "<p>";
+						tooltip += "" + inicioHora + ":" + (inicioMin < 10 ? "0" + inicioMin : inicioMin) + " - " + terminoHora + ":" + (terminoMin < 10 ? "0" + terminoMin : terminoMin) + "" ;
+						tooltip += " com " + horarioCliente.funcionario.nome;
+						
+						tooltip += "<a href='javascript:Agenda.delelarHorario("+horarioCliente.id+")' style='float: right;margin-right: 5px;'><img src='/min/img/icon/delete.png' /></a>";
+						tooltip +=	"</p>";
+						tooltip += "<p>Fazendo: </p><ul>";
+						for(var i = 0; i < horarioCliente.servicos.length; i++){
+							tooltip += "<li>" + horarioCliente.servicos[i].nome + "</li>";
+						}
+						tooltip += "</ul>";
+						if(horarioCliente.observacao){
+							tooltip += "<p>" + horarioCliente.observacao + "</p>";
+							
+						}
+					tooltip += "</div>";
+				}
+				tooltip + "</div>";
+				divHorario.append(tooltip);
 			},
 			delelarHorario: function(horarioId){
 				if(confirm("Tem certeza que deseja excluir?")){
