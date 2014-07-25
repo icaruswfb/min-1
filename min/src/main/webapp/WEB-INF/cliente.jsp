@@ -65,7 +65,7 @@
             <c:if test="${ cliente.id ne null }">
             
             
-            <div class="modal fade" id="modalWider" tabindex="-1" role="dialog" aria-hidden="true">
+            		<div class="modal fade" id="modalWider" tabindex="-1" role="dialog" aria-hidden="true">
                         <div class="modal-dialog modal-sm">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -76,27 +76,27 @@
                                     <form id="novo-pagamento-form">
 										<input type="hidden" name="comandaId" />
 						                 <label>Forma de pagamento</label>
-						                 <select class="select custom-select" name="formaPagamento">
-						                 	<option value="Dinheiro">Dinheiro</option>
-						                 	<option value="Visa">Visa</option>
-						                 	<option value="VisaElectron">Visa Electron</option>
-						                 	<option value="MasterCard">MasterCard</option>
-						                 	<option value="Maestro">Maestro</option>
-						                 	<option value="Diners">Diners</option>
-						                 	<option value="Amex">Amex</option>
-						                 	<option value="Cheque">Cheque</option>
-						                 	<option value="Crédito">Crédito</option>
+						                 <select class="select custom-select" name="formaPagamento" onchange="Cliente.mostrarParcelamento()" id="forma-pagamento">
+						                 	<c:forEach var="formaPagamento" items="${ formasPagamento }">
+							                 	<option value="${ formaPagamento }">${ formaPagamento.nome }</option>
+						                 	</c:forEach>
 						                 </select>
+						                 <div id="parcelamento">
+							                 <br />
+							                 <br />
+							                 <label>Parcelas</label>
+			                                <input type="text" class="form-control input-sm mask-number" name="parcelas"/>
+						                 </div>
 						                 <br />
 						                 <br />
 						                 <label>Valor</label>
-		                                <input type="text" class="form-control input-sm" name="valor"/>
+		                                <input type="text" class="form-control input-sm mask-number" name="valor"/>
 									</form>
                                 </div>
                                 <div class="modal-footer">
                                 	
-					                 <button class="btn " type="button" onclick="Comanda.pagar()" data-dismiss="modal">Salvar</button>
-                                    <button type="button" class="btn btn-sm" data-dismiss="modal">Cancelar</button>
+					                 <button class="btn " type="button" onclick="Comanda.pagar()">Salvar</button>
+                                    <button type="button" class="btn btn-sm" data-dismiss="modal" id="fechar-popup-pagamento">Cancelar</button>
                                 </div>
                             </div>
                         </div>
@@ -114,6 +114,25 @@
 					</div>
              	 <div class="clearfix"></div>
              	 
+             	 <!-- Modal de fechamento de comanda -->
+                   <div class="modal fade" id="modalFechamento" tabindex="-1" role="dialog" aria-hidden="true">
+                     <div class="modal-dialog modal-lg">
+                         <div class="modal-content">
+                             <div class="modal-header">
+                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                 <h4 class="modal-title">Fechamento de comanda de ${ cliente.nome }</h4>
+                             </div>
+                             <div class="modal-body">
+						<div class="listview list-container" id="fechamento-comanda-observacoes">
+		                </div>
+                             </div>
+                             <div class="modal-footer">
+                                 <button type="button" class="btn btn-sm" data-dismiss="modal" onclick="Comanda.fecharComanda()" id="fechar-comanda-button">Fechar comanda</button>
+                                 <button type="button" class="btn btn-sm" data-dismiss="modal">Cancelar</button>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
 				<h4 class="page-title m-t-10" id="historico-title"><a href="javascript:Cliente.exibirHistorico()" >HISTÓRICO <span id="historico-title-action">[-]</span></a></h4>
 				<div id="historico-block">
 		            <div class="block-area">
@@ -224,12 +243,22 @@
 		$(document).ready(function(){
              $('.mask-date').mask('00/00');
              $('.mask-cep').mask('00000-000');
+             $('.mask-number').mask('#####0');
             <c:if test="${ cliente.id ne null }">
 	     		Comanda.init();
             	Comanda.findComandaAberta();
             	//Histórico
 				Cliente.gerarDados();
 				Cliente.abrirAgendaCliente();
+
+
+             	<c:forEach var="formaPagamento" items="${ formasPagamento }">
+             		<c:if test="${formaPagamento.parcelavel}">
+             		
+             			Cliente.pagamentosParcelados.push('${formaPagamento}');
+             		</c:if>
+             	</c:forEach>
+             	Cliente.mostrarParcelamento();
             </c:if>
 		});
 	</script>

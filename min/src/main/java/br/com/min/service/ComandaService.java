@@ -13,16 +13,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.min.dao.ComandaDAO;
+import br.com.min.dao.ComissaoDAO;
 import br.com.min.dao.GenericDAO;
 import br.com.min.dao.HistoricoDAO;
 import br.com.min.dao.ProdutoDAO;
 import br.com.min.entity.Comanda;
+import br.com.min.entity.Comissao;
 import br.com.min.entity.Historico;
+import br.com.min.entity.LancamentoComissao;
 import br.com.min.entity.LancamentoEstoque;
 import br.com.min.entity.LancamentoProduto;
 import br.com.min.entity.LancamentoServico;
 import br.com.min.entity.Pagamento;
+import br.com.min.entity.Pessoa;
 import br.com.min.entity.Produto;
+import br.com.min.entity.TipoComissao;
 import br.com.min.entity.TipoLancamentoEstoque;
 import br.com.min.utils.Utils;
 
@@ -39,6 +44,8 @@ public class ComandaService {
 	private ProdutoDAO produtoDao;
 	@Autowired
 	private ProdutoService produtoService;
+	@Autowired
+	private ComissaoDAO comissaDao;
 
 	@Transactional
 	public Comanda persist(Comanda entity){
@@ -63,6 +70,9 @@ public class ComandaService {
 		for(Produto produto : produtosParaAtualizar){
 			produtoService.atualizarSituacaoEstoque(produto);
 		}
+		if(isFechamento){
+			calcularComissoes(entity);
+		}
 		return entity;
 	}
 	
@@ -85,6 +95,20 @@ public class ComandaService {
 		return dao.findComandaAberta(clienteId);
 	}
 	
+	private LancamentoComissao criarComissao(Double valor, Pessoa funcionario, Pessoa auxiliar, TipoComissao tipo, Comanda comanda){
+		LancamentoComissao comissao = new LancamentoComissao();
+		comissao.setComanda(comanda);
+		comissao.setDataCriacao(new Date());
+		comissao.setFuncionario(funcionario);
+		comissao.setTipo(tipo);
+		comissao.setValorVenda(valor);
+		if(auxiliar != null){
+			comissao.setPercentualReduzido(auxiliar.getComissao().getComissaoAuxiliar());
+		}
+
+		return comissao;
+	}
+	
 	private List<Produto> calcularValores(Comanda comanda){
 		double valorPago = 0;
 		for(Pagamento pagamento : comanda.getPagamentos()){
@@ -94,15 +118,21 @@ public class ComandaService {
 		Map<Produto, Long> produtosUtilizados = new HashMap<Produto, Long>();
 		for(LancamentoProduto produto : comanda.getProdutos()){
 			Produto p = produto.getProduto();
-			total += p.getPrecoRevenda() * produto.getQuantidadeUtilizada();
-			contarQuantidadeUtilizada(p, produto.getQuantidadeUtilizada(), produtosUtilizados);
+			if(p != null){
+				total += p.getPrecoRevenda() * produto.getQuantidadeUtilizada();
+				contarQuantidadeUtilizada(p, produto.getQuantidadeUtilizada(), produtosUtilizados);
+			}
 		}
 		for(LancamentoServico servico : comanda.getServicos()){
-			total += servico.getServico().getPreco();
+			if(servico.getServico() != null){
+				total += servico.getServico().getPreco();
+			}
 			for(LancamentoProduto produto : servico.getProdutosUtilizados()){
 				Produto p = produto.getProduto();
-				total += produto.getProduto().getPrecoRevenda() * produto.getQuantidadeUtilizada();
-				contarQuantidadeUtilizada(p, produto.getQuantidadeUtilizada(), produtosUtilizados);
+				if(p != null){
+					total += produto.getProduto().getPrecoRevenda() * produto.getQuantidadeUtilizada();
+					contarQuantidadeUtilizada(p, produto.getQuantidadeUtilizada(), produtosUtilizados);
+				}
 			}
 		}
 		if(comanda.getDesconto() == null){
@@ -114,6 +144,119 @@ public class ComandaService {
 		return criarLancamentosEstoque(comanda, produtosUtilizados);
 	}
 	
+	private List<LancamentoComissao> gerarComissoes(Comanda comanda){
+		List<LancamentoComissao> comissoes = new ArrayList<>();
+		for(LancamentoProduto produto : comanda.getProdutos()){
+			Produto p = produto.getProduto();
+			if(p != null){
+				if(produto.getVendedor() != null){
+					comissoes.add(criarComissao((p.getPrecoRevenda() * produto.getQuantidadeUtilizada()), produto.getVendedor(), null, TipoComissao.VENDA, comanda));
+				}
+			}
+		}
+		for(LancamentoServico servico : comanda.getServicos()){
+			if(servico.getServico() != null){
+				if(servico.getFuncionario() != null){
+					TipoComissao tipo = TipoComissao.SERVICO;
+					Pessoa assistente = servico.getAssistente();
+					if(assistente != null){
+						tipo = TipoComissao.SERVICO_COM_AUXILIAR;
+						comissoes.add(criarComissao(servico.getServico().getPreco(), assistente, null, TipoComissao.AUXILIAR, comanda));
+					}
+					comissoes.add(criarComissao(servico.getServico().getPreco(), servico.getFuncionario(), assistente, tipo, comanda));
+				}
+			}
+		}
+		return comissoes;
+	}
+	
+	private void calcularComissoes(Comanda comanda){
+		List<LancamentoComissao> comissoes = gerarComissoes(comanda);
+		
+		Map<Long, Double> vendasProdutoPorCliente = new HashMap<>();
+		List<LancamentoComissao> lancamentosToAdd = new ArrayList<>();
+		for(LancamentoComissao comissao : comissoes){
+			if(comissao.getTipo().equals(TipoComissao.SERVICO_COM_AUXILIAR)){
+				Double percentual = comissao.getFuncionario().getComissao().getComissaoServico() - comissao.getPercentualReduzido();
+				comissao.setPercentual(percentual);
+			} else if(comissao.getTipo().equals(TipoComissao.SERVICO)){
+				Double percentual = comissao.getFuncionario().getComissao().getComissaoServico();
+				comissao.setPercentual(percentual);
+			} else if(comissao.getTipo().equals(TipoComissao.AUXILIAR)){
+				Double percentual = comissao.getFuncionario().getComissao().getComissaoAuxiliar();
+				comissao.setPercentual(percentual);
+			} else if(comissao.getTipo().equals(TipoComissao.VENDA)){
+				Double vendasProduto = vendasProdutoPorCliente.get(comissao.getFuncionario().getId());
+				if(vendasProduto == null){
+					List<LancamentoComissao> lancamentos = comissaDao.findLancamentosComissaoVendaDoMes(comissao.getFuncionario(), comissao.getDataCriacao(), TipoComissao.VENDA);
+					vendasProduto = 0d;
+					for(LancamentoComissao lancamento : lancamentos){
+						vendasProduto += lancamento.getValorVenda();
+					}
+					vendasProdutoPorCliente.put(comissao.getFuncionario().getId(), vendasProduto);
+				}
+				Comissao comissaoFuncionario = comissao.getFuncionario().getComissao();
+				Double venda = comissao.getValorVenda();
+				Double range1 = comissaoFuncionario.getValorRange1() == null ? Double.MAX_VALUE : comissaoFuncionario.getValorRange1();
+				Double range2 = comissaoFuncionario.getValorRange2() == null ? Double.MAX_VALUE : comissaoFuncionario.getValorRange2();
+				Double range3 = comissaoFuncionario.getValorRange3() == null ? Double.MAX_VALUE : comissaoFuncionario.getValorRange3();
+				Double[] ranges = {range1, range2, range3, 
+												Double.MAX_VALUE};
+				Double[] percents = {comissaoFuncionario.getComissaoRange1(), 
+													comissaoFuncionario.getComissaoRange2(), 
+													comissaoFuncionario.getComissaoRange3(), 
+													comissaoFuncionario.getComissaoRange4()};
+				int index;
+				if(vendasProduto < comissaoFuncionario.getValorRange1()){
+					index = 0;
+				}else if( vendasProduto < comissaoFuncionario.getValorRange2()){
+					index = 1;
+				}else if( vendasProduto < comissaoFuncionario.getValorRange3() ){
+					index = 2;
+				}else{
+					index = 3;
+				}
+				lancamentosToAdd.addAll(calcularPercentualPorRange(ranges, percents, vendasProduto, comissao, comanda, index));
+				vendasProduto += venda;
+				vendasProdutoPorCliente.put(comissao.getFuncionario().getId(), vendasProduto);
+			}
+
+			comissao.setValor( (comissao.getValorVenda() / 100) * comissao.getPercentual() );
+		}
+		for(LancamentoComissao comissao : lancamentosToAdd){
+			comissao.setValor( (comissao.getValorVenda() / 100) * comissao.getPercentual() );
+		}
+		comissoes.addAll(lancamentosToAdd);
+		comanda.getComissoes().addAll(comissoes);
+		genericDao.persist(comanda);
+	}
+	
+	private List<LancamentoComissao> calcularPercentualPorRange(
+					Double[] ranges, Double[] percents, Double vendasProduto, 
+					LancamentoComissao comissao, 
+					Comanda comanda, int index){
+		List<LancamentoComissao> lancamentosToAdd = new ArrayList<>();
+		Double percentual = 0d;
+		Double novoValor = (vendasProduto + comissao.getValorVenda()); 
+		if( novoValor  <= ranges[index] ){
+			percentual = percents[index];
+		}else{
+			Double diferencaAcima = novoValor - ranges[index];
+			Double diferencaAbaixo = ranges[index] - vendasProduto;
+			comissao.setValorVenda(diferencaAbaixo);
+			percentual = percents[index];
+			LancamentoComissao novaComissao = criarComissao(diferencaAcima, comissao.getFuncionario(), null, TipoComissao.VENDA, comanda);
+			index++;
+			novaComissao.setPercentual(percents[index]);
+			lancamentosToAdd.addAll(calcularPercentualPorRange(ranges, percents, vendasProduto + diferencaAbaixo, novaComissao, comanda, index));
+			
+			lancamentosToAdd.add(novaComissao);
+			vendasProduto += diferencaAbaixo;
+		}
+		comissao.setPercentual(percentual);
+		return lancamentosToAdd;
+	}
+	
 	private List<Produto> criarLancamentosEstoque(Comanda comanda, Map<Produto, Long> produtosUtilizados){
 		Set<Entry<Produto, Long>> entries = produtosUtilizados.entrySet();
 		List<LancamentoEstoque> toAdd = new ArrayList<LancamentoEstoque>();
@@ -121,6 +264,7 @@ public class ComandaService {
 		for(Entry<Produto, Long> entry : entries){
 			produtosParaAtualizar.add(entry.getKey());
 			boolean criarNovo = true;
+			
 			for(LancamentoEstoque existente : comanda.getEstoque()){
 				if(entry.getKey().equals(existente.getProduto())){
 					criarNovo = false;

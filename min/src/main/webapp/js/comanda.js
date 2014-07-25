@@ -69,6 +69,7 @@ Comanda = {
 			url: '/min/web/clientes/findComandasFechadas/' + id,
 			type: 'GET',
 			success: function(comandas){
+				$("#comandas-fechadas").html('');
 				Comanda.comandas = comandas;
 				for(var i = 0; i<comandas.length; i++){
 					var comanda = comandas[i];
@@ -87,17 +88,17 @@ Comanda = {
 	appendLinhaServico:function(linha, id){
 		id = id == undefined ? "#comanda-form" : id;
 		$(id + " .bloco-servicos").append(linha);
-		$(id + " .bloco-servicos select").chosen({
-            max_selected_options: 1
-        });
+//		$(id + " .bloco-servicos select").chosen({
+//            max_selected_options: 1
+//        });
 		$(".mask-number").mask("##########0");
 	},
 	appendLinhaProduto:function(linha, id){
 		id = id == undefined ? '' : id;
 		$(id + " .bloco-produtos").append(linha);
-		$(id + " .bloco-produtos select").chosen({
-            max_selected_options: 1
-        });
+//		$(id + " .bloco-produtos select").chosen({
+//            max_selected_options: 1
+//        });
 
 		$(".mask-number").mask("##########0");
 	},
@@ -116,12 +117,13 @@ Comanda = {
 		
 		form += "<div class='col-md-4'>";
 		form += "<p>Servi&ccedil;o:</p>";
-		form += "<select name='servicoId' multiple='multiple' "+readOnly+" class='tag-select-limited' onchange='Comanda.buscarValorServico(\""+id+"\", \""+comandaId+"\")' placeholder='Selecione um servi&ccedil;o' >";
+		form += "<select name='servicoId' "+readOnly+" class='form-control input-sm m-b-10' onchange='Comanda.buscarValorServico(\""+id+"\", \""+comandaId+"\")' placeholder='Selecione um servi&ccedil;o' >";
+		form += "<option value='-' ></option>";
 		var servicoSelecionado = null;
 		for(var s = 0; s < Comanda.servicos.length; s++){
 			var servico = Comanda.servicos[s];
 			var selected = "";
-			if(lancamentoServico && lancamentoServico.servico.id == servico.id){
+			if(lancamentoServico && lancamentoServico.servico && lancamentoServico.servico.id == servico.id){
 				selected = "selected='selected'";
 				servicoSelecionado = servico;
 			}
@@ -130,19 +132,21 @@ Comanda = {
 		form += "</select>";
 		form += "</div><div class='col-md-2'>";
 		form += "<p>Funcionario:</p>";
-		form += "<select name='funcionarioId' multiple='multiple' "+readOnly+" class='tag-select-limited' placeholder='Selecione um funcionario' >";
+		form += "<select name='funcionarioId'  "+readOnly+" class='form-control input-sm m-b-10' placeholder='Selecione um funcionario' >";
+		form += "<option value='-' ></option>";
 		for(var s = 0; s < Comanda.funcionarios.length; s++){
 			var funcionario = Comanda.funcionarios[s];
-			var selected = lancamentoServico ? (lancamentoServico.funcionario.id == funcionario.id ? "selected='selected'": "") : "";
+			var selected = (lancamentoServico && lancamentoServico.funcionario) ? (lancamentoServico.funcionario.id == funcionario.id ? "selected='selected'": "") : "";
 			form+="<option "+selected+" value='"+funcionario.id+"'>" +funcionario.nome+"</option>";
 		}
 		form += "</select>";
 		form += "</div><div class='col-md-2'>";
 		form += "<p>Assistente:</p>";
-		form += "<select name='assistenteId' multiple='multiple' "+readOnly+" class='tag-select-limited' placeholder='Selecione um funcionario' >";
+		form += "<select name='assistenteId' "+readOnly+" class='form-control input-sm m-b-10' placeholder='Selecione um funcionario' >";
+		form += "<option value='-' ></option>";
 		for(var s = 0; s < Comanda.funcionarios.length; s++){
 			var funcionario = Comanda.funcionarios[s];
-			var selected = lancamentoServico ? (lancamentoServico.assistente.id == funcionario.id ? "selected='selected'": "") : "";
+			var selected = (lancamentoServico && lancamentoServico.assistente) ? (lancamentoServico.assistente.id == funcionario.id ? "selected='selected'": "") : "";
 			form+="<option "+selected+" value='"+funcionario.id+"'>" +funcionario.nome+"</option>";
 		}
 		form += "</select>";
@@ -175,7 +179,7 @@ Comanda = {
 	
 	buscarValorServico: function(id, comandaId){
 		var servicoId = $("#" + id + " select[name='servicoId']").val();
-		if(servicoId){
+		if(servicoId != "-"){
 			for(var i = 0; i < Comanda.servicos.length; i++){
 				var servico = Comanda.servicos[i];
 				if(servico.id == servicoId){
@@ -186,13 +190,14 @@ Comanda = {
 			$("#" + id + " input[name='valorServico']").val("");
 		}
 		Comanda.preencherTotais(comandaId);
+		Comanda.salvarComanda();
 		return true;
 	},
 	
 	buscarValorProduto: function(id, servico){
 		servico = servico == null ? '' : servico;
 		var produtoId = $("#" + id + " select[name='produto"+servico+"Id']").val();
-		if(produtoId){
+		if(produtoId != "-"){
 			for(var i = 0; i < Comanda.produtos.length; i++){
 				var produto = Comanda.produtos[i];
 				if(produto.id == produtoId){
@@ -204,14 +209,17 @@ Comanda = {
 						quantidade = $("#" + id + " input[name='quantidadeProduto"+servico+"']").val();
 					}
 					$("#" + id + " input[name='valorProduto"+servico+"']").val((produto.precoRevenda * quantidade));
-					$("#quantidade"+servico+"-" + id).html("Quantidade (" + produto.unidade + "):");
+					$("#quantidade-" + id).html("Quantidade (" + produto.unidade + "):");
 					break;
 				}
 			}
 		}else{
-			$("#" + id + " input[name='valorProduto']").val("");
+			$("#" + id + " input[name='valorProduto"+servico+"']").val("");
+			$("#quantidade-" + id).html("Quantidade:");
+			$("#" + id + " input[name='quantidadeProduto"+servico+"']").val("");
 		}
 		Comanda.preencherTotais($("#comanda-form input[name='comandaId']").val());
+		Comanda.salvarComanda();
 		return true;
 	},
 	
@@ -235,6 +243,8 @@ Comanda = {
 		var desconto = $("#descontos-" + comandaId).val();
 		$("#valorTotal-" + comandaId).val(total);
 		$("#valorCobrado-" + comandaId).val(total - desconto);
+		var pago = $("#valorPago-" + comandaId).val();
+		$("#valorFaltante-" + comandaId).val((total - desconto) - pago);
 	},
 	
 	criarLinhaProduto: function(lancamentoProduto, readOnly, comandaId){
@@ -252,7 +262,8 @@ Comanda = {
 		
 		form += "<div class='col-md-3'>";
 		form += "<p>Produto:</p>";
-		form += "<select name='produtoId' multiple='multiple' "+readOnly+" onchange='Comanda.buscarValorProduto(\""+id+"\")' class='tag-select-limited' placeholder='Selecione um produto' >";
+		form += "<select name='produtoId' "+readOnly+" onchange='Comanda.buscarValorProduto(\""+id+"\")' class='form-control input-sm m-b-10' placeholder='Selecione um produto' >";
+		form += "<option value='-' ></option>";
 		var produtoSelecionado = null;
 		for(var s = 0; s < Comanda.produtos.length; s++){
 			var produto = Comanda.produtos[s];
@@ -260,7 +271,7 @@ Comanda = {
 				continue;
 			}
 			var selected = "";
-			if(lancamentoProduto && lancamentoProduto.produto.id == produto.id){
+			if(lancamentoProduto && lancamentoProduto.produto && lancamentoProduto.produto.id == produto.id){
 				selected = "selected='selected'";
 				produtoSelecionado = produto;
 			}
@@ -269,16 +280,17 @@ Comanda = {
 		form += "</select>";
 		form += "</div><div class='col-md-3'>";
 		form += "<p>Vendedor:</p>";
-		form += "<select name='vendedorId' multiple='multiple' "+readOnly+" class='tag-select-limited' placeholder='Selecione um vendedor' >";
+		form += "<select name='vendedorId'  "+readOnly+" class='form-control input-sm m-b-10' placeholder='Selecione um vendedor' >";
+		form += "<option value='-' ></option>";
 		for(var s = 0; s < Comanda.funcionarios.length; s++){
 			var funcionario = Comanda.funcionarios[s];
-			var selected = lancamentoProduto ? (lancamentoProduto.vendedor.id == funcionario.id ? "selected='selected'": "") : "";
+			var selected = (lancamentoProduto && lancamentoProduto.vendedor) ? (lancamentoProduto.vendedor.id == funcionario.id ? "selected='selected'": "") : "";
 			form+="<option "+selected+" value='"+funcionario.id+"'>" +funcionario.nome+"</option>";
 		}
 		form += "</select>";
 		form += "</div><div class='col-md-2'>";
 		form += "<p id='quantidade-"+id+"'>Quantidade";
-		if(lancamentoProduto){
+		if(lancamentoProduto && lancamentoProduto.produto){
 			form += "(" + lancamentoProduto.produto.unidade + ")";
 		}
 		form += ":</p>";
@@ -304,6 +316,25 @@ Comanda = {
 		form += "</div>";
 		return form;
 	},
+	detalhesFechamento: function(){
+		$.ajax({
+			url: '/min/web/clientes/verificarComanda',
+			type: 'POST',
+			data: $("#comanda-form").serialize(),
+			success: function(verificacoes){
+				Utils.removeMessageBlock("#fechamento-comanda-observacoes");
+				if(verificacoes.criticalError){
+					$("#fechar-comanda-button").hide();
+				}else{
+					$("#fechar-comanda-button").show();
+				}
+				for(var i = 0; i < verificacoes.messages.length; i++){
+					var message = verificacoes.messages[i];
+					Utils.createMessageBlock(message.message, "#fechamento-comanda-observacoes", message.severity, "fechamentoError-" + Utils.guid());
+				}
+			}
+		});
+	},
 	criarDivInfoComanda:function(comanda){
 		var isComandaAberta = comanda.fechamento == null ? true : false;
 		var info = "";
@@ -311,7 +342,7 @@ Comanda = {
 		if(isComandaAberta){
 			info += "<div class='action-buttons'>";
 			info += '<a class="btn btn-lg m-r-5" onclick="Comanda.salvarComanda()" >Salvar comanda</a>';
-			info += '<a class="btn btn-lg btn-alt m-r-5" onclick="Comanda.fecharComanda()" >Fechar comanda</a>';
+			info += '<a class="btn btn-lg btn-alt m-r-5" data-toggle="modal" href="#modalFechamento" onclick="Comanda.detalhesFechamento()" >Fechar comanda</a>';
 			info += '</div>';
 		}else{
 			info += "<form id='comanda-form"+comanda.id+"' >";
@@ -366,13 +397,15 @@ Comanda = {
 
 		info += "<div class='col-md-12'>";
 		info += "<div class='col-md-9'>";
-		info += "<div class='col-md-11'>";
+		
+		//Totais
+		info += "<div class='col-md-7'>";
 		info += "<p class='total'>Total:</p>";
 		info += "</div>";
 		info += "<div class='col-md-1'>";
 		info += "<input class='form-control input-sm m-b-10' id='valorTotal-"+comanda.id+"' name='total' readonly value='"+(comanda.valorTotal ? comanda.valorTotal : 0)+"' />";
 		info += "</div>";
-		info += "<div class='col-md-11'>";
+		info += "<div class='col-md-3'>";
 		info += "<p class='total'>Descontos:</p>";
 		info += "</div>";
 		info += "<div class='col-md-1'>";
@@ -380,17 +413,23 @@ Comanda = {
 						"name='descontos' value='"+(comanda.desconto ? comanda.desconto : 0)+"' " +
 						"onblur='Comanda.preencherTotais("+comanda.id+");' "+(isComandaAberta ? '' : 'readonly')+"  />";
 		info += "</div>";
-		info += "<div class='col-md-11'>";
+		info += "<div class='col-md-7'>";
 		info += "<p class='total'>Valor cobrado:</p>";
 		info += "</div>";
 		info += "<div class='col-md-1'>";
 		info += "<input class='form-control input-sm m-b-10' id='valorCobrado-"+comanda.id+"' name='valorCobrado' readonly value='"+(comanda.valorCobrado ? comanda.valorCobrado : 0)+"' />";
 		info += "</div>";
-		info += "<div class='col-md-11'>";
+		info += "<div class='col-md-3'>";
 		info += "<p class='total'>Valor pago:</p>";
 		info += "</div>";
 		info += "<div class='col-md-1'>";
 		info += "<input class='form-control input-sm m-b-10' id='valorPago-"+comanda.id+"' name='valorPago' readonly value='"+(comanda.valorPago ? comanda.valorPago : 0)+"' />";
+		info += "</div>";
+		info += "<div class='col-md-11'>";
+		info += "<p class='total'>Falta:</p>";
+		info += "</div>";
+		info += "<div class='col-md-1'>";
+		info += "<input class='form-control input-sm m-b-10' id='valorFaltante-"+comanda.id+"' name='valorFaltante' readonly value='0' />";
 		info += "</div>";
 		info += "</div>";
 		
@@ -425,12 +464,20 @@ Comanda = {
 	},
 	
 	pagar:function(){
+		var valor = $("#novo-pagamento-form input[name='valor']").val();
+		Utils.removeMessageBlock("#novo-pagamento-form");
+		if(valor == '' || valor <= 0){
+			Utils.createMessageBlock("Pagamento precisa de um valor maior que zero (0)", "#novo-pagamento-form", "danger");
+			return false;
+		}
 		$.ajax({
 			url: '/min/web/clientes/pagar',
 			type: 'POST',
 			data: $("#novo-pagamento-form").serialize(),
 			success:function(comanda){
 				Comanda.refreshPagamentos(comanda);
+				Comanda.salvarComanda();
+				$("#fechar-popup-pagamento").click();
 			}
 		});
 	},
@@ -443,11 +490,17 @@ Comanda = {
 			Comanda.addPagamento(pagamento, (isComandaAberta ? '' : comanda.id));
 		}
 		$("#valorPago-" + comanda.id).val(comanda.valorPago);
+		var cobrado = $("#valorCobrado-" + comanda.id).val();
+		$("#valorFaltante-" + comanda.id).val(cobrado - comanda.valorPago);
 	},
 	
 	addPagamento:function(pagamento, comandaId){
 		var linha = "<tr id='pagamento-"+pagamento.id+"'>";
-		linha += "<td>" + pagamento.formaPagamento + "</td>";
+		linha += "<td>" + pagamento.formaPagamento;
+		if(pagamento.parcelamento){
+			linha += " (" +pagamento.parcelamento+"x)";
+		}
+		linha += "</td>";
 		linha += "<td>" + pagamento.valor + "</td>";
 		linha += "<td>";
 		if(comandaId == ''){
@@ -468,6 +521,7 @@ Comanda = {
 				type: 'GET',
 				success:function(comanda){
 					Comanda.refreshPagamentos(comanda);
+					Comanda.salvarComanda();
 				}
 			});
 			
@@ -559,9 +613,9 @@ Comanda = {
 	adicionarProdutoAoServico: function(servicoId){
 		var form = Comanda.criarProdutoAoServico(servicoId);
 		$("#" + servicoId).append(form);
-		$("#" + servicoId + " select").chosen({
-            max_selected_options: 1
-        });
+//		$("#" + servicoId + " select").chosen({
+//            max_selected_options: 1
+//        });
 		$(".mask-number").mask("##########0");
 	},
 	
@@ -571,24 +625,25 @@ Comanda = {
 		var form = "<div class='' id='"+id+"'><div class='col-md-4'> <span class='icon' style='float: right;font-size: 20px;'>&#61807;</span></div><div class='col-md-4'>";
 		form += "<input type='hidden' value='" + servicoId + "' name='guidProdutoServico' />";
 		form += "<p>Produto:</p>";
-		form += "<select name='produtoServicoId' multiple='multiple'  class='tag-select-limited' "+readonly+" placeholder='Selecione um produto' onchange='Comanda.buscarValorProduto(\"" + id + "\", \"Servico\")' >";
+		form += "<select name='produtoServicoId'  class='form-control input-sm m-b-10' "+readonly+" placeholder='Selecione um produto' onchange='Comanda.buscarValorProduto(\"" + id + "\", \"Servico\")' >";
+		form += "<option value='-' ></option>";
 		for(var s = 0; s < Comanda.produtos.length; s++){
 			var produto = Comanda.produtos[s];
 			if(produto.categoria != 'SALAO'){
 				continue;
 			}
-			var selected = produtoUtilizado ? (produtoUtilizado.produto.id == produto.id ? "selected='selected'" : "") : "";
+			var selected = (produtoUtilizado && produtoUtilizado.produto) ? (produtoUtilizado.produto.id == produto.id ? "selected='selected'" : "") : "";
 			form+="<option "+selected+" value='"+produto.id+"'>" +produto.nome+"</option>";
 		}
 		form += "</select>";
 		form += "</div>";
 		form += "<div class='col-md-2'>";
 		form += "<p id='quantidade-"+id+"'>Quantidade";
-		if(produtoUtilizado){
+		if(produtoUtilizado && produtoUtilizado.produto){
 			form += " (" + produtoUtilizado.produto.unidade + ")";
 		}
 		form += ":</p>";
-		form += "<input name='quantidadeProdutoServico' class='form-control input-sm m-b-10' "+readonly+"  onblur='Comanda.buscarValorProduto(\"" + id + "\", \"Servico\")' ";
+		form += "<input name='quantidadeProdutoServico' class='form-control input-sm m-b-10 mask-number' "+readonly+"  onblur='Comanda.buscarValorProduto(\"" + id + "\", \"Servico\")' ";
 		if(produtoUtilizado){
 			form+= "value='" + (produtoUtilizado.quantidadeUtilizada)+ "' ";
 		}
@@ -597,7 +652,7 @@ Comanda = {
 		form += "<div class='col-md-1'>";
 		form += '<p>Valor (R$):</p>';
 		form += '<input name="valorProdutoServico" class="form-control input-sm m-b-10" readonly ';
-		if(produtoUtilizado){
+		if(produtoUtilizado && produtoUtilizado.produto){
 			form+= "value='" + ((produtoUtilizado.produto.precoRevenda * produtoUtilizado.quantidadeUtilizada).toFixed(2))+ "' ";
 		}
 		form += "/>";
@@ -636,20 +691,18 @@ Comanda = {
 	},
 	
 	fecharComanda:function(){
-		if(confirm("Tem certeza que deseja fechar esta comanda?")){
-			$.ajax({
-				url: '/min/web/clientes/fecharComanda',
-				type: 'POST',
-				data: $("#comanda-form").serialize(),
-				success: function(comanda){
-					$("#comanda-form").html("");
-					if($("#comandas-fechadas").css('display') == 'block'){
-						Comanda.findComandas();
-					}
-					Comanda.findComandaAberta();
+		$.ajax({
+			url: '/min/web/clientes/fecharComanda',
+			type: 'POST',
+			data: $("#comanda-form").serialize(),
+			success: function(comanda){
+				$("#comanda-form").html("");
+				if($("#comandas-fechadas").css('display') == 'block'){
+					Comanda.findComandas();
 				}
-			});
-		}
+				Comanda.findComandaAberta();
+			}
+		});
 	},
 	fecharComandaPorId:function(id){
 		if(confirm("Tem certeza que deseja fechar esta comanda?")){

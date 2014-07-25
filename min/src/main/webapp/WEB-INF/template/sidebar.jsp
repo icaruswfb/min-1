@@ -63,13 +63,13 @@
 		<li id="agenda-menu"><a class="sa-side-calendar" href="<spring:url value='/web/agenda/' />"> <span
 				class="menu-item">Agenda</span>
 		</a></li>
-		<li class="dropdown" id="report-menu">
+		<li class="dropdown" id="financeiro-menu">
              <a class="sa-side-chart" href="">
-                 <span class="menu-item">Relatórios</span>
+                 <span class="menu-item">Financeiro</span>
              </a>
              <ul class="list-unstyled menu-item">
-             	<li><a id="fechamento-menu" href="<spring:url value='/web/report/fechamento' />">Fechamento</a></li>
-				<li><a id="fluxofinanceiro-menu" href="<spring:url value='/web/report/financeiro' />">Fluxo financeiro</a></li>
+             	<li><a id="caixa-menu" href="<spring:url value='/web/report/caixa' />">Caixa</a></li>
+				<li><a id="comissao-menu" href="<spring:url value='/web/report/comissao' />">Comissão</a></li>
              </ul>
          </li>
          <li class="dropdown" id="admin-menu">

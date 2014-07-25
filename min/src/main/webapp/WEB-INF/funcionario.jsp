@@ -21,10 +21,10 @@
 		<section id="content" class="container">
 
 			<h4 class="page-title">FUNCIONÁRIO</h4>
-            <form:form method="post" action="../salvar" commandName="funcionario">
+            <form:form method="post" action="../salvar" commandName="funcionario" id="funcionario-form">
             	<form:hidden path="id" />
 				<div class="block-area" id="buttons">
-	                 <button class="btn m-r-5" type="submit">Salvar</button>
+	                 <a class="btn m-r-5" id="salvar">Salvar</button>
 	                 <a href="<spring:url value='/web/funcionarios/' />" class="btn btn-alt m-r-5" type="button">Cancelar</a>
 	             </div>
 			 	<!-- Table Hover -->
@@ -74,108 +74,76 @@
                      </div>
                 </div>
                 
+                <div class="col-lg-12">
+               		<div class="col-lg-12">
+                		<p>Percentuais de comissão</p>
+                	</div>
+                	<div class="col-lg-12">
+                		<div class="col-lg-3">
+	                		<p>Serviço</p>
+                 			<input id="comissao.comissaoServico" 
+                 						name="comissao.comissaoServico"
+                 						value="<fmt:formatNumber value="${ funcionario.comissao.comissaoServico }" minFractionDigits="2"  />" 
+                 						class="form-control m-b-10 mask-percent" placeholder="Percentual"/>
+                		</div>
+                	</div>
+                	<div class="col-lg-12">
+                		<div class="col-lg-3">
+	                		<p>Auxiliar</p>
+                 			<input id="comissao.comissaoAuxiliar" 
+                 						name="comissao.comissaoAuxiliar"
+                 						value="<fmt:formatNumber value="${ funcionario.comissao.comissaoAuxiliar }" minFractionDigits="2"  />" 
+                 						class="form-control m-b-10 mask-percent" placeholder="Percentual"/>
+                		</div>
+                	</div>
+                	<div class="col-lg-12">
+                		<div class="col-lg-3">
+	                		<p>Vendas até (R$)</p>
+                 			<input id="comissao.valorRange1" 
+                 						name="comissao.valorRange1"
+                 						value="<fmt:formatNumber value="${ funcionario.comissao.valorRange1 }" minFractionDigits="2"  />" 
+                 						class="form-control m-b-10 mask-money" placeholder="Valor"/>
+                 			<input id="comissao.comissaoRange1" 
+                 						name="comissao.comissaoRange1"
+                 						value="<fmt:formatNumber value="${ funcionario.comissao.comissaoRange1 }" minFractionDigits="2"  />" 
+                 						class="form-control m-b-10 mask-percent" placeholder="Percentual"/>
+                		</div>
+                		<div class="col-lg-3">
+	                		<p>Vendas até (R$)</p>
+                 			<input id="comissao.valorRange2" 
+                 						name="comissao.valorRange2"
+                 						value="<fmt:formatNumber value="${ funcionario.comissao.valorRange2 }" minFractionDigits="2"  />" 
+                 						class="form-control m-b-10 mask-money" placeholder="Valor"/>
+                 			<input id="comissao.comissaoRange2" 
+                 						name="comissao.comissaoRange2"
+                 						value="<fmt:formatNumber value="${ funcionario.comissao.comissaoRange2 }" minFractionDigits="2"  />" 
+                 						class="form-control m-b-10 mask-percent" placeholder="Percentual"/>
+                		</div>
+                		<div class="col-lg-3">
+	                		<p>Vendas até (R$)</p>
+                 			<input id="comissao.valorRange3" 
+                 						name="comissao.valorRange3"
+                 						value="<fmt:formatNumber value="${ funcionario.comissao.valorRange3 }" minFractionDigits="2"  />" 
+                 						class="form-control m-b-10 mask-money" placeholder="Valor"/>
+                 			<input id="comissao.comissaoRange3" 
+                 						name="comissao.comissaoRange3"
+                 						value="<fmt:formatNumber value="${ funcionario.comissao.comissaoRange3 }" minFractionDigits="2"  />" 
+                 						class="form-control m-b-10 mask-percent" placeholder="Percentual"/>
+                		</div>
+                		<div class="col-lg-3">
+	                		<p>Comissão máxima (%)</p>
+                 			<input id="comissao.comissaoRange4" 
+                 						name="comissao.comissaoRange4"
+                 						value="<fmt:formatNumber value="${ funcionario.comissao.comissaoRange4 }" minFractionDigits="2"  />" 
+                 						class="form-control m-b-10 mask-percent" placeholder="Percentual"/>
+                		</div>
+                	</div>
+                </div>
              </form:form>
               <div class="clearfix"></div>
             <br /><br />
             <c:if test="${ funcionario.id ne null }">
-	            <div class="block-area">
-					<div class="row">
-						<div class="col-md-9">
-							<!-- Main Chart -->
-							<div class="tile">
-								<h2 class="tile-title">Visitas x Mês</h2>
-								<div class="p-10">
-									<div id="line-chart" class="main-chart" style="height: 100px"></div>
-	
-								</div>
-							</div>
-						</div>
-						
-						<div class="col-md-3">
-							<div class="tile">
-	                            <h2 class="tile-title">DADOS COMPILADOS</h2>
-	                            <div class="listview narrow">
-	                                <div class="media p-l-5">
-	                                    <div class="media-body">
-	                                        <small class="text-muted">Total de visitas:</small><br/>
-	                                        10
-	                                    </div>
-	                                </div>
-	                            </div>
-	                            <div class="listview narrow">
-	                                <div class="media p-l-5">
-	                                    <div class="media-body">
-	                                        <small class="text-muted">Quantia total gasta:</small><br/>
-	                                        R$1.320,00
-	                                    </div>
-	                                </div>
-	                            </div>
-	                            <div class="listview narrow">
-	                                <div class="media p-l-5">
-	                                    <div class="media-body">
-	                                        <small class="text-muted">Quantia média gasta por visita:</small><br/>
-	                                        R$132,00
-	                                    </div>
-	                                </div>
-	                            </div>
-	                        </div>
-						</div>​
-						
-					</div>
-	
-					<div class="clearfix"></div>
-				</div>
-	            <div class="clearfix"></div>
-				<h4 class="page-title">HISTÓRICO</h4>
-				<div class="block-area" id="historico">
-					<div class="listview list-container">
-	                     <header class="listview-header media">
-	                        <input type="checkbox" class="pull-left list-parent-check" value="">
-	                        
-	                        <ul class="list-inline list-mass-actions pull-left">
-	                            <li>
-	                                <a data-toggle="modal" href="#compose-message" title="Add" class="tooltips">
-	                                    <i class="sa-list-add"></i>
-	                                </a>
-	                            </li>
-	                            <li>
-	                                <a href="" title="Refresh" class="tooltips">
-	                                    <i class="sa-list-refresh"></i>
-	                                </a>
-	                            </li>
-	                            <li class="show-on" style="display: none;">
-	                                <a href="" title="Delete" class="tooltips">
-	                                    <i class="sa-list-delete"></i>
-	                                </a>
-	                            </li>
-	                        </ul>
-	
-	                        <div class="clearfix"></div>
-	                    </header>                   
-	                    <div class="media">
-								<small class="text-muted">31/12/2013 18:30 com <a href="">Susy</a></small><br />
-	                        <input type="checkbox" class="pull-left list-check" value="">
-	                        <div class="media-body">
-	                            Per an error perpetua, fierent fastidii recteque ad pro. Mei id brute intellegam
-	                            <div class="list-options">
-	                                <button class="btn btn-sm">View</button>
-	                                <button class="btn btn-sm">Delete</button>
-	                            </div>
-	                        </div>
-	                    </div>
-	                    <div class="media">
-								<small class="text-muted">18:30 com <a href="">Susy</a></small><br />
-	                        <input type="checkbox" class="pull-left list-check" value="">
-	                        <div class="media-body">
-	                            Per an error perpetua, fierent fastidii recteque ad pro. Mei id brute intellegam
-	                            <div class="list-options">
-	                                <button class="btn btn-sm">View</button>
-	                                <button class="btn btn-sm">Delete</button>
-	                            </div>
-	                        </div>
-	                    </div>
-	                </div>
-				</div>
+            	
             </c:if>
             
 		</section>
@@ -203,6 +171,12 @@
 		$(document).ready(function(){
              $('.mask-date').mask('00/00');
              $('.mask-cep').mask('00000-000');
+             $('.mask-number').mask('########0');
+             $('.mask-percent').mask('##0,00%', {reverse: true});
+             $('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
+             $("#salvar").on('click', function(){
+                 Funcionario.submit();
+               });
 		});
 		
 	</script>

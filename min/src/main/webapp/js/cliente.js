@@ -141,14 +141,18 @@ Cliente = {
 					//Servico preferido
 					for(var s = 0; s < comanda.servicos.length; s++){
 						var servico = comanda.servicos[s];
-						if( ! countServicos[servico.servico.id]){
-							countServicos[servico.servico.id] = [];
+						if(servico.servico){
+							if( ! countServicos[servico.servico.id]){
+								countServicos[servico.servico.id] = [];
+							}
+							countServicos[servico.servico.id].push(servico.servico);
 						}
-						countServicos[servico.servico.id].push(servico.servico);
-						if( ! countFuncionarios[servico.funcionario.id]){
-							countFuncionarios[servico.funcionario.id] = [];
+						if(servico.funcionario){
+							if( ! countFuncionarios[servico.funcionario.id]){
+								countFuncionarios[servico.funcionario.id] = [];
+							}
+							countFuncionarios[servico.funcionario.id].push(servico.funcionario);
 						}
-						countFuncionarios[servico.funcionario.id].push(servico.funcionario);
 					}
 					
 					//Grafico
@@ -358,6 +362,17 @@ Cliente = {
 		
 		
 		
-		
+	},
+
+	pagamentosParcelados:[],
+	mostrarParcelamento:function(){
+		var valor = $("#forma-pagamento").val();
+		for(var i = 0; i < Cliente.pagamentosParcelados.length; i++){
+			if(valor == Cliente.pagamentosParcelados[i]){
+				$("#parcelamento").show();
+				return;
+			}
+		}
+		$("#parcelamento").hide();
 	}
 };

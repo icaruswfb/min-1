@@ -16,7 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import br.com.min.entity.Comanda;
+import br.com.min.entity.LancamentoComissao;
 import br.com.min.entity.Pagamento;
+import br.com.min.entity.Pessoa;
+import br.com.min.entity.TipoComissao;
 
 @Repository
 public class ComandaDAO {
@@ -56,13 +59,13 @@ public class ComandaDAO {
 		
 		Calendar dataInicioPesquisa = Calendar.getInstance();
 		dataInicioPesquisa.setTime(date);
-		dataInicioPesquisa.set(Calendar.HOUR, 0);
+		dataInicioPesquisa.set(Calendar.HOUR_OF_DAY, 0);
 		dataInicioPesquisa.set(Calendar.MINUTE, 0);
 		dataInicioPesquisa.set(Calendar.SECOND, 0);
 		dataInicioPesquisa.set(Calendar.MILLISECOND, 0);
 		Calendar dataFimPesquisa = Calendar.getInstance();
 		dataFimPesquisa.setTime(date);
-		dataFimPesquisa.set(Calendar.HOUR, 23);
+		dataFimPesquisa.set(Calendar.HOUR_OF_DAY, 23);
 		dataFimPesquisa.set(Calendar.MINUTE, 59);
 		dataFimPesquisa.set(Calendar.SECOND, 59);
 		dataFimPesquisa.set(Calendar.MILLISECOND, 999);

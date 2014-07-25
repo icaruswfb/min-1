@@ -2491,3 +2491,7 @@ a.list-group-item.active > .badge,
 	color: #fff;
 	padding: 1px 10px;
 } 
+
+#pagamento-erro-block{
+	display: none;
+}

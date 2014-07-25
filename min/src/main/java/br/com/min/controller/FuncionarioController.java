@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import br.com.min.entity.Comissao;
 import br.com.min.entity.Pessoa;
 import br.com.min.service.PessoaService;
 
@@ -50,6 +51,7 @@ public class FuncionarioController {
 		Pessoa funcionario;
 		if(id == null){
 			funcionario = new Pessoa();
+			funcionario.setComissao(new Comissao());
 		}else{
 			funcionario = pessoaService.findById(id);
 		}

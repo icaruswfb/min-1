@@ -30,6 +30,8 @@ public class Comanda {
 	private List<LancamentoProduto> produtos = new ArrayList<LancamentoProduto>();
 	@OneToMany(mappedBy="comanda", cascade=CascadeType.ALL, orphanRemoval=true)
 	private List<LancamentoEstoque> estoque = new ArrayList<LancamentoEstoque>();
+	@OneToMany(mappedBy="comanda", cascade=CascadeType.ALL, orphanRemoval=true)
+	private List<LancamentoComissao> comissoes = new ArrayList<>();
 	private Double valorTotal;
 	private Double desconto;
 	private Double valorCobrado;
@@ -122,6 +124,12 @@ public class Comanda {
 	}
 	public void setEstoque(List<LancamentoEstoque> estoque) {
 		this.estoque = estoque;
+	}
+	public List<LancamentoComissao> getComissoes() {
+		return comissoes;
+	}
+	public void setComissoes(List<LancamentoComissao> comissoes) {
+		this.comissoes = comissoes;
 	}
 	
 	

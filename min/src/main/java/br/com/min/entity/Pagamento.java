@@ -19,6 +19,7 @@ public class Pagamento {
 	private Date data;
 	@Enumerated(EnumType.STRING)
 	private FormaPagamento formaPagamento;
+	private Integer parcelamento;
 	@ManyToOne
 	private Comanda comanda;
 	public Long getId() {
@@ -73,6 +74,12 @@ public class Pagamento {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
+	}
+	public Integer getParcelamento() {
+		return parcelamento;
+	}
+	public void setParcelamento(Integer parcelamento) {
+		this.parcelamento = parcelamento;
 	}
 	
 	

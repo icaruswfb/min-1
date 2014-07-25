@@ -9,6 +9,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -51,6 +52,7 @@ public class PessoaDAO {
 				Criterion predicate = Restrictions.eq("funcionario", cliente.getFuncionario());
 				criteria = criteria.add(Restrictions.and(predicate));
 			}
+			criteria.addOrder(Order.asc("nome"));
 		}
 		List<Pessoa> clientes = criteria.list();
 		return clientes;

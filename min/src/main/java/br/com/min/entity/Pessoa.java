@@ -5,11 +5,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 
@@ -31,6 +33,7 @@ public class Pessoa implements Serializable{
 	private Boolean funcionario;
 	private String documento;
 	private String cor;
+	private Comissao comissao;
 
 	@Id
 	@GeneratedValue
@@ -123,6 +126,13 @@ public class Pessoa implements Serializable{
 	}
 	public void setCor(String cor) {
 		this.cor = cor;
+	}
+	@OneToOne(optional=true, cascade=CascadeType.ALL)
+	public Comissao getComissao() {
+		return comissao;
+	}
+	public void setComissao(Comissao comissao) {
+		this.comissao = comissao;
 	}
 	
 }

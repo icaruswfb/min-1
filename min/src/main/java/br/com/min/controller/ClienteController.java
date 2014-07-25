@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import br.com.min.controller.vo.MessageVO;
+import br.com.min.controller.vo.VerificacaoVO;
 import br.com.min.entity.Comanda;
 import br.com.min.entity.FormaPagamento;
 import br.com.min.entity.Historico;
@@ -40,6 +43,7 @@ import br.com.min.utils.Utils;
 @RequestMapping("/clientes")
 public class ClienteController {
 	
+	private static final String NOTHING_SELECTED = "-";
 	@Autowired
 	private PessoaService pessoaService;
 	@Autowired
@@ -81,9 +85,9 @@ public class ClienteController {
 			cliente = new Pessoa();
 		}else{
 			cliente = pessoaService.findById(id);
+			mv.addObject("formasPagamento", FormaPagamento.values());
 		}
 		mv.addObject("cliente", cliente);
-		
 		
 		return mv;
 	}
@@ -94,21 +98,30 @@ public class ClienteController {
 	}
 	
 	@RequestMapping(value="/pagar", method=RequestMethod.POST)
-	public @ResponseBody Comanda pagar(Long comandaId, String formaPagamento, Double valor){
-		Pagamento pagamento = new Pagamento();
+	public @ResponseBody Comanda pagar(Long comandaId, String formaPagamento, Double valor, Integer parcelas){
 		Comanda comanda = comandaService.findById(comandaId);
-		pagamento.setComanda(comanda);
-		pagamento.setData(new Date());
-		pagamento.setFormaPagamento(FormaPagamento.valueOf(formaPagamento));
-		if(pagamento.getFormaPagamento().equals(FormaPagamento.Crédito)){
-			Double credito = comandaService.getCreditoCliente(comanda.getCliente().getId());
-			if(valor > credito){
-				valor = credito;
+		if(valor > 0){
+			Pagamento pagamento = new Pagamento();
+			pagamento.setComanda(comanda);
+			pagamento.setData(new Date());
+			pagamento.setFormaPagamento(FormaPagamento.valueOf(formaPagamento));
+			
+			if(pagamento.getFormaPagamento().equals(FormaPagamento.Credito)){
+				Double credito = comandaService.getCreditoCliente(comanda.getCliente().getId());
+				if(valor > credito){
+					valor = credito;
+				}
 			}
+			if(pagamento.getFormaPagamento().isParcelavel()){
+				if(parcelas == null || parcelas <= 0){
+					parcelas = 1;
+				}
+				pagamento.setParcelamento(parcelas);
+			}
+			pagamento.setValor(valor);
+			comanda.getPagamentos().add(pagamento);
+			comanda = comandaService.persist(comanda);
 		}
-		pagamento.setValor(valor);
-		comanda.getPagamentos().add(pagamento);
-		comanda = comandaService.persist(comanda);
 		limparComandaJSON(comanda);
 		return comanda;
 	}
@@ -197,21 +210,93 @@ public class ClienteController {
 		return comanda;
 	}
 	
+	@RequestMapping(value="/verificarComanda", method=RequestMethod.POST)
+	public @ResponseBody VerificacaoVO verificarCamanda(HttpServletRequest request){
+		Comanda comanda = criarComanda(request);
+		comanda = comandaService.persist(comanda);
+		
+		return verificarComanda(comanda);
+	}
+	
+	private VerificacaoVO verificarComanda(Comanda comanda){
+		VerificacaoVO vo = new VerificacaoVO();
+		if(comanda.getValorCobrado() > comanda.getValorPago()){
+			vo.addMessage(MessageVO.WARNING, "O valor cobrado é maior que o valor pago, fechar a comanda agora irá gerar um débito.");
+		}
+		if(comanda.getValorCobrado() < comanda.getValorPago()){
+			vo.addMessage(MessageVO.WARNING, "O valor cobrado é menor que o valor pago, fechar a comanda agora irá gerar um crédito.");
+		}
+		for(LancamentoServico lancamentoServico : comanda.getServicos()){
+			boolean hasServicoError = false;
+			boolean hasFuncionarioError = false;
+			boolean hasProdutoError = false;
+			if( ! hasServicoError && lancamentoServico.getServico() == null){
+				hasServicoError = true;
+				vo.setCriticalError(true);
+				vo.addMessage(MessageVO.ERROR, "Todos os lançamentos de serviço devem ter um serviço vinculado.");
+			}
+			if( ! hasFuncionarioError && lancamentoServico.getFuncionario() == null){
+				hasFuncionarioError = true;
+				vo.setCriticalError(true);
+				vo.addMessage(MessageVO.ERROR, "Todos os lançamentos de serviço devem ter um funcionário vinculado.");
+			}
+			if( ! hasProdutoError ){
+				for(LancamentoProduto lancamentoProduto : lancamentoServico.getProdutosUtilizados()){
+					if(lancamentoProduto.getProduto() == null){
+						hasProdutoError = true;
+						vo.setCriticalError(true);
+						vo.addMessage(MessageVO.ERROR, "Todos os lançamentos de produto do serviço devem ter um produto vinculado.");
+						break;
+					}
+				}
+			}
+		}
+		for(LancamentoProduto lancamentoProduto : comanda.getProdutos()){
+			boolean hasProdutoError = false;
+			boolean hasVendedorError = false;
+			if( ! hasProdutoError && lancamentoProduto.getProduto() == null){
+				hasProdutoError = true;
+				vo.setCriticalError(true);
+				vo.addMessage(MessageVO.ERROR, "Todos os lançamentos de produto devem ter um produto vinculado.");
+			}
+			if( ! hasVendedorError && lancamentoProduto.getVendedor() == null){
+				hasVendedorError = true;
+				vo.setCriticalError(true);
+				vo.addMessage(MessageVO.ERROR, "Todos os lançamentos de produto devem ter um vendedor vinculado.");
+			}
+		}
+		
+		if(vo.getMessages().isEmpty()){
+			vo.setSuccess(true);
+			vo.addMessage(MessageVO.SUCCESS, "A comanda está pronta para ser fechada.");
+		}
+		
+		return vo;
+	}
+	
 	@RequestMapping(value="/fecharComanda", method=RequestMethod.POST)
 	public @ResponseBody Comanda fecharComanda(HttpServletRequest request){
 		Comanda comanda = criarComanda(request);
-		comanda.setFechamento(new Date());
-		comanda = comandaService.persist(comanda, true);
-		limparComandaJSON(comanda);
-		return comanda;
+		comanda = comandaService.persist(comanda);
+		VerificacaoVO vo = verificarComanda(comanda);
+		if( ! vo.isCriticalError()){
+			comanda.setFechamento(new Date());
+			comanda = comandaService.persist(comanda, true);
+			limparComandaJSON(comanda);
+			return comanda;
+		}
+		throw new RuntimeException("Há erros críticos com a comanda que está sendo fechada");
 	}
 	
 	@RequestMapping(value="/fecharComanda/{id}", method=RequestMethod.GET)
-	public @ResponseBody String fecharComanda(@PathVariable("id") Long id){
+	public @ResponseBody VerificacaoVO fecharComanda(@PathVariable("id") Long id){
 		Comanda comanda = comandaService.findById(id);
-		comanda.setFechamento(new Date());
-		comandaService.persist(comanda, true);
-		return "ok";
+		VerificacaoVO vo = verificarComanda(comanda);
+		if( ! vo.isCriticalError()){
+			comanda.setFechamento(new Date());
+			comandaService.persist(comanda, true);
+		}
+		return vo;
 	}
 	
 	private Comanda criarComanda(HttpServletRequest request){
@@ -245,9 +330,15 @@ public class ClienteController {
 			try {
 				lancamentoProduto.setComanda(comanda);
 				lancamentoProduto.setDataCriacao(Utils.dateTimeFormat.parse(datasCriacao[i]));
-				lancamentoProduto.setProduto(findProduto(Long.parseLong(produtosIds[i])));
-				lancamentoProduto.setVendedor(findPessoa(Long.parseLong(vendedoresIds[i])));
-				lancamentoProduto.setQuantidadeUtilizada(Long.parseLong(quantidades[i]));
+				if(produtosIds != null && (produtosIds.length >= i + 1) && ! produtosIds[i].equals(NOTHING_SELECTED)){
+					lancamentoProduto.setProduto(findProduto(Long.parseLong(produtosIds[i])));
+				}
+				if(vendedoresIds != null && (vendedoresIds.length >= i + 1) && ! vendedoresIds[i].equals(NOTHING_SELECTED)){
+					lancamentoProduto.setVendedor(findPessoa(Long.parseLong(vendedoresIds[i])));
+				}
+				if(StringUtils.isNotBlank(quantidades[i])){
+					lancamentoProduto.setQuantidadeUtilizada(Long.parseLong(quantidades[i]));
+				}
 			} catch (ParseException e) {
 				throw new RuntimeException(e);
 			}
@@ -276,9 +367,15 @@ public class ClienteController {
 			try {
 				lancamento.setComanda(comanda);
 				lancamento.setDataCriacao(Utils.dateTimeFormat.parse(datasCriacao[i]));
-				lancamento.setFuncionario(findPessoa(Long.parseLong(funcionariosIds[i])));
-				lancamento.setServico(findServico(Long.parseLong(servicosIds[i])));
-				lancamento.setAssistente(findPessoa(Long.parseLong(assistentesIds[i])));
+				if(funcionariosIds != null && (funcionariosIds.length >= i + 1) && ! funcionariosIds[i].equals(NOTHING_SELECTED)){
+					lancamento.setFuncionario(findPessoa(Long.parseLong(funcionariosIds[i])));
+				}
+				if(servicosIds != null && (servicosIds.length >= i + 1) && ! servicosIds[i].equals(NOTHING_SELECTED)){
+					lancamento.setServico(findServico(Long.parseLong(servicosIds[i])));
+				}
+				if(assistentesIds != null && (assistentesIds.length >= i + 1) && ! assistentesIds[i].equals(NOTHING_SELECTED)){
+					lancamento.setAssistente(findPessoa(Long.parseLong(assistentesIds[i])));
+				}
 			} catch (ParseException e) {
 				throw new RuntimeException(e);
 			}
@@ -300,8 +397,13 @@ public class ClienteController {
 		String[] quantidades = request.getParameterValues("quantidadeProdutoServico");
 		for(int i = 0; i < ids.length; i++){
 			LancamentoProduto lancamentoProduto = new LancamentoProduto();
-			lancamentoProduto.setProduto(findProduto(Long.parseLong(produtodIds[i])));
-			lancamentoProduto.setQuantidadeUtilizada(Long.parseLong(quantidades[i]));
+			if(produtodIds != null && (produtodIds.length >= i + 1) && ! produtodIds[i].equals(NOTHING_SELECTED)){
+				lancamentoProduto.setProduto(findProduto(Long.parseLong(produtodIds[i])));
+			}
+			if(StringUtils.isNotBlank(quantidades[i])){
+				lancamentoProduto.setQuantidadeUtilizada(Long.parseLong(quantidades[i]));
+			}
+			lancamentoProduto.setDataCriacao(new Date());
 			LancamentoServico lancamentoServico = lancamentos.get(ids[i]);
 			lancamentoServico.getProdutosUtilizados().add(lancamentoProduto);
 		}
@@ -356,6 +458,7 @@ public class ClienteController {
 			comanda.setCliente(null);
 			comanda.setCriador(null);
 			comanda.setPagamentos(null);
+			comanda.setComissoes(null);
 		}
 		return comanda;
 	}
@@ -372,6 +475,7 @@ public class ClienteController {
 			for(Pagamento pagamento : comanda.getPagamentos()){
 				limarPagamentoJSON(pagamento);
 			}
+			comanda.setComissoes(null);
 		}
 		return comanda;
 	}
