@@ -34,6 +34,7 @@ public class Pessoa implements Serializable{
 	private String documento;
 	private String cor;
 	private Comissao comissao;
+	private Imagem imagem;
 
 	@Id
 	@GeneratedValue
@@ -133,6 +134,13 @@ public class Pessoa implements Serializable{
 	}
 	public void setComissao(Comissao comissao) {
 		this.comissao = comissao;
+	}
+	@OneToOne(cascade=CascadeType.ALL, orphanRemoval=true)
+	public Imagem getImagem() {
+		return imagem;
+	}
+	public void setImagem(Imagem imagem) {
+		this.imagem = imagem;
 	}
 	
 }

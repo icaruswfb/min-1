@@ -12,8 +12,9 @@
 	<div class="side-widgets overflow">
 		<!-- Profile Menu -->
 		<div class="text-center s-widget m-b-25 dropdown" id="profile-menu">
+			<div style="height: 10px;  margin: 10px; background-color: ${ loggedUser.pessoa.cor }"></div>
 			<a href="" data-toggle="dropdown"> <img
-				class="profile-pic animated" src="<spring:url value='/img/profile-pic.jpg' />" alt="">
+				class="profile-pic animated" src="<spring:url value='/web/upload/${ loggedUser.pessoa.imagem.id }' />" alt="">
 			</a>
 			<ul class="dropdown-menu profile-menu animated">
 				<li><a href="">My Profile</a> <i class="icon left">&#61903;</i><i
@@ -25,8 +26,8 @@
 				<li><a href="">Sign Out</a> <i class="icon left">&#61903;</i><i
 					class="icon right">&#61815;</i></li>
 			</ul>
-			<h4 class="m-0">Malinda Hollaway</h4>
-			@malinda-h
+			<h4 class="m-0">${ loggedUser.pessoa.nome }</h4>
+			${ loggedUser.login }
 		</div>
 
 		<!-- Calendar -->

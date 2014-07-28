@@ -13,6 +13,14 @@
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 	<filter>
+		<filter-name>securityFilter</filter-name>
+		<filter-class>br.com.min.filter.SecurityFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>securityFilter</filter-name>
+		<url-pattern>/web/*</url-pattern>
+	</filter-mapping>
+	<filter>
 		<filter-name>charsetFilter</filter-name>
 		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
 		<init-param>
@@ -39,4 +47,5 @@
 		<servlet-name>dispatcherServlet</servlet-name>
 		<url-pattern>/web/*</url-pattern>
 	</servlet-mapping>
+	
 </web-app>

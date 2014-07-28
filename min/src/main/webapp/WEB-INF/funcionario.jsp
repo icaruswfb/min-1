@@ -21,8 +21,10 @@
 		<section id="content" class="container">
 
 			<h4 class="page-title">FUNCIONÁRIO</h4>
+			
             <form:form method="post" action="../salvar" commandName="funcionario" id="funcionario-form">
             	<form:hidden path="id" />
+            	<form:hidden path="imagem.id" id="imagem-id" />
 				<div class="block-area" id="buttons">
 	                 <a class="btn m-r-5" id="salvar">Salvar</button>
 	                 <a href="<spring:url value='/web/funcionarios/' />" class="btn btn-alt m-r-5" type="button">Cancelar</a>
@@ -74,7 +76,7 @@
                      </div>
                 </div>
                 
-                <div class="col-lg-12">
+                <div class="block-area">
                		<div class="col-lg-12">
                 		<p>Percentuais de comissão</p>
                 	</div>
@@ -140,6 +142,25 @@
                 	</div>
                 </div>
              </form:form>
+             <form action="/min/web/upload/" id="upload" enctype="multipart/form-data" method="post">
+				<div class="block-area">
+	                <div class="col-lg-12">
+	                    <p>Imagem do perfil</p>
+	                	<div class="fileupload fileupload-new" data-provides="fileupload">
+	                        <div class="fileupload-preview thumbnail form-control"></div>
+	                        
+	                        <div>
+	                            <span class="btn btn-file btn-alt btn-sm">
+	                                <span class="fileupload-new">Selecionar imagem</span>
+	                                <span class="fileupload-exists">Alterar</span>
+	                                <input type="file" name="imagem" id="imagem" />
+	                            </span>
+	                            <a href="#" class="btn fileupload-exists btn-sm" data-dismiss="fileupload">Remover</a>
+	                        </div>
+	                    </div>
+	                </div>
+               </div>
+			</form>
               <div class="clearfix"></div>
             <br /><br />
             <c:if test="${ funcionario.id ne null }">
@@ -180,6 +201,36 @@
 		});
 		
 	</script>
+	<script type="text/javascript"> 
+	    $(document).ready(function()
+	    {
+	        $('#imagem').on('change', function()
+	        {
+	        	 $("#upload").submit();
+	        });
+
+	        $("#upload").submit(function(event){
+            	event.preventDefault();
+            	var formData = new FormData($(this)[0]);
+
+            	$.ajax({
+            	    url: '/min/web/upload/',
+            	    type: 'POST',
+            	    data: formData,
+            	    async: false,
+            	    cache: false,
+            	    contentType: false,
+            	    processData: false,
+            	    success: function (returndata) {
+            	      $("#imagem-id").val(returndata);
+            	    }
+            	  });
+            	  
+            	return false;
+	         });         
+	        
+	    });
 	
+	</script>
 </body>
 </html>
