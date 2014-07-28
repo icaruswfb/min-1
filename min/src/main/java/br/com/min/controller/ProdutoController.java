@@ -104,6 +104,7 @@ public class ProdutoController {
 				lancamento.getComanda().setPagamentos(null);
 				lancamento.getComanda().setProdutos(null);
 				lancamento.getComanda().setServicos(null);
+				lancamento.getComanda().setComissoes(null);
 			}
 		}
 		vo.setLancamentos(lancamentos);

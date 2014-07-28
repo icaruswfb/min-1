@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import br.com.min.entity.LancamentoEstoque;
 import br.com.min.entity.Produto;
+import br.com.min.entity.SituacaoEstoque;
 
 @Repository
 public class ProdutoDAO {
@@ -33,6 +34,9 @@ public class ProdutoDAO {
 			}
 			if(StringUtils.isNotBlank(entity.getNome())){
 				predicates.add(Restrictions.ilike("nome", entity.getNome(), MatchMode.ANYWHERE));
+			}
+			if(entity.getSituacaoEstoque() != null){
+				criteria.add(Restrictions.eq("situacaoEstoque", entity.getSituacaoEstoque()));
 			}
 			Criterion[] predicatesArray = new Criterion[predicates.size()];
 			predicatesArray = predicates.toArray(predicatesArray);
