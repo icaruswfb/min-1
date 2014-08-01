@@ -21,7 +21,7 @@ public class ComissaoDAO {
 	@Autowired
 	private SessionFactory sessionFactory;
 	
-	public List<LancamentoComissao> findByPeriodo(Date periodoInicio, Date periodoFim){
+	public List<LancamentoComissao> findByPeriodo(Date periodoInicio, Date periodoFim, Pessoa funcionario){		
 		Calendar inicio = Calendar.getInstance();
 		inicio.setTime(periodoInicio);
 		inicio.set(Calendar.HOUR_OF_DAY, 0);
@@ -38,6 +38,9 @@ public class ComissaoDAO {
 		
 		Session session = sessionFactory.openSession();
 		Criteria criteria = session.createCriteria(LancamentoComissao.class);
+		if(funcionario != null){
+			criteria.add(Restrictions.eq("funcionario", funcionario));
+		}
 		criteria.add(Restrictions.between("dataCriacao", inicio.getTime(), fim.getTime()));
 		
 		List<LancamentoComissao> resultado = criteria.list();

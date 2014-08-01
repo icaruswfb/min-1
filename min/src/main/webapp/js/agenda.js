@@ -57,7 +57,7 @@ Agenda = {
 			criarCalendario: function(){
 				$.ajax({
 					type: 'GET',
-					url: '/min/web/funcionarios/listar',
+					url: '/min/web/funcionarios/listarParaAgenda',
 					success: function(funcionarios){
 						Agenda.funcionarios = funcionarios;
 						var html = "<table class='calendario-table table tile'></table>";
@@ -94,7 +94,7 @@ Agenda = {
 
 							$("#calendar .calendario-table").append(linha);
 						}
-						
+						Agenda.findHorariosDoDia();
 					}
 				});
 			},
@@ -225,8 +225,8 @@ Agenda = {
 							
 							primeiro = false;
 						}else{
-							divHorario.css("background-color", Agenda.funcionarios[indexFuncionario].cor);
-							divHorario.css("box-shadow", "0 0 3px " + Agenda.funcionarios[indexFuncionario].cor);
+							divHorario.css("background-color", (Agenda.funcionarios[indexFuncionario].cor ? Agenda.funcionarios[indexFuncionario].cor : "#f0f0f0"));
+							divHorario.css("box-shadow", "0 0 3px " +  (Agenda.funcionarios[indexFuncionario].cor ? Agenda.funcionarios[indexFuncionario].cor : "#f0f0f0"));
 						}
 					}
 					minutosInicio = 0;
@@ -289,7 +289,6 @@ Agenda = {
 			refresh: function(){
 				$("#calendar").html('');
 				Agenda.criarCalendario();
-				Agenda.findHorariosDoDia();
 			},
 			getStringClassMinutos:function(minutos, primeiro){
 				var min = "00";

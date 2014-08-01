@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +23,7 @@ import br.com.min.entity.FormaPagamento;
 import br.com.min.entity.LancamentoComissao;
 import br.com.min.entity.Pagamento;
 import br.com.min.entity.Pessoa;
+import br.com.min.entity.Role;
 import br.com.min.entity.TipoComissao;
 import br.com.min.service.ComandaService;
 import br.com.min.service.ComissaoService;
@@ -39,20 +42,21 @@ public class ReportController {
 	private PessoaService pessoaService;
 	
 	@RequestMapping(value="/caixa", method=RequestMethod.GET)
-	public ModelAndView listarCaixa(){
-		return criarViewCaixa(new Date());
+	public ModelAndView listarCaixa(HttpServletRequest request){
+		return criarViewCaixa(new Date(), request);
 	}
 	@RequestMapping(value="/caixa/data", method=RequestMethod.POST)
-	public ModelAndView listarCaixa(String data){
+	public ModelAndView listarCaixa(String data, HttpServletRequest request){
 		try {
-			return criarViewCaixa(Utils.dateFormat.parse(data));
+			return criarViewCaixa(Utils.dateFormat.parse(data), request);
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
 		}
 	}
 	
 	@RequestMapping(value="/comissao", method=RequestMethod.GET)
-	public ModelAndView listarComissoes(){
+	public ModelAndView listarComissoes(HttpServletRequest request){
+		
 		Date hoje = new Date();
 		Calendar inicio = Calendar.getInstance();
 		inicio.setTime(hoje);
@@ -62,24 +66,28 @@ public class ReportController {
 		fim.setTime(hoje);
 		fim.set(Calendar.DAY_OF_MONTH, fim.getActualMaximum(Calendar.DAY_OF_MONTH));
 		
-		return listarComissoes(inicio.getTime(), fim.getTime());
+		return listarComissoes(inicio.getTime(), fim.getTime(), request);
 	}
 	
 	@RequestMapping(value="/comissao/data", method=RequestMethod.POST)
-	public ModelAndView listarComissoes(String dataInicio, String dataFim){
+	public ModelAndView listarComissoes(String dataInicio, String dataFim, HttpServletRequest request){
 		try {
 			Date inicio =Utils.dateFormat.parse(dataInicio);
 			Date fim = Utils.dateFormat.parse(dataFim);
-			return listarComissoes(inicio, fim);
+			return listarComissoes(inicio, fim, request);
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
 		}
 	}
 	
-	private ModelAndView listarComissoes(Date inicio, Date fim){
+	private ModelAndView listarComissoes(Date inicio, Date fim, HttpServletRequest request){
 		ModelAndView mv = new ModelAndView("comissoes");
-		List<LancamentoComissao> comissoes = comissaoServico.findByPeriodo(inicio, fim);
-		List<ComissoesPorFuncionarioVO> comissoesPorFuncionario = processarComissoes(comissoes);
+		Pessoa funcionario = null;
+		if( ! Utils.hasRole(Role.ADMIN, request) && ! Utils.hasRole(Role.CAIXA, request) ){
+			funcionario = Utils.getUsuarioLogado(request).getPessoa();
+		}
+		List<LancamentoComissao> comissoes = comissaoServico.findByPeriodo(inicio, fim, funcionario);
+		List<ComissoesPorFuncionarioVO> comissoesPorFuncionario = processarComissoes(comissoes, request);
 		
 		mv.addObject("comissoesPorFuncionario", comissoesPorFuncionario);
 		mv.addObject("comissoes", comissoes);
@@ -88,9 +96,15 @@ public class ReportController {
 		return mv;
 	}
 	
-	private Map<Long, ComissoesPorFuncionarioVO> iniciarVosPorFuncionario(){
+	private Map<Long, ComissoesPorFuncionarioVO> iniciarVosPorFuncionario(HttpServletRequest request){
 		Map<Long, ComissoesPorFuncionarioVO> vosPorFuncionario = new HashMap<>();
-		List<Pessoa> funcionarios = pessoaService.listarFuncionarios();
+		List<Pessoa> funcionarios = null;
+		if( ! Utils.hasRole(Role.ADMIN, request) && ! Utils.hasRole(Role.CAIXA, request)){
+			Pessoa funcionario = Utils.getUsuarioLogado(request).getPessoa();
+			funcionarios = pessoaService.findPessoa(funcionario);
+		} else {
+			funcionarios = pessoaService.listarFuncionarios();
+		}
 		for(Pessoa funcionario : funcionarios){
 			ComissoesPorFuncionarioVO vo = new ComissoesPorFuncionarioVO();
 			vo.setFuncionario(funcionario);
@@ -99,9 +113,9 @@ public class ReportController {
 		return vosPorFuncionario;
 	}
 	
-	private List<ComissoesPorFuncionarioVO>  processarComissoes(List<LancamentoComissao> comissoes){
+	private List<ComissoesPorFuncionarioVO>  processarComissoes(List<LancamentoComissao> comissoes, HttpServletRequest request){
 		List<ComissoesPorFuncionarioVO> vos = new ArrayList<>();
-		Map<Long, ComissoesPorFuncionarioVO> vosPorFuncionario = iniciarVosPorFuncionario();
+		Map<Long, ComissoesPorFuncionarioVO> vosPorFuncionario = iniciarVosPorFuncionario(request);
 		for(LancamentoComissao comissao : comissoes){
 			ComissoesPorFuncionarioVO vo = vosPorFuncionario.get(comissao.getFuncionario().getId());
 			vo.getComissoes().add(comissao);
@@ -131,34 +145,36 @@ public class ReportController {
 		return vos;
 	}
 	
-	private ModelAndView criarViewCaixa(Date data){
-		List<Comanda> comandas = comandaService.findFechamento(data);
+	private ModelAndView criarViewCaixa(Date data, HttpServletRequest request){
 		ModelAndView mv = new ModelAndView("caixa");
-		mv.addObject("comandas", comandas);
-		Map<FormaPagamento, Double> totais = new HashMap<FormaPagamento, Double>();
-		for(FormaPagamento fp : FormaPagamento.values()){
-			totais.put(fp, 0d);
-		}
-		Double totalLancado = 0d;
-		Double totalPago = 0d;
-		for(Comanda comanda : comandas){
-			totalLancado += comanda.getValorCobrado();
-			for(Pagamento pagamento : comanda.getPagamentos()){
-				Double total = totais.get(pagamento.getFormaPagamento());
-				total += pagamento.getValor();
-				totalPago += pagamento.getValor();
-				totais.put(pagamento.getFormaPagamento(), total);
+		if( Utils.hasRole(Role.ADMIN, request) || Utils.hasRole(Role.CAIXA, request)){
+			List<Comanda> comandas = comandaService.findFechamento(data);
+			mv.addObject("comandas", comandas);
+			Map<FormaPagamento, Double> totais = new HashMap<FormaPagamento, Double>();
+			for(FormaPagamento fp : FormaPagamento.values()){
+				totais.put(fp, 0d);
 			}
+			Double totalLancado = 0d;
+			Double totalPago = 0d;
+			for(Comanda comanda : comandas){
+				totalLancado += comanda.getValorCobrado();
+				for(Pagamento pagamento : comanda.getPagamentos()){
+					Double total = totais.get(pagamento.getFormaPagamento());
+					total += pagamento.getValor();
+					totalPago += pagamento.getValor();
+					totais.put(pagamento.getFormaPagamento(), total);
+				}
+			}
+			
+			for(FormaPagamento formaPagamento : totais.keySet()){
+				mv.addObject("total" + formaPagamento.name(), totais.get(formaPagamento));
+			}
+			
+			mv.addObject("totalLancado", totalLancado);
+			mv.addObject("totalPago", totalPago);
+			
+			mv.addObject("data", data);
 		}
-		
-		for(FormaPagamento formaPagamento : totais.keySet()){
-			mv.addObject("total" + formaPagamento.name(), totais.get(formaPagamento));
-		}
-		
-		mv.addObject("totalLancado", totalLancado);
-		mv.addObject("totalPago", totalPago);
-		
-		mv.addObject("data", data);
 		return mv;
 	}
 	

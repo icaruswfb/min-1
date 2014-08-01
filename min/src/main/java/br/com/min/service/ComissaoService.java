@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.min.dao.ComissaoDAO;
 import br.com.min.entity.LancamentoComissao;
+import br.com.min.entity.Pessoa;
 
 @Service
 public class ComissaoService {
@@ -16,7 +17,11 @@ public class ComissaoService {
 	private ComissaoDAO dao;
 	
 	public List<LancamentoComissao> findByPeriodo(Date inicio, Date fim){
-		return dao.findByPeriodo(inicio, fim);
+		return dao.findByPeriodo(inicio, fim, null);
+	}
+	
+	public List<LancamentoComissao> findByPeriodo(Date inicio, Date fim, Pessoa funcionario){
+		return dao.findByPeriodo(inicio, fim, funcionario);
 	}
 	
 	public List<LancamentoComissao> findByMes(Date date){

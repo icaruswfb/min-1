@@ -18,6 +18,11 @@ import javax.persistence.Transient;
 @Entity
 public class Pessoa implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7439432709290331921L;
+
 	@Transient
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM");
 	
@@ -35,6 +40,7 @@ public class Pessoa implements Serializable{
 	private String cor;
 	private Comissao comissao;
 	private Imagem imagem;
+	private Usuario usuario;
 
 	@Id
 	@GeneratedValue
@@ -141,6 +147,36 @@ public class Pessoa implements Serializable{
 	}
 	public void setImagem(Imagem imagem) {
 		this.imagem = imagem;
+	}
+	@OneToOne(mappedBy="pessoa", cascade=CascadeType.ALL, orphanRemoval=true)
+	public Usuario getUsuario() {
+		return usuario;
+	}
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Pessoa other = (Pessoa) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
 	}
 	
 }

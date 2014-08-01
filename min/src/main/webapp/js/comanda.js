@@ -1,4 +1,7 @@
 Comanda = {
+	hasRoleCaixa: false,
+	hasRoleOperacional: false,
+	hasRoleAdmin: false,
 	servicos : [],
 	produtos: [],
 	funcionarios: [],
@@ -30,10 +33,22 @@ Comanda = {
 			}
 		});
 	},
+	
 	init:function(){
 		Comanda.findFuncionarios();
 		Comanda.findProdutos();
 		Comanda.findServicos();
+		Comanda.checkDados();
+	},
+	checkDados:function(){
+		if(Comanda.funcionarios.length < 1 || Comanda.produtos.length < 1 || Comanda.servicos.length < 1 ){
+			console.log("Aguardando processamento de dados para a comanda...");
+			setTimeout(function(){
+				Comanda.checkDados();
+			}, 500);
+		}else{
+			Comanda.findComandaAberta();
+		}
 	},
 	findComandaAberta:function(){
 
@@ -104,6 +119,7 @@ Comanda = {
 	},
 	criarLinhaServico: function(lancamentoServico, readOnly, comandaId){
 		readOnly = readOnly == undefined ? "" : readOnly;
+		var disabled = readOnly == "" ? "" : "disabled='disabled'";
 		var id = "servico-"+Utils.guid();
 		var form = "<div id='" +id+ "' class='lancamento'>";
 		form += "<input type='hidden' value='" + id + "' name='guidServico' />";
@@ -117,7 +133,7 @@ Comanda = {
 		
 		form += "<div class='col-md-4'>";
 		form += "<p>Servi&ccedil;o:</p>";
-		form += "<select name='servicoId' "+readOnly+" class='form-control input-sm m-b-10' onchange='Comanda.buscarValorServico(\""+id+"\", \""+comandaId+"\")' placeholder='Selecione um servi&ccedil;o' >";
+		form += "<select name='servicoId' "+readOnly+" " + disabled + " class='form-control input-sm m-b-10' onchange='Comanda.buscarValorServico(\""+id+"\", \""+comandaId+"\")' placeholder='Selecione um servi&ccedil;o' >";
 		form += "<option value='-' ></option>";
 		var servicoSelecionado = null;
 		for(var s = 0; s < Comanda.servicos.length; s++){
@@ -131,8 +147,8 @@ Comanda = {
 		}
 		form += "</select>";
 		form += "</div><div class='col-md-2'>";
-		form += "<p>Funcionario:</p>";
-		form += "<select name='funcionarioId'  "+readOnly+" class='form-control input-sm m-b-10' placeholder='Selecione um funcionario' >";
+		form += "<p>Funcion&aacute;rio:</p>";
+		form += "<select name='funcionarioId'  "+readOnly+" " + disabled + " class='form-control input-sm m-b-10' placeholder='Selecione um funcion&aacute;rio' onchange='Comanda.salvarComanda();' >";
 		form += "<option value='-' ></option>";
 		for(var s = 0; s < Comanda.funcionarios.length; s++){
 			var funcionario = Comanda.funcionarios[s];
@@ -142,7 +158,7 @@ Comanda = {
 		form += "</select>";
 		form += "</div><div class='col-md-2'>";
 		form += "<p>Assistente:</p>";
-		form += "<select name='assistenteId' "+readOnly+" class='form-control input-sm m-b-10' placeholder='Selecione um funcionario' >";
+		form += "<select name='assistenteId' "+readOnly+" " + disabled + " class='form-control input-sm m-b-10' placeholder='Selecione um funcionario' onchange='Comanda.salvarComanda();' >";
 		form += "<option value='-' ></option>";
 		for(var s = 0; s < Comanda.funcionarios.length; s++){
 			var funcionario = Comanda.funcionarios[s];
@@ -249,6 +265,7 @@ Comanda = {
 	
 	criarLinhaProduto: function(lancamentoProduto, readOnly, comandaId){
 		readOnly = readOnly == null ? "" : readOnly;
+		var disabled = readOnly == "" ? "" : "disabled='disabled'";
 		var id = "produto-" + Utils.guid();
 		var form = "<div id='" +id+ "' class='lancamento'>";
 		form += "<input type='hidden' value='" + id + "' name='guidProduto' />";
@@ -262,7 +279,7 @@ Comanda = {
 		
 		form += "<div class='col-md-3'>";
 		form += "<p>Produto:</p>";
-		form += "<select name='produtoId' "+readOnly+" onchange='Comanda.buscarValorProduto(\""+id+"\")' class='form-control input-sm m-b-10' placeholder='Selecione um produto' >";
+		form += "<select name='produtoId' "+readOnly+" " + disabled + " onchange='Comanda.buscarValorProduto(\""+id+"\")' class='form-control input-sm m-b-10' placeholder='Selecione um produto' >";
 		form += "<option value='-' ></option>";
 		var produtoSelecionado = null;
 		for(var s = 0; s < Comanda.produtos.length; s++){
@@ -280,7 +297,7 @@ Comanda = {
 		form += "</select>";
 		form += "</div><div class='col-md-3'>";
 		form += "<p>Vendedor:</p>";
-		form += "<select name='vendedorId'  "+readOnly+" class='form-control input-sm m-b-10' placeholder='Selecione um vendedor' >";
+		form += "<select name='vendedorId'  "+readOnly+" " + disabled + " class='form-control input-sm m-b-10' placeholder='Selecione um vendedor'  onchange='Comanda.salvarComanda();' >";
 		form += "<option value='-' ></option>";
 		for(var s = 0; s < Comanda.funcionarios.length; s++){
 			var funcionario = Comanda.funcionarios[s];
@@ -342,7 +359,9 @@ Comanda = {
 		if(isComandaAberta){
 			info += "<div class='action-buttons'>";
 			info += '<a class="btn btn-lg m-r-5" onclick="Comanda.salvarComanda()" >Salvar comanda</a>';
-			info += '<a class="btn btn-lg btn-alt m-r-5" data-toggle="modal" href="#modalFechamento" onclick="Comanda.detalhesFechamento()" >Fechar comanda</a>';
+			if(Comanda.hasRoleAdmin || Comanda.hasRoleCaixa){
+				info += '<a class="btn btn-lg btn-alt m-r-5" data-toggle="modal" href="#modalFechamento" onclick="Comanda.detalhesFechamento()" >Fechar comanda</a>';
+			}
 			info += '</div>';
 		}else{
 			info += "<form id='comanda-form"+comanda.id+"' >";
@@ -396,7 +415,12 @@ Comanda = {
 		info += "</div>";
 
 		info += "<div class='col-md-12'>";
-		info += "<div class='col-md-9'>";
+
+		if(Comanda.hasRoleAdmin || Comanda.hasRoleCaixa){
+			info += "<div class='col-md-9'>";
+		}else{
+			info += "<div class='col-md-12'>";
+		}
 		
 		//Totais
 		info += "<div class='col-md-7'>";
@@ -434,24 +458,26 @@ Comanda = {
 		info += "</div>";
 		
 		//Pagamentos
-		info += "<div class='col-md-3'>";
-		if(isComandaAberta && comanda.credito != 0){
-			if(comanda.credito > 0){
-				info += "<p>H&aacute; um cr&eacute;dito de R$" + comanda.credito + "</p>";
-			}else if(comanda.credito < 0){
-				info += "<p>H&aacute; um d&eacute;bito de R$" + comanda.credito + "</p>";
+		if(Comanda.hasRoleAdmin || Comanda.hasRoleCaixa){
+			info += "<div class='col-md-3'>";
+			if(isComandaAberta && comanda.credito != 0){
+				if(comanda.credito > 0){
+					info += "<p>H&aacute; um cr&eacute;dito de R$" + comanda.credito + "</p>";
+				}else if(comanda.credito < 0){
+					info += "<p>H&aacute; um d&eacute;bito de R$" + comanda.credito + "</p>";
+				}
 			}
-		}
-		info += "<table class='table table-hover tile'>";
-		info += "<thead><tr><th>Forma Pgto.</th><th>Valor</th><th style='width: 50px'></th></tr></thead>";
-		info += "<tbody></tbody>";
-		info += "</table>";
-		if(isComandaAberta){
-			info += "<div class=''>";
-			info += "<a href='javascript:Comanda.novoPagamento()'class='btn btn-sm' style='float: right'>Novo pagamento</a><br /><br />";
+			info += "<table class='table table-hover tile'>";
+			info += "<thead><tr><th>Forma Pgto.</th><th>Valor</th><th style='width: 50px'></th></tr></thead>";
+			info += "<tbody></tbody>";
+			info += "</table>";
+			if(isComandaAberta){
+				info += "<div class=''>";
+				info += "<a href='javascript:Comanda.novoPagamento()'class='btn btn-sm' style='float: right'>Novo pagamento</a><br /><br />";
+				info += "</div>";
+			}
 			info += "</div>";
 		}
-		info += "</div>";
 		
 		info += "</div>";
 
@@ -621,11 +647,12 @@ Comanda = {
 	
 	criarProdutoAoServico: function(servicoId, produtoUtilizado, readonly){
 		readonly = readonly ? readonly : '';
+		var disabled = readonly == '' ? "" : "disabled='disabled'";
 		var id = "produtoServico-" + Utils.guid();
 		var form = "<div class='' id='"+id+"'><div class='col-md-4'> <span class='icon' style='float: right;font-size: 20px;'>&#61807;</span></div><div class='col-md-4'>";
 		form += "<input type='hidden' value='" + servicoId + "' name='guidProdutoServico' />";
 		form += "<p>Produto:</p>";
-		form += "<select name='produtoServicoId'  class='form-control input-sm m-b-10' "+readonly+" placeholder='Selecione um produto' onchange='Comanda.buscarValorProduto(\"" + id + "\", \"Servico\")' >";
+		form += "<select name='produtoServicoId'  class='form-control input-sm m-b-10' "+readonly+" " + disabled + " placeholder='Selecione um produto' onchange='Comanda.buscarValorProduto(\"" + id + "\", \"Servico\")' >";
 		form += "<option value='-' ></option>";
 		for(var s = 0; s < Comanda.produtos.length; s++){
 			var produto = Comanda.produtos[s];

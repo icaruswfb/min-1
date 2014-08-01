@@ -31,6 +31,7 @@ import br.com.min.entity.LancamentoServico;
 import br.com.min.entity.Pagamento;
 import br.com.min.entity.Pessoa;
 import br.com.min.entity.Produto;
+import br.com.min.entity.Role;
 import br.com.min.entity.Servico;
 import br.com.min.service.ComandaService;
 import br.com.min.service.HistoricoService;
@@ -72,14 +73,13 @@ public class ClienteController {
 	}
 	
 	@RequestMapping(value="/novo/p", method=RequestMethod.GET)
-	public ModelAndView novo(){
-		return editar(null);
+	public ModelAndView novo(HttpServletRequest request){
+		return editar(null, request);
 	}
 	
 	@RequestMapping(value="/editar/{id}", method=RequestMethod.GET)
-	public ModelAndView editar(@PathVariable("id") Long id){
+	public ModelAndView editar(@PathVariable("id") Long id, HttpServletRequest request){
 		ModelAndView mv = new ModelAndView("cliente");
-		
 		Pessoa cliente;
 		if(id == null){
 			cliente = new Pessoa();
@@ -93,48 +93,70 @@ public class ClienteController {
 	}
 	
 	@RequestMapping(value="/historico/{id}", method=RequestMethod.GET)
-	public @ResponseBody List<Historico> listarHistorico(@PathVariable("id") Long id){
-		return historicoService.findByClienteId(id);
+	public @ResponseBody List<Historico> listarHistorico(@PathVariable("id") Long id, HttpServletRequest request){
+		if(Utils.hasRole(Role.ADMIN, request)){
+			List<Historico> historico = historicoService.findByClienteId(id);
+			limparHistoricoJSON(historico);
+			return historico;
+		}
+		throw new RuntimeException("Sem permissão para acessar histórico de cliente");
+	}
+	
+	private void limparHistoricoJSON(List<Historico> historico){
+		for(Historico h : historico){
+			if(h.getCriador() != null){
+				h.getCriador().setUsuario(null);
+			}
+			if(h.getFuncionario() != null){
+				h.getFuncionario().setUsuario(null);
+			}
+		}
 	}
 	
 	@RequestMapping(value="/pagar", method=RequestMethod.POST)
-	public @ResponseBody Comanda pagar(Long comandaId, String formaPagamento, Double valor, Integer parcelas){
-		Comanda comanda = comandaService.findById(comandaId);
-		if(valor > 0){
-			Pagamento pagamento = new Pagamento();
-			pagamento.setComanda(comanda);
-			pagamento.setData(new Date());
-			pagamento.setFormaPagamento(FormaPagamento.valueOf(formaPagamento));
-			
-			if(pagamento.getFormaPagamento().equals(FormaPagamento.Credito)){
-				Double credito = comandaService.getCreditoCliente(comanda.getCliente().getId());
-				if(valor > credito){
-					valor = credito;
+	public @ResponseBody Comanda pagar(Long comandaId, String formaPagamento, Double valor, Integer parcelas, HttpServletRequest request){
+		if(Utils.hasRole(Role.ADMIN, request) || Utils.hasRole(Role.CAIXA, request)){
+			Comanda comanda = comandaService.findById(comandaId);
+			if(valor > 0){
+				Pagamento pagamento = new Pagamento();
+				pagamento.setComanda(comanda);
+				pagamento.setData(new Date());
+				pagamento.setFormaPagamento(FormaPagamento.valueOf(formaPagamento));
+				
+				if(pagamento.getFormaPagamento().equals(FormaPagamento.Credito)){
+					Double credito = comandaService.getCreditoCliente(comanda.getCliente().getId());
+					if(valor > credito){
+						valor = credito;
+					}
 				}
-			}
-			if(pagamento.getFormaPagamento().isParcelavel()){
-				if(parcelas == null || parcelas <= 0){
-					parcelas = 1;
+				if(pagamento.getFormaPagamento().isParcelavel()){
+					if(parcelas == null || parcelas <= 0){
+						parcelas = 1;
+					}
+					pagamento.setParcelamento(parcelas);
 				}
-				pagamento.setParcelamento(parcelas);
+				pagamento.setValor(valor);
+				comanda.getPagamentos().add(pagamento);
+				comanda = comandaService.persist(comanda, Utils.getUsuarioLogado(request).getPessoa());
 			}
-			pagamento.setValor(valor);
-			comanda.getPagamentos().add(pagamento);
-			comanda = comandaService.persist(comanda);
+			limparComandaJSON(comanda);
+			return comanda;
 		}
-		limparComandaJSON(comanda);
-		return comanda;
+		throw new RuntimeException("Sem permissão para pagar a comanda");
 	}
 
 	@RequestMapping(value="/deletarPagamento/{id}/{comandaId}", method=RequestMethod.GET)
-	public @ResponseBody Comanda deletarPagamento(@PathVariable("id") Long id, @PathVariable("comandaId") Long comandaId){
-		Comanda comanda = comandaService.findById(comandaId);
-		Pagamento pagamento = new Pagamento();
-		pagamento.setId(id);
-		comanda.getPagamentos().remove(pagamento);
-		comanda = comandaService.persist(comanda);
-		limparComandaJSON(comanda);
-		return comanda;
+	public @ResponseBody Comanda deletarPagamento(@PathVariable("id") Long id, @PathVariable("comandaId") Long comandaId, HttpServletRequest request){
+		if(Utils.hasRole(Role.CAIXA, request)){
+			Comanda comanda = comandaService.findById(comandaId);
+			Pagamento pagamento = new Pagamento();
+			pagamento.setId(id);
+			comanda.getPagamentos().remove(pagamento);
+			comanda = comandaService.persist(comanda, Utils.getUsuarioLogado(request).getPessoa());
+			limparComandaJSON(comanda);
+			return comanda;
+		}
+		throw new RuntimeException("Sem permissão para deletar o pagamento da comanda");
 	}
 	
 	
@@ -143,44 +165,57 @@ public class ClienteController {
 	}
 	
 	@RequestMapping(value="/salvar", method=RequestMethod.POST)
-	public ModelAndView salvar(@ModelAttribute("cliente") Pessoa cliente){
-		cliente.setFuncionario(false);
-		pessoaService.persist(cliente);
+	public ModelAndView salvar(@ModelAttribute("cliente") Pessoa cliente, HttpServletRequest request){
+		if(Utils.hasRole(Role.CAIXA, request)){
+			cliente.setFuncionario(false);
+			pessoaService.persist(cliente);
+		}
 		return listar();
 	}
 	
 	@RequestMapping(value="/delete/{id}", method=RequestMethod.GET)
-	public ModelAndView delete(@PathVariable("id") Long id){
-		pessoaService.delete(id);
+	public ModelAndView delete(@PathVariable("id") Long id, HttpServletRequest request){
+		if(Utils.hasRole(Role.CAIXA, request)){
+			pessoaService.delete(id);
+		}
 		return listar();
 	}
 	
 	@RequestMapping(value="/findComandas/{id}", method=RequestMethod.GET)
-	public @ResponseBody List<Comanda> findComandas(@PathVariable("id") Long id){
-		Comanda comanda = new Comanda();
-		Pessoa cliente = pessoaService.findById(id);
-		comanda.setCliente(cliente);
-		List<Comanda> comandas = comandaService.find(comanda);
-		limparComandasJSON(comandas);
-		return comandas;
+	public @ResponseBody List<Comanda> findComandas(@PathVariable("id") Long id, HttpServletRequest request){
+		if(Utils.hasRole(Role.ADMIN, request)){
+			Comanda comanda = new Comanda();
+			Pessoa cliente = pessoaService.findById(id);
+			comanda.setCliente(cliente);
+			List<Comanda> comandas = comandaService.find(comanda);
+			limparComandasJSON(comandas);
+			return comandas;
+		}
+		return new ArrayList<>();
 	}
 
 	@RequestMapping(value="/findComanda/{id}", method=RequestMethod.GET)
-	public @ResponseBody Comanda findComanda(@PathVariable("id") Long id){
-		Comanda comanda = comandaService.findById(id);
-		comanda = limparComandaJSON(comanda);
-		return comanda;
+	public @ResponseBody Comanda findComanda(@PathVariable("id") Long id, HttpServletRequest request){
+		if(Utils.hasRole(Role.ADMIN, request)){
+			Comanda comanda = comandaService.findById(id);
+			comanda = limparComandaJSON(comanda);
+			return comanda;
+		}
+		return new Comanda();
 	}
 	
 	
 	@RequestMapping(value="/findComandasFechadas/{id}", method=RequestMethod.GET)
-	public @ResponseBody List<Comanda> findComandasFechadas(@PathVariable("id") Long id){
-		Comanda comanda = new Comanda();
-		Pessoa cliente = pessoaService.findById(id);
-		comanda.setCliente(cliente);
-		List<Comanda> comandas = comandaService.find(comanda, true);
-		limparComandasSimplificadaJSON(comandas);
-		return comandas;
+	public @ResponseBody List<Comanda> findComandasFechadas(@PathVariable("id") Long id, HttpServletRequest request){
+		if(Utils.hasRole(Role.ADMIN, request)){
+			Comanda comanda = new Comanda();
+			Pessoa cliente = pessoaService.findById(id);
+			comanda.setCliente(cliente);
+			List<Comanda> comandas = comandaService.find(comanda, true);
+			limparComandasSimplificadaJSON(comandas);
+			return comandas;
+		}
+		return new ArrayList<>();
 	}
 	
 	@RequestMapping(value="/findComandaAberta/{id}", method=RequestMethod.GET)
@@ -190,14 +225,14 @@ public class ClienteController {
 	
 	
 	@RequestMapping(value="/abrirComanda/{id}", method=RequestMethod.GET)
-	public @ResponseBody Comanda abrirComanda(@PathVariable("id") Long id){
+	public @ResponseBody Comanda abrirComanda(@PathVariable("id") Long id, HttpServletRequest request){
 		Comanda comanda = new Comanda();
 		Pessoa cliente = pessoaService.findById(id);
 		comanda.setCliente(cliente);
 		comanda.setAbertura(new Date());
 		comanda.setCredito(comandaService.getCreditoCliente(id));
 		
-		comanda = comandaService.persist(comanda);
+		comanda = comandaService.persist(comanda, Utils.getUsuarioLogado(request).getPessoa());
 		limparComandaJSON(comanda);
 		return comanda;
 	}
@@ -205,7 +240,7 @@ public class ClienteController {
 	@RequestMapping(value="/salvarComanda", method=RequestMethod.POST)
 	public @ResponseBody Comanda salvarComanda(HttpServletRequest request){
 		Comanda comanda = criarComanda(request);
-		comanda = comandaService.persist(comanda);
+		comanda = comandaService.persist(comanda, Utils.getUsuarioLogado(request).getPessoa());
 		limparComandaJSON(comanda);
 		return comanda;
 	}
@@ -213,7 +248,7 @@ public class ClienteController {
 	@RequestMapping(value="/verificarComanda", method=RequestMethod.POST)
 	public @ResponseBody VerificacaoVO verificarCamanda(HttpServletRequest request){
 		Comanda comanda = criarComanda(request);
-		comanda = comandaService.persist(comanda);
+		comanda = comandaService.persist(comanda, Utils.getUsuarioLogado(request).getPessoa());
 		
 		return verificarComanda(comanda);
 	}
@@ -276,33 +311,42 @@ public class ClienteController {
 	
 	@RequestMapping(value="/fecharComanda", method=RequestMethod.POST)
 	public @ResponseBody Comanda fecharComanda(HttpServletRequest request){
-		Comanda comanda = criarComanda(request);
-		comanda = comandaService.persist(comanda);
-		VerificacaoVO vo = verificarComanda(comanda);
-		if( ! vo.isCriticalError()){
-			comanda.setFechamento(new Date());
-			comanda = comandaService.persist(comanda, true);
-			limparComandaJSON(comanda);
-			return comanda;
+		if( Utils.hasRole(Role.ADMIN, request) || Utils.hasRole(Role.CAIXA, request)){
+			Comanda comanda = criarComanda(request);
+			comanda = comandaService.persist(comanda, Utils.getUsuarioLogado(request).getPessoa());
+			VerificacaoVO vo = verificarComanda(comanda);
+			if( ! vo.isCriticalError()){
+				comanda.setFechamento(new Date());
+				comanda = comandaService.persist(comanda, true, Utils.getUsuarioLogado(request).getPessoa());
+				limparComandaJSON(comanda);
+				return comanda;
+			}
+			throw new RuntimeException("Há erros críticos com a comanda que está sendo fechada");
 		}
-		throw new RuntimeException("Há erros críticos com a comanda que está sendo fechada");
+		throw new RuntimeException("Sem permissão para fechar a comanda");
 	}
 	
 	@RequestMapping(value="/fecharComanda/{id}", method=RequestMethod.GET)
-	public @ResponseBody VerificacaoVO fecharComanda(@PathVariable("id") Long id){
-		Comanda comanda = comandaService.findById(id);
-		VerificacaoVO vo = verificarComanda(comanda);
-		if( ! vo.isCriticalError()){
-			comanda.setFechamento(new Date());
-			comandaService.persist(comanda, true);
+	public @ResponseBody VerificacaoVO fecharComanda(@PathVariable("id") Long id, HttpServletRequest request){
+		if( Utils.hasRole(Role.ADMIN, request) || Utils.hasRole(Role.CAIXA, request)){
+			Comanda comanda = comandaService.findById(id);
+			VerificacaoVO vo = verificarComanda(comanda);
+			if( ! vo.isCriticalError()){
+				comanda.setFechamento(new Date());
+				comandaService.persist(comanda, true, Utils.getUsuarioLogado(request).getPessoa());
+			}
+			return vo;
 		}
-		return vo;
+		throw new RuntimeException("Sem permissão para fechar a comanda");
 	}
 	
 	private Comanda criarComanda(HttpServletRequest request){
 		Long comandaId = Long.parseLong(request.getParameter("comandaId"));
 		Double descontos = Double.parseDouble(request.getParameter("descontos"));
 		Comanda comanda = comandaService.findById(comandaId);
+		if(comanda.getFechamento() != null){
+			throw new RuntimeException("Alteração de comanda já fechada");
+		}
 		comanda.setDesconto(descontos);
 		comanda.getServicos().clear();
 		comanda.getProdutos().clear();
@@ -467,9 +511,18 @@ public class ClienteController {
 		if(comanda != null){
 			for(LancamentoProduto produto : comanda.getProdutos()){
 				produto.setComanda(null);
+				if(produto.getVendedor() != null){
+					produto.getVendedor().setUsuario(null);
+				}
 			}
 			for(LancamentoServico servico : comanda.getServicos()){
 				servico.setComanda(null);
+				if(servico.getFuncionario() != null){
+					servico.getFuncionario().setUsuario(null);
+				}
+				if(servico.getAssistente() != null){
+					servico.getAssistente().setUsuario(null);
+				}
 			}
 			comanda.setEstoque(null);
 			for(Pagamento pagamento : comanda.getPagamentos()){

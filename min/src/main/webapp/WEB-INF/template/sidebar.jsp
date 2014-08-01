@@ -17,14 +17,21 @@
 				class="profile-pic animated" src="<spring:url value='/web/upload/${ loggedUser.pessoa.imagem.id }' />" alt="">
 			</a>
 			<ul class="dropdown-menu profile-menu animated">
-				<li><a href="">My Profile</a> <i class="icon left">&#61903;</i><i
-					class="icon right">&#61815;</i></li>
-				<li><a href="">Messages</a> <i class="icon left">&#61903;</i><i
-					class="icon right">&#61815;</i></li>
-				<li><a href="">Settings</a> <i class="icon left">&#61903;</i><i
-					class="icon right">&#61815;</i></li>
-				<li><a href="">Sign Out</a> <i class="icon left">&#61903;</i><i
-					class="icon right">&#61815;</i></li>
+				<li>
+					<a href="/min/web/funcionarios/editar/${ loggedUser.pessoa.id }">Meu perfil</a> 
+					<i class="icon left">&#61903;</i>
+					<i class="icon right">&#61815;</i>
+				</li>
+				<li>
+					<a href="">Notificações</a> 
+					<i class="icon left">&#61903;</i>
+					<i 	class="icon right">&#61815;</i>
+				</li>
+				<li>
+					<a href="/min/web/logout">Sair</a> 
+					<i class="icon left">&#61903;</i>
+					<i 	class="icon right">&#61815;</i>
+				</li>
 			</ul>
 			<h4 class="m-0">${ loggedUser.pessoa.nome }</h4>
 			${ loggedUser.login }
@@ -69,21 +76,25 @@
                  <span class="menu-item">Financeiro</span>
              </a>
              <ul class="list-unstyled menu-item">
-             	<li><a id="caixa-menu" href="<spring:url value='/web/report/caixa' />">Caixa</a></li>
+	             <c:if test="${ hasRole['ADMIN'] or hasRole['CAIXA'] }">
+    	         	<li><a id="caixa-menu" href="<spring:url value='/web/report/caixa' />">Caixa</a></li>
+             	</c:if>
 				<li><a id="comissao-menu" href="<spring:url value='/web/report/comissao' />">Comissão</a></li>
              </ul>
          </li>
-         <li class="dropdown" id="admin-menu">
-             <a class="sa-side-folder" href="">
-                 <span class="menu-item">Admin</span>
-             </a>
-             <ul class="list-unstyled menu-item">
-             	<li><a id="servicos-menu" href="<spring:url value='/web/servicos/' />">Serviços</a></li>
-				<li><a id="produtos-menu" href="<spring:url value='/web/produtos/' />">Produtos</a></li>
-				<li><a id="estoque-menu" href="<spring:url value='/web/estoque/' />">Projeção de estoque</a></li>
-				<li><a id="employee-menu" href="<spring:url value='/web/funcionarios/' />">Funcionários</a></li>
-             </ul>
-         </li>
+	         <li class="dropdown" id="admin-menu">
+	             <a class="sa-side-folder" href="">
+	                 <span class="menu-item">Salão</span>
+	             </a>
+	             <ul class="list-unstyled menu-item">
+         			<c:if test="${ hasRole['ADMIN'] }">
+		             	<li><a id="servicos-menu" href="<spring:url value='/web/servicos/' />">Serviços</a></li>
+						<li><a id="produtos-menu" href="<spring:url value='/web/produtos/' />">Produtos</a></li>
+						<li><a id="estoque-menu" href="<spring:url value='/web/estoque/' />">Projeção de estoque</a></li>
+			         </c:if>
+					<li><a id="employee-menu" href="<spring:url value='/web/funcionarios/' />">Funcionários</a></li>
+	             </ul>
+	         </li>
 		
 		
 		

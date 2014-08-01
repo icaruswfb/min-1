@@ -6,6 +6,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 import br.com.min.controller.error.HorarioOcupadoException;
 import br.com.min.entity.Horario;
 import br.com.min.entity.Pessoa;
+import br.com.min.entity.Role;
 import br.com.min.entity.Servico;
 import br.com.min.service.HorarioService;
 import br.com.min.service.PessoaService;
@@ -44,7 +47,11 @@ public class AgendaController {
 		mv.addObject("dataStr", Utils.dateFormat.format(hoje));
 		return mv;
 	}
-
+	
+	private void limparPessoaJSON(Pessoa pessoa){
+		pessoa.setUsuario(null);
+	}
+	
 	private ModelAndView criarViewAgenda(){
 		ModelAndView mv = new ModelAndView("agenda");
 		List<Pessoa> pessoas = homeController.pesquisar(null, null);
@@ -74,24 +81,38 @@ public class AgendaController {
 					@PathVariable("dia") Integer dia, 
 					@PathVariable("mes")Integer mes, 
 					@PathVariable("ano") Integer ano, 
-					@PathVariable("funcionariosId") String funcionariosId){
-		Horario horario  = criarHorarioPesquisa(dia, mes, ano, funcionariosId, null);
+					@PathVariable("funcionariosId") String funcionariosId,
+					HttpServletRequest request){
+		Horario horario  = criarHorarioPesquisa(dia, mes, ano, null, request);
 		List<Horario> horarios = horarioService.findHorario(horario);
+		limparHorariosJSON(horarios);
 		return horarios;
 	}
+	
+	private void limparHorariosJSON(List<Horario> horarios){
+		for(Horario horario : horarios){
+			limparPessoaJSON(horario.getFuncionario());
+		}
+	}
+	
 	@RequestMapping(value="cliente/{id}/{dia}/{mes}/{ano}", method=RequestMethod.GET)
 	public @ResponseBody List<Horario> findHorariosCliente(
 					@PathVariable("dia") Integer dia, 
 					@PathVariable("mes")Integer mes, 
 					@PathVariable("ano") Integer ano, 
-					@PathVariable("id") Long clienteId){
-		Horario horario  = criarHorarioPesquisa(dia, mes, ano, null, clienteId);
+					@PathVariable("id") Long clienteId,
+					HttpServletRequest request){
+		Horario horario  = criarHorarioPesquisa(dia, mes, ano, clienteId, request);
 		List<Horario> horarios = horarioService.findHorario(horario);
+		limparHorariosJSON(horarios);
 		return horarios;
 	}
 	
-	private Horario criarHorarioPesquisa(Integer dia, Integer mes, Integer ano, String funcionarios, Long clienteId){
+	private Horario criarHorarioPesquisa(Integer dia, Integer mes, Integer ano, Long clienteId, HttpServletRequest request){
 		Horario horario  = new Horario();
+		if( ! Utils.hasRole(Role.ADMIN, request) && ! Utils.hasRole(Role.CAIXA, request) ){
+			horario.setFuncionario(Utils.getUsuarioLogado(request).getPessoa());
+		}
 		StringBuffer dataInicioStr = new StringBuffer();
 		StringBuffer dataTerminoStr = new StringBuffer();
 		if(dia == null || dia == -1){

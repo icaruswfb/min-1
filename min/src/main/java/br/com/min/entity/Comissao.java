@@ -10,15 +10,15 @@ public class Comissao {
 	@Id
 	@GeneratedValue
 	private Long id;
-	private Double comissaoServico;
-	private Double comissaoAuxiliar;
-	private Double valorRange1;
-	private Double valorRange2;
-	private Double valorRange3;
-	private Double comissaoRange1;
-	private Double comissaoRange2;
-	private Double comissaoRange3;
-	private Double comissaoRange4;
+	private Double comissaoServico = 0.0;
+	private Double comissaoAuxiliar = 0.0;
+	private Double valorRange1 = 0.0;
+	private Double valorRange2 = 0.0;
+	private Double valorRange3 = 0.0;
+	private Double comissaoRange1 = 0.0;
+	private Double comissaoRange2 = 0.0;
+	private Double comissaoRange3 = 0.0;
+	private Double comissaoRange4 = 0.0;
 	
 	public Long getId() {
 		return id;

@@ -18,12 +18,9 @@
 
 		<jsp:include page="template/sidebar.jsp"></jsp:include>
 
-
-
-
 		<!-- Content -->
 		<section id="content" class="container">
-
+			
 			<h4 class="page-title">HOME</h4>
 
 			<div class="block-area">

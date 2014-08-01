@@ -2495,3 +2495,13 @@ a.list-group-item.active > .badge,
 #pagamento-erro-block{
 	display: none;
 }
+
+#historico-block .overflow{
+}
+
+#messages{
+	position: absolute;
+	width: 50%;
+	background-color: rgba(0,0,0,0.8);
+	z-index: 9999;
+}

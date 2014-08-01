@@ -16,6 +16,7 @@ import br.com.min.entity.Usuario;
 public class SecurityFilter implements Filter{
 
 	public static final String LOGGED_USER = "loggedUser";
+	public static final String HAS_ROLE = "hasRole";
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {

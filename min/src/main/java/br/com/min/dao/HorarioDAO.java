@@ -45,9 +45,10 @@ public class HorarioDAO {
 			Criterion[] orPredicatesArray = new Criterion[orPredicates.size()];
 			orPredicatesArray = orPredicates.toArray(orPredicatesArray);
 			Criterion[] andPredicatesArray = new Criterion[andPredicates.size()];
-			andPredicatesArray = orPredicates.toArray(andPredicatesArray);
-			criteria.addOrder(Order.asc("inicio"));
+			andPredicatesArray = andPredicates.toArray(andPredicatesArray);
 			criteria = criteria.add(Restrictions.and(andPredicatesArray));
+			criteria = criteria.add(Restrictions.or(orPredicatesArray));
+			criteria.addOrder(Order.asc("inicio"));
 		}
 		List<Horario> clientes = criteria.list();
 		return clientes;

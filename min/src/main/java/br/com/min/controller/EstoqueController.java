@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,9 +14,11 @@ import org.springframework.web.servlet.ModelAndView;
 import br.com.min.controller.vo.ProjecaoEstoqueVO;
 import br.com.min.entity.LancamentoEstoque;
 import br.com.min.entity.Produto;
+import br.com.min.entity.Role;
 import br.com.min.entity.SituacaoEstoque;
 import br.com.min.entity.TipoLancamentoEstoque;
 import br.com.min.service.ProdutoService;
+import br.com.min.utils.Utils;
 
 @Controller
 @RequestMapping("/estoque")
@@ -24,23 +28,25 @@ public class EstoqueController {
 	private ProdutoService produtoService;
 	
 	@RequestMapping("/")
-	public ModelAndView listarProjecao(){
-		Produto query = new Produto();
-		query.setSituacaoEstoque(SituacaoEstoque.ALERTA);
-		List<Produto> alertas = produtoService.find(query);
-		query.setSituacaoEstoque(SituacaoEstoque.CRITICA);
-		List<Produto> criticos = produtoService.find(query);
-		query.setSituacaoEstoque(SituacaoEstoque.BOA);
-		List<Produto> boas = produtoService.find(query);
+	public ModelAndView listarProjecao(HttpServletRequest request){
 		ModelAndView mv = new ModelAndView("projecaoCompraEstoque");
-		
-		List<ProjecaoEstoqueVO> alertasVO = criarProjecao(alertas);
-		List<ProjecaoEstoqueVO> criticosVO = criarProjecao(criticos);
-		List<ProjecaoEstoqueVO> boasVO = criarProjecao(boas);
-		
-		mv.addObject("alertas", alertasVO);
-		mv.addObject("criticos", criticosVO);
-		mv.addObject("boas", boasVO);
+		if(Utils.hasRole(Role.ADMIN, request)){
+			Produto query = new Produto();
+			query.setSituacaoEstoque(SituacaoEstoque.ALERTA);
+			List<Produto> alertas = produtoService.find(query);
+			query.setSituacaoEstoque(SituacaoEstoque.CRITICA);
+			List<Produto> criticos = produtoService.find(query);
+			query.setSituacaoEstoque(SituacaoEstoque.BOA);
+			List<Produto> boas = produtoService.find(query);
+			
+			List<ProjecaoEstoqueVO> alertasVO = criarProjecao(alertas);
+			List<ProjecaoEstoqueVO> criticosVO = criarProjecao(criticos);
+			List<ProjecaoEstoqueVO> boasVO = criarProjecao(boas);
+			
+			mv.addObject("alertas", alertasVO);
+			mv.addObject("criticos", criticosVO);
+			mv.addObject("boas", boasVO);
+		}
 		
 		return mv;
 	}

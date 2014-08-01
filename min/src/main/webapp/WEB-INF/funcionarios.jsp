@@ -21,9 +21,11 @@
 		<section id="content" class="container">
 
 			<h4 class="page-title">FUNCIONÁRIOS</h4>
-			<div class="block-area" id="buttons">
-                 <a href="<spring:url value='/web/funcionarios/novo/p' />" class="btn m-r-5" >Novo funcionário</a>
-             </div>
+			<c:if test="${ hasRole['ADMIN'] }">
+				<div class="block-area" id="buttons">
+	                 <a href="<spring:url value='/web/funcionarios/novo/p' />" class="btn m-r-5" >Novo funcionário</a>
+	             </div>
+			</c:if>
 			 <!-- Table Hover -->
                 <div class="block-area" id="tableHover">
                         <table class="table table-hover tile">
@@ -51,7 +53,13 @@
 	                                    <td>${ funcionario.telefone }</td>
 	                                    <td><fmt:formatDate value="${ funcionario.aniversario }" pattern="dd/MM" /></td>
 	                                    <td>${ funcionario.email }</td>
-	                                    <td><a href="<spring:url value='/web/funcionarios/delete/${ funcionario.id }' />" onclick="return confirm('Tem certeza que deseja excluir?');"><img src='<spring:url value="/img/icon/delete.png" />' /></a></td>
+	                                    <td>
+											<c:if test="${ hasRole['ADMIN'] }">
+		                                    	<a href="<spring:url value='/web/funcionarios/delete/${ funcionario.id }' />" onclick="return confirm('Tem certeza que deseja excluir?');">
+		                                    		<img src='<spring:url value="/img/icon/delete.png" />' />
+		                                    	</a>
+	                                    	</c:if>
+	                                    </td>
 	                                </tr>
                             	</c:forEach>
                             </tbody>

@@ -12,10 +12,10 @@
 		<div class="media-body">
 			<div class="media" id="top-menu">
 				<div class="pull-left tm-icon">
-					<a data-drawer="messages" class="drawer-toggle" href=""> <i
-						class="sa-top-message"></i> <!-- 
-                            <i class="n-count animated">0</i>
-                             --> <span>Mensagens</span>
+					<a data-drawer="messages" class="drawer-toggle" href="/min/web/tarefas/"> 
+						<i 	class="sa-top-message"></i> 
+                        <i class="n-count animated">0</i>
+                        <span>Mensagens</span>
 					</a>
 				</div>
 

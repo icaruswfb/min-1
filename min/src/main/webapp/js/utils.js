@@ -1,13 +1,14 @@
 Utils = {
 	showError:function(text){
-		html = '<div class="alert alert-danger alert-dismissable fade in error-alert" style="display: none">' + 
+		var id = 'error-'+ Utils.guid();
+		html = '<div class="alert alert-danger alert-dismissable fade in error-alert" style="display: none" id="'+ id +'">' + 
 		                  '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + 
 		                  '<div class="texto"></div>' + 
 		              '</div>';
 		$("section[id='content']").prepend(html);
 		
-		$(".error-alert .texto").html(text);
-		$(".error-alert").show();
+		$("#" + id + " .texto").html(text);
+		$("#" + id).show();
 	}	,
 	createMessageBlock:function(text, elementToAppend, serverity, alertId){
 		serverity = serverity ? serverity : 'info';

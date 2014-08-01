@@ -17,6 +17,9 @@
 
 		<jsp:include page="template/sidebar.jsp"></jsp:include>
 
+		<c:set var="canEdit" value="${ hasRole['CAIXA'] }" />
+		
+
 		<!-- Content -->
 		<section id="content" class="container">
 
@@ -24,7 +27,9 @@
             <form:form method="post" action="../salvar" commandName="cliente">
             	<form:hidden path="id" id="cliente-id" />
 				<div class="block-area" id="buttons">
-	                 <button class="btn m-r-5" type="submit">Salvar</button>
+					<c:if test="${ hasRole['CAIXA'] }">
+		                 <button class="btn m-r-5" type="submit">Salvar</button>
+					</c:if>
 	                 <a href="<spring:url value='/web/clientes/' />" >
 		                 <button class="btn btn-alt m-r-5" type="button">Cancelar</button>
 	                 </a>
@@ -34,29 +39,29 @@
                 	<p>Preencha os dados do cliente e clique em Salvar</p>
                 </div>
                  <div class="col-lg-12">
-                 	<form:input path="nome" cssClass="form-control input-lg m-b-10" placeholder="Nome"/>
+                 	<form:input path="nome" cssClass="form-control input-lg m-b-10" placeholder="Nome" readonly="${ not canEdit }"/>
                 </div>
                 <div class="col-lg-3">
-                 	<form:input path="documento" cssClass="form-control m-b-10" placeholder="RG ou CPF"/>
+                 	<form:input path="documento" cssClass="form-control m-b-10" placeholder="RG ou CPF" readonly="${ not canEdit }"/>
                 </div>
                 <div class="col-lg-3">
-                 	<form:input path="telefone" cssClass="form-control m-b-10" placeholder="Telefones"/>
+                 	<form:input path="telefone" cssClass="form-control m-b-10" placeholder="Telefones" readonly="${ not canEdit }"/>
                 </div>
                 <div class="col-lg-3">
-                 	<form:input path="aniversarioStr" cssClass="form-control m-b-10 mask-date validate[required,custom[date]]" placeholder="Aniversário (dd/MM)"/>
+                 	<form:input path="aniversarioStr" cssClass="form-control m-b-10 mask-date validate[required,custom[date]]" placeholder="Aniversário (dd/MM)"  readonly="${ not canEdit }"/>
                 </div>
                 <div class="col-lg-3">
-                 	<form:input path="email" cssClass="form-control m-b-10" placeholder="E-mail"/>
+                 	<form:input path="email" cssClass="form-control m-b-10" placeholder="E-mail"  readonly="${ not canEdit }"/>
                 </div>
                 
                 <div class="col-lg-6">
-                 	<form:input path="endereco" cssClass="form-control m-b-10" placeholder="Endereço"/>
+                 	<form:input path="endereco" cssClass="form-control m-b-10" placeholder="Endereço" readonly="${ not canEdit }"/>
                 </div>
                 <div class="col-lg-3">
-                 	<form:input path="cep" cssClass="form-control m-b-10 mask-cep" placeholder="CEP"/>
+                 	<form:input path="cep" cssClass="form-control m-b-10 mask-cep" placeholder="CEP" readonly="${ not canEdit }"/>
                 </div>
                 <div class="col-lg-3">
-                 	<form:input path="cidade" cssClass="form-control m-b-10" placeholder="Cidade"/>
+                 	<form:input path="cidade" cssClass="form-control m-b-10" placeholder="Cidade" readonly="${ not canEdit }"/>
                 </div>
                 
              </form:form>
@@ -109,8 +114,10 @@
 						<form action="" method="post" id="comanda-form">
 							
 						</form>
-						<h4 class='page-title'><a href='javascript:Comanda.expandirComandasAntigas()'>COMANDAS ANTIGAS <span id='comandas-fechadas-acao'>[+]</span></a></h4>
-						<div id='comandas-fechadas' class='block-area'></div>
+						<c:if test="${ hasRole['ADMIN'] }">
+							<h4 class='page-title'><a href='javascript:Comanda.expandirComandasAntigas()'>COMANDAS ANTIGAS <span id='comandas-fechadas-acao'>[+]</span></a></h4>
+							<div id='comandas-fechadas' class='block-area'></div>
+						</c:if>
 					</div>
              	 <div class="clearfix"></div>
              	 
@@ -133,11 +140,71 @@
                          </div>
                      </div>
                  </div>
-				<h4 class="page-title m-t-10" id="historico-title"><a href="javascript:Cliente.exibirHistorico()" >HISTÓRICO <span id="historico-title-action">[-]</span></a></h4>
+                  <c:if test="${ hasRole['ADMIN'] }">
+					<h4 class="page-title m-t-10" id="historico-title"><a href="javascript:Cliente.exibirHistorico()" >HISTÓRICO <span id="historico-title-action">[-]</span></a></h4>
+					<div class="block-area">
+						<div class="row">
+								<!-- Main Chart -->
+	                        <div class="col-sm-6" >
+								<div class="tile m-b-20 w-100-p" id="dados-compilados">
+		                            <h2 class="tile-title">DADOS COMPILADOS</h2>
+		                        </div>
+	                        </div>
+	                        <div class="col-sm-6" >
+								<div class="tile">
+									<h2 class="tile-title">Visitas x Mês</h2>
+									<div class="p-10">
+										<div id="grafico-frequencia" class="main-chart" style="height: 200px"></div>
+		
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-6">
+		                        <div class="tile">
+	                                <h2 class="tile-title">Servicos</h2>
+	                                <div class="p-10">
+	                                    <div id="servicos-pizza" class="main-chart" style="height: 200px"></div>
+	                                </div>
+	                            </div>
+	                        </div>
+	                        <div class="col-sm-6">
+		                        <div class="tile">
+	                                <h2 class="tile-title">Atendimentos</h2>
+	                                <div class="p-10">
+	                                    <div id="funcionarios-pizza" class="main-chart" style="height: 200px"></div>
+	                                </div>
+	                            </div>
+	                        </div>
+	                        <div class="col-sm-6">
+								<a data-toggle="modal" href="#modalLog" onclick="Cliente.findHistorico();" class="btn btn-lg m-b-20">Ver histórico detalhado de atividades cliente</a>
+		                         <div class="modal fade" id="modalLog" tabindex="-1" role="dialog" aria-hidden="true">
+			                        <div class="modal-dialog modal-lg">
+			                            <div class="modal-content">
+			                                <div class="modal-header">
+			                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			                                    <h4 class="modal-title">Histórico detalhado de ${ cliente.nome }</h4>
+			                                </div>
+			                                <div class="modal-body">
+												<div class="listview list-container" id="historico-list">
+								                </div>
+			                                </div>
+			                                <div class="modal-footer">
+			                                    <button type="button" class="btn btn-sm" data-dismiss="modal">Fechar</button>
+			                                </div>
+			                            </div>
+			                        </div>
+			                    </div>
+                       		</div>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+						
+               		 </c:if>
+				<h4 class="page-title m-t-10">AGENDA</h4>
 				<div id="historico-block">
 		            <div class="block-area">
 						<div class="row">
-							<div class="col-md-6">
+							<div class="col-md-12" id="block-calendar">
 								<div class="row">
 									<div id="calendar" class="p-relative p-10 m-b-20">
 										<!-- Calendar Views -->
@@ -155,63 +222,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="col-md-6">
-								<!-- Main Chart -->
-								
-		                        <div class="col-sm-12" >
-									<div class="tile m-b-20 w-100-p" id="dados-compilados">
-			                            <h2 class="tile-title">DADOS COMPILADOS</h2>
-			                        </div>
-		                        </div>
-		                        
-		                        <div class="col-sm-12" >
-									<div class="tile">
-										<h2 class="tile-title">Visitas x Mês</h2>
-										<div class="p-10">
-											<div id="grafico-frequencia" class="main-chart" style="height: 200px"></div>
-			
-										</div>
-									</div>
-								</div>
-								<div class="col-sm-12">
-			                        <div class="tile">
-		                                <h2 class="tile-title">Servicos</h2>
-		                                <div class="p-10">
-		                                    <div id="servicos-pizza" class="main-chart" style="height: 200px"></div>
-		                                </div>
-		                            </div>
-		                        </div>
-		                        <div class="col-sm-12">
-			                        <div class="tile">
-		                                <h2 class="tile-title">Atendimentos</h2>
-		                                <div class="p-10">
-		                                    <div id="funcionarios-pizza" class="main-chart" style="height: 200px"></div>
-		                                </div>
-		                            </div>
-		                        </div>
-		                        <div class="col-sm-12">
-									<a data-toggle="modal" href="#modalLog" onclick="Cliente.findHistorico();" class="btn btn-lg m-b-20">Ver histórico detalhado de atividades cliente</a>
-			                         <div class="modal fade" id="modalLog" tabindex="-1" role="dialog" aria-hidden="true">
-				                        <div class="modal-dialog modal-lg">
-				                            <div class="modal-content">
-				                                <div class="modal-header">
-				                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				                                    <h4 class="modal-title">Histórico detalhado de ${ cliente.nome }</h4>
-				                                </div>
-				                                <div class="modal-body">
-													<div class="listview list-container" id="historico-list">
-									                </div>
-				                                </div>
-				                                <div class="modal-footer">
-				                                    <button type="button" class="btn btn-sm" data-dismiss="modal">Fechar</button>
-				                                </div>
-				                            </div>
-				                        </div>
-				                    </div>
-                         		</div>
-							</div>​
 						</div>
-						<div class="clearfix"></div>
 					</div>
 				</div>
 				
@@ -246,12 +257,11 @@
              $('.mask-number').mask('#####0');
             <c:if test="${ cliente.id ne null }">
 	     		Comanda.init();
-            	Comanda.findComandaAberta();
-            	//Histórico
-				Cliente.gerarDados();
-				Cliente.abrirAgendaCliente();
 
-
+				Comanda.hasRoleCaixa = ${ hasRole['CAIXA']} ;
+				Comanda.hasRoleOperacional = ${ hasRole['OPERACIONAL'] };
+				Comanda.hasRoleAdmin = ${ hasRole['ADMIN'] };
+				
              	<c:forEach var="formaPagamento" items="${ formasPagamento }">
              		<c:if test="${formaPagamento.parcelavel}">
              		
@@ -259,6 +269,11 @@
              		</c:if>
              	</c:forEach>
              	Cliente.mostrarParcelamento();
+             	<c:if test="${ hasRole['ADMIN'] }">
+	            	//Histórico
+					Cliente.gerarDados();
+             	</c:if>
+				Cliente.abrirAgendaCliente();
             </c:if>
 		});
 	</script>
@@ -287,7 +302,7 @@
 									allDaySlot: false,
 									slotEventOverlap: false
 								});
-	
+
 						var overflowRegular, overflowInvisible = false;
 						overflowRegular = $('.overflow').niceScroll();
 					});

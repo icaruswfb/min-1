@@ -7,8 +7,8 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import br.com.itau.internet.seguranca.jarvis.sectoken.JarvisToken;
 import br.com.min.entity.Usuario;
+import br.com.min.utils.Utils;
 
 @Repository
 public class UsuarioDAO {
@@ -16,35 +16,44 @@ public class UsuarioDAO {
 	@Autowired
 	private SessionFactory sessionFactory;
 	
-	public void persist(Usuario usuario){
+	public Usuario persist(Usuario usuario, boolean encryptPassword){
 		Session session = sessionFactory.openSession();
-		JarvisToken token = new JarvisToken();
-		String encryptedPassword;
-		try {
-			encryptedPassword = token.getToken("", usuario.getSenha(), "");
+		if(encryptPassword){
+			String encryptedPassword = Utils.encriyt(usuario.getSenha());
 			usuario.setSenha(encryptedPassword);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
 		}
-		session.merge(usuario);
+		usuario = (Usuario) session.merge(usuario);
 		session.flush();
+		return usuario;
 	}
 	
 	public Usuario autenticar(String login, String senha){
-		JarvisToken token = new JarvisToken();
 		Session session = sessionFactory.openSession();
 		Criteria criteria = session.createCriteria(Usuario.class);
 		criteria.add(Restrictions.eq("login", login));
-		
 		Usuario usuario = (Usuario) criteria.uniqueResult();
-		try {
-			if( ! token.isTokenValid("", senha, "", usuario.getSenha())){
+		if(usuario != null){
+			if( ! Utils.isTokenValid(usuario.getSenha(), senha) ){
 				usuario = null;
 			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
 		}
 		session.flush();
+		return usuario;
+	}
+
+	public Usuario findById(Long id) {
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(Usuario.class);
+		criteria.add(Restrictions.eq("id", id));
+		Usuario usuario = (Usuario) criteria.uniqueResult();
+		return usuario;
+	}
+
+	public Usuario findByLogin(String login) {
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(Usuario.class);
+		criteria.add(Restrictions.eq("login", login));
+		Usuario usuario = (Usuario) criteria.uniqueResult();
 		return usuario;
 	}
 	

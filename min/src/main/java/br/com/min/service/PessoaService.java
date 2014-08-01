@@ -23,20 +23,20 @@ public class PessoaService {
 	private ImagemDAO imagemDao;
 	
 	@Transactional
-	public void persist(Pessoa cliente){
-		if(cliente.getImagem() != null){
-			Imagem imagem = imagemDao.findById(cliente.getImagem().getId());
-			cliente.setImagem(imagem);
+	public void persist(Pessoa pessoa){
+		if(pessoa.getImagem() != null){
+			Imagem imagem = imagemDao.findById(pessoa.getImagem().getId());
+			pessoa.setImagem(imagem);
 		}
-		genericDao.persist(cliente);
-		if(cliente.getImagem() != null){
-			imagemDao.deletarNaoUtilizados();
-		}
+		genericDao.persist(pessoa);
+//		if(pessoa.getImagem() != null){
+//			imagemDao.deletarNaoUtilizados();
+//		}
 	}
 	
 	@Transactional
-	public List<Pessoa> findPessoa(Pessoa cliente){
-		return dao.findPessoa(cliente);
+	public List<Pessoa> findPessoa(Pessoa pessoa){
+		return dao.findPessoa(pessoa);
 	}
 	
 	public List<Pessoa> listarClientes(){
@@ -52,9 +52,9 @@ public class PessoaService {
 	}
 	
 	public Pessoa findById(Long id){
-		Pessoa cliente = new Pessoa();
-		cliente.setId(id);
-		List<Pessoa> result = dao.findPessoa(cliente);
+		Pessoa pessoa = new Pessoa();
+		pessoa.setId(id);
+		List<Pessoa> result = dao.findPessoa(pessoa);
 		if(result.isEmpty()){
 			return null;
 		}else{
@@ -63,9 +63,9 @@ public class PessoaService {
 	}
 
 	public void delete(Long id) {
-		Pessoa cliente = new Pessoa();
-		cliente.setId(id);
-		genericDao.delete(cliente);
+		Pessoa pessoa = new Pessoa();
+		pessoa.setId(id);
+		genericDao.delete(pessoa);
 	}
 	
 }

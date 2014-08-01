@@ -5,6 +5,7 @@ public enum Funcao {
 	Recepcionista,
 	Manicure,
 	Cabelereira,
-	Maquiadora
+	Maquiadora,
+	Administrador
 	
 }

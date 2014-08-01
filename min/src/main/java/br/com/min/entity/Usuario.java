@@ -1,11 +1,13 @@
 package br.com.min.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 
 @Entity
 public class Usuario {
@@ -13,8 +15,11 @@ public class Usuario {
 	@Id
 	@GeneratedValue
 	private Long id;
+	@Column(unique=true)
 	private String login;
 	private String senha;
+	@Transient
+	private String confirmacaoSenha;
 	@OneToOne
 	private Pessoa pessoa;
 	@Enumerated(EnumType.STRING)
@@ -49,6 +54,12 @@ public class Usuario {
 	}
 	public void setRole(Role role) {
 		this.role = role;
+	}
+	public String getConfirmacaoSenha() {
+		return confirmacaoSenha;
+	}
+	public void setConfirmacaoSenha(String confirmacaoSenha) {
+		this.confirmacaoSenha = confirmacaoSenha;
 	}
 	
 }

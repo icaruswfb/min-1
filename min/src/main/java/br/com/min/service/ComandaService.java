@@ -48,8 +48,8 @@ public class ComandaService {
 	private ComissaoDAO comissaDao;
 
 	@Transactional
-	public Comanda persist(Comanda entity){
-		return persist(entity, false);
+	public Comanda persist(Comanda entity, Pessoa usuarioLogado){
+		return persist(entity, false, usuarioLogado);
 	}
 	
 	@Transactional
@@ -58,12 +58,12 @@ public class ComandaService {
 	}
 	
 	@Transactional
-	public Comanda persist(Comanda entity, boolean isFechamento){
+	public Comanda persist(Comanda entity, boolean isFechamento, Pessoa usuarioLogado){
 		if(entity.getId() == null){
-			gravarHistoricoAbertura(entity);
+			gravarHistoricoAbertura(entity, usuarioLogado);
 		}
 		if(isFechamento){
-			gravarHistoricoFechamento(entity);
+			gravarHistoricoFechamento(entity, usuarioLogado);
 		}
 		List<Produto> produtosParaAtualizar = calcularValores(entity);
 		entity = (Comanda)genericDao.persist(entity);
@@ -312,8 +312,8 @@ public class ComandaService {
 		produtosUtilizados.put(p, quantidadeTotalUtilizada + quantidade);
 	}
 	
-	private void gravarHistoricoFechamento(Comanda entity){
-		Historico historico = criarHistorico(entity);
+	private void gravarHistoricoFechamento(Comanda entity, Pessoa usuarioLogado){
+		Historico historico = criarHistorico(entity, usuarioLogado);
 		StringBuffer sb = new StringBuffer();
 		sb.append("Comanda aberta em ").append(Utils.dateTimeFormat.format(entity.getAbertura()));
 		sb.append(" foi fechada em ").append(Utils.dateTimeFormat.format(entity.getFechamento()))
@@ -323,21 +323,24 @@ public class ComandaService {
 		genericDao.persist(historico);
 	}
 	
-	private void gravarHistoricoAbertura(Comanda entity){
-		Historico historico = criarHistorico(entity);
+	private void gravarHistoricoAbertura(Comanda entity, Pessoa usuarioLogado){
+		Historico historico = criarHistorico(entity, usuarioLogado);
 		StringBuffer sb = new StringBuffer();
 		sb.append("Comanda aberta em ").append(Utils.dateTimeFormat.format(entity.getAbertura()));
 		historico.setTexto(sb.toString());
 		genericDao.persist(historico);
 	}
 	
-	private Historico criarHistorico(Comanda comanda){
+	private Historico criarHistorico(Comanda comanda, Pessoa usuarioLogado){
 		Historico historico = new Historico();
+		historico.setCriador(usuarioLogado);
 		historico.setData(new Date());
 		historico.setCliente(comanda.getCliente());
 		StringBuffer textoPequeno = new StringBuffer();
 		textoPequeno.append(Utils.dateTimeFormat.format(historico.getData()));
-		textoPequeno.append(" - criado por TODO");
+		if(historico.getCriador() != null){
+			textoPequeno.append(" - criado por ").append(historico.getCriador().getNome());
+		}
 		historico.setTextoPequeno(textoPequeno.toString());
 		return historico;
 	}

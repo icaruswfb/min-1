@@ -91,10 +91,10 @@
                             </div>
                         </div>
                     </div>
+                     <a data-toggle="modal" href="#modalWider" style="display: none;" class="btn btn-sm">Modal - Wider</a>
 			
 			<h4 class="page-title">AGENDA - ${ dataStr }</h4>
 
-                            <a data-toggle="modal" href="#modalWider" style="display: none;" class="btn btn-sm">Modal - Wider</a>
 			<div class="block-area">
 				
 				<div class="row">
@@ -128,6 +128,7 @@
 
 	<jsp:include page="template/scripts.jsp"></jsp:include>
 	<script type="text/javascript">
+		 Agenda.criarCalendario();
 		$(document).ready(
 				function() {
 					/* Tag Select */
@@ -139,8 +140,6 @@
 	                    /* Overflow */
 	                    $('.overflow').niceScroll();
 	                })();
-	                Agenda.criarCalendario();
-	                Agenda.findHorariosDoDia();
 	                $(window).load(function(){
 							Agenda.selecionarData();
 		                });

@@ -1,6 +1,8 @@
 package br.com.min.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import br.com.min.entity.Pessoa;
+import br.com.min.entity.Role;
 import br.com.min.entity.Usuario;
 import br.com.min.filter.SecurityFilter;
 import br.com.min.service.PessoaService;
@@ -43,6 +46,14 @@ public class HomeController {
 				return "login";
 			}
 			request.getSession().setAttribute(SecurityFilter.LOGGED_USER, user);
+			Map<String, Boolean> roles = new HashMap<>();
+			boolean hasAdminRole = user.getRole().equals(Role.ADMIN);
+			for(Role role : Role.values()){
+				roles.put(
+						role.name(), 
+						hasAdminRole ? true : user.getRole().equals(role));
+			}
+			request.getSession().setAttribute(SecurityFilter.HAS_ROLE, roles);
 			return "index";
 		}
 	}
