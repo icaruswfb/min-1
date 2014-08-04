@@ -79,25 +79,25 @@
 	     			      	<h4 class="page-title m-b-10">DADOS DE USUÁRIO</h4>
 				            <form:form method="post" action="../salvar" commandName="funcionario" id="funcionario-form">
 				               	<form:hidden path="usuario.id" />
-				                <div class="col-lg-12">
+				                <div class="col-lg-12 p-l-0">
 					                <div class="col-lg-6">
 				                 	<form:input path="usuario.login" cssClass="form-control m-b-10" placeholder="Nome de usuário" readonly="${ not canEdit }"/>
 					                </div>
 				                </div>
 				                
 						        <c:if test="${ canEdit }">
-					                <div class="col-lg-12">
+					                <div class="col-lg-12 p-l-0">
 						                <div class="col-lg-6">
 					                 	<form:password path="usuario.senha" cssClass="form-control m-b-10" placeholder="Senha" readonly="${ not canEdit }"/>
 						                </div>
 					                </div>
-					                <div class="col-lg-12">
+					                <div class="col-lg-12 p-l-0">
 						                <div class="col-lg-6">
 					                 	<form:password path="usuario.confirmacaoSenha" cssClass="form-control m-b-10" placeholder="Confirmação de senha" readonly="${ not canEdit }"/>
 						                </div>
 					                </div>
 				                </c:if>
-				                <div class="col-lg-12">
+				                <div class="col-lg-12 p-l-0">
 					                <div class="col-lg-6">
 				                	<form:select path="usuario.role" cssClass="form-control m-b-10"  disabled="${ not hasRole['ADMIN'] }">
 				                         <form:option value="ADMIN">Administrador do sistema</form:option>

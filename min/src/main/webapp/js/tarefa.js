@@ -45,6 +45,9 @@ Tarefa = {
 		refreshTopo:function(){
 			Tarefa.exibirTarefasBlocoTopo();
 			Tarefa.contarNaoLidas();
+			if(Home.isHome){
+				Home.exibirProximasTarefas();
+			}
 		},
 		salvarTarefa:function(){
 			$.ajax({

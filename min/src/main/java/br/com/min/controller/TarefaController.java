@@ -1,6 +1,7 @@
 package br.com.min.controller;
 
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -53,6 +54,20 @@ public class TarefaController {
 	public @ResponseBody Integer contarNaoLidas(HttpServletRequest request){
 		Usuario logado = Utils.getUsuarioLogado(request);
 		return tarefaService.contarNaoLidas(logado.getPessoa());
+	}
+
+	@RequestMapping("/listarProximasAgendadas")
+	public @ResponseBody List<Tarefa> listarProximasAgendadas(HttpServletRequest request){
+		Usuario logado = Utils.getUsuarioLogado(request);
+		Calendar inicio = Calendar.getInstance();
+		inicio.add(Calendar.MONTH, -1);
+		inicio.add(Calendar.DAY_OF_MONTH, -1);
+		Calendar fim = Calendar.getInstance();
+		fim.add(Calendar.WEEK_OF_YEAR, 1);
+		
+		List<Tarefa> tarefas = tarefaService.listarTarefasAgendadasEntre(logado.getPessoa().getId(), inicio.getTime(), fim.getTime());
+		limparTarefasJSON(tarefas);
+		return tarefas;
 	}
 	
 	@RequestMapping("/listarTodas")
