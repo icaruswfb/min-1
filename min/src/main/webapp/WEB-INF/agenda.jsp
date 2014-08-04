@@ -49,7 +49,7 @@
 									                 		</c:if>
 									                 	</c:forEach>
 								                    </select>
-									                 <label>Funcionário</label>
+									                 <label class="m-t-10">Funcionário</label>
 									                  <select data-placeholder="Selecionar funcionário..." class="select custom-select" id="funcionario-select">
 									                 	<c:forEach var="funcionario" items="${ pessoas }">
 									                 		<c:if test="${ funcionario.funcionario eq true }">
@@ -58,20 +58,20 @@
 									                 	</c:forEach>
 								                    </select>
 								            
-								                 <label>Horário</label>
+								                 <label class="m-t-10">Horário</label>
 								                 <div class="input-icon datetime-pick time-only">
 					                                <input data-format="hh:mm" type="text" class="form-control input-sm" id="horario-inicio-agenda"/>
 					                                <span class="add-on">
 					                                    <i class="sa-plus"></i>
 					                                </span>
 					                            </div>
-								                 <label>Serviços</label>
+								                 <label class="m-t-10">Serviços</label>
 								                  <select data-placeholder="Selecionar serviços..." class="tag-select" multiple="multiple" id="servico-select" onchange="Agenda.calcularHorario()">
 								                 	<c:forEach var="servico" items="${ servicos }">
 								                 		<option value="${ servico.id }">${ servico.nome }</option>
 								                 	</c:forEach>
 							                    </select>
-								                 <label>Horário de término</label>
+								                 <label class="m-t-10">Horário de término</label>
 								                 <div class="input-icon datetime-pick time-only">
 					                                <input data-format="hh:mm" type="text" class="form-control input-sm" id="horario-fim-agenda"/>
 					                                <span class="add-on">
@@ -79,7 +79,7 @@
 					                                </span>
 					                            </div>
 					                            
-							                    <label>Observações</label>
+							                    <label class="m-t-10">Observações</label>
 							                    <textarea class="form-control overflow" rows="3"  id="observacao"></textarea>
 									</form>
                                 </div>

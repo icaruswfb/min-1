@@ -1,17 +1,24 @@
 package br.com.min.dao;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import br.com.min.entity.Pessoa;
 import br.com.min.entity.Tarefa;
 
 @Repository
@@ -36,6 +43,14 @@ public class TarefaDAO {
 		criteria.addOrder(Order.desc("dataCriacao"));
 		List<Tarefa> tarefas = criteria.list();
 		return tarefas;
+	}
+	
+	public Tarefa findById(Long id){
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(Tarefa.class);
+		
+		criteria.add(Restrictions.eq("id", id));
+		return (Tarefa) criteria.uniqueResult();
 	}
 	
 	public List<Tarefa> find(Tarefa tarefa){
@@ -66,12 +81,17 @@ public class TarefaDAO {
 	private Criteria criarCriteriaBasica(Tarefa tarefa){
 		Session session = sessionFactory.openSession();
 		Criteria criteria = session.createCriteria(Tarefa.class);
-
+		
+		if(tarefa.getId() != null){
+			criteria.add(Restrictions.eq("id", tarefa.getId()));
+		}
+		
 		if(tarefa.getFuncionario() != null){
 			criteria.add(
 						Restrictions.or(
 								Restrictions.isNull("funcionario"), 
-								Restrictions.eqOrIsNull("funcionario", tarefa.getFuncionario()))
+								Restrictions.eqOrIsNull("funcionario", tarefa.getFuncionario()),
+								Restrictions.eq("criador", tarefa.getFuncionario()))
 					);
 		}
 		if(tarefa.getCliente() != null){
@@ -82,6 +102,68 @@ public class TarefaDAO {
 		}
 
 		return criteria;
+	}
+	
+	public List<Tarefa> listarUltimas(Pessoa pessoa, int maxResult){
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(Tarefa.class);
+
+		if(pessoa != null){
+			criteria.add(
+								Restrictions.eqOrIsNull("funcionario", pessoa)
+					);
+		}
+		criteria.addOrder(Order.desc("dataCriacao"));
+		criteria.setMaxResults(maxResult);
+		return criteria.list();
+	}
+
+	public List<Tarefa> pesquisar(String pesquisa, Pessoa pessoa) {
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(Tarefa.class);
+
+		if(pessoa != null){
+			criteria.add(
+						Restrictions.or(
+								Restrictions.isNull("funcionario"), 
+								Restrictions.eqOrIsNull("funcionario", pessoa),
+								Restrictions.eq("criador", pessoa))
+					);
+		}
+		
+		List<Criterion> orPredicates = new ArrayList<>();
+		orPredicates.add(Restrictions.ilike("descricao", pesquisa, MatchMode.ANYWHERE));
+		criteria.createAlias("criador", "cri", JoinType.LEFT_OUTER_JOIN);
+		criteria.createAlias("funcionario", "fun", JoinType.LEFT_OUTER_JOIN);
+		criteria.createAlias("cliente", "cli", JoinType.LEFT_OUTER_JOIN);
+		orPredicates.add(Restrictions.ilike("cri.nome", pesquisa, MatchMode.ANYWHERE));
+		orPredicates.add(Restrictions.ilike("fun.nome", pesquisa, MatchMode.ANYWHERE));
+		orPredicates.add(Restrictions.ilike("cli.nome", pesquisa, MatchMode.ANYWHERE));
+		
+		Criterion[] or = new Criterion[orPredicates.size()];
+		or = orPredicates.toArray(or);
+		criteria.add(Restrictions.or(or));
+
+		criteria.addOrder(Order.desc("dataCriacao"));
+		List<Tarefa> result = criteria.list();
+		return result;
+	}
+
+	public Integer contarNaoLidas(Pessoa pessoa) {
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(Tarefa.class);
+
+		if(pessoa != null){
+			criteria.add(Restrictions.eqOrIsNull("funcionario", pessoa));
+		}
+		criteria.add(
+				Restrictions.or(
+						Restrictions.isNull("concluida"),
+						Restrictions.eqOrIsNull("concluida", false)
+					)
+			);
+		Integer count = ((Number) (criteria.setProjection(Projections.rowCount()).uniqueResult())).intValue();
+		return count;
 	}
 	
 }

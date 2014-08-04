@@ -1,6 +1,5 @@
 package br.com.min.entity;
 
-import java.text.ParseException;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -8,8 +7,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
-
-import br.com.min.utils.Utils;
 
 @Entity
 public class Tarefa {
@@ -21,14 +18,13 @@ public class Tarefa {
 	private Date dataCriacao;
 	private Date dataAgendada;
 	private Boolean concluida;
+	private Boolean paraTodos;
 	@ManyToOne
 	private Pessoa funcionario;
 	@ManyToOne
 	private Pessoa cliente;
 	@ManyToOne
 	private Pessoa criador;
-	@Transient
-	private String dataAgendadaStr;
 	
 	public Long getId() {
 		return id;
@@ -78,16 +74,11 @@ public class Tarefa {
 	public void setCriador(Pessoa criador) {
 		this.criador = criador;
 	}
-	public String getDataAgendadaStr() {
-		return dataAgendadaStr;
+	public Boolean getParaTodos() {
+		return paraTodos;
 	}
-	public void setDataAgendadaStr(String dataAgendadaStr) {
-		this.dataAgendadaStr = dataAgendadaStr;
-		try {
-			this.dataAgendada = Utils.dateTimeFormat.parse(dataAgendadaStr);
-		} catch (ParseException e) {
-			throw new RuntimeException(e);
-		}
+	public void setParaTodos(Boolean paraTodos) {
+		this.paraTodos = paraTodos;
 	}
 	
 }

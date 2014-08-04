@@ -12,9 +12,11 @@
 		<div class="media-body">
 			<div class="media" id="top-menu">
 				<div class="pull-left tm-icon">
-					<a data-drawer="messages" class="drawer-toggle" href="/min/web/tarefas/"> 
-						<i 	class="sa-top-message"></i> 
-                        <i class="n-count animated">0</i>
+					<a data-drawer="messages" class="drawer-toggle" onclick="Tarefa.exibirTarefasBlocoTopo()"> 
+						<i 	class="sa-top-message"></i>
+						<!-- 
+						 --> 
+                        <i class="n-count animated" style="display:none">0</i>
                         <span>Mensagens</span>
 					</a>
 				</div>

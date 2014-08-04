@@ -13,6 +13,8 @@
 		<!-- Profile Menu -->
 		<div class="text-center s-widget m-b-25 dropdown" id="profile-menu">
 			<div style="height: 10px;  margin: 10px; background-color: ${ loggedUser.pessoa.cor }"></div>
+			<input type="hidden" id="usuario-logado-id" value="${ loggedUser.id }"/>
+			<input type="hidden" id="usuario-logado-pessoa-id" value="${ loggedUser.pessoa.id }"/>
 			<a href="" data-toggle="dropdown"> <img
 				class="profile-pic animated" src="<spring:url value='/web/upload/${ loggedUser.pessoa.imagem.id }' />" alt="">
 			</a>

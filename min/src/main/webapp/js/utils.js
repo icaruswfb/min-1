@@ -39,6 +39,12 @@ Utils = {
 		str += ":" + ((date.getMinutes() < 10 ? "0" : "") + date.getMinutes());
 		return str;
 	},
+	formatDate:function(date){
+		var str = "" + ((date.getDate() < 10 ? "0" : '') + date.getDate()) ;
+		str += "/" + (((date.getMonth() + 1) < 10 ? "0" : "") + (date.getMonth() + 1)) ;
+		str += "/" + date.getFullYear();
+		return str;
+	},
 	formatTime:function(date){
 		var str = "" ;
 		str += " " + ((date.getHours() < 10 ? "0" : "") + date.getHours());
