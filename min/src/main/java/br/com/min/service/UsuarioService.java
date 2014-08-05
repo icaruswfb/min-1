@@ -1,9 +1,12 @@
 package br.com.min.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.min.dao.UsuarioDAO;
+import br.com.min.entity.Role;
 import br.com.min.entity.Usuario;
 
 @Service
@@ -18,6 +21,10 @@ public class UsuarioService {
 	public Usuario findById(Long id){
 		return dao.findById(id);
 	}
+	public List<Usuario> findByRole(Role role){
+		return dao.findByRole(role);
+	}
+	
 	public Usuario findById(String login){
 		return dao.findByLogin(login);
 	}

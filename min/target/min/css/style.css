@@ -336,7 +336,7 @@ blockquote small {
 }
 
 .drawer.toggled {
-    height: 308px;
+    min-height: 100px;
     margin-bottom: 15px !important;
     display: block;
     -webkit-animation-name: flipInX;
@@ -2494,4 +2494,88 @@ a.list-group-item.active > .badge,
 
 #pagamento-erro-block{
 	display: none;
+}
+
+#historico-block .overflow{
+}
+
+#messages{
+	position: absolute;
+	width: 50%;
+	background-color: rgba(0,0,0,0.9);
+	z-index: 9999;
+	box-shadow: 3px 3px 5px #000;
+}
+
+.imagem-notificacao{
+	vertical-align: middle;
+	text-align: center;
+	width: 40px;
+	height: 40px;
+	overflow: hidden;
+	background-position: center;
+	background-size: auto 40px;
+	background-repeat: no-repeat;
+}
+
+.checkbox-mensagem{
+	border: 1px solid rgba(255,255,255,0.4);
+	height: 17px;
+	width: 16px;
+	float: left;
+	margin-right: 10px;
+	margin-top: 8px;
+	cursor: pointer;
+	background-color: rgba(0,0,0,0.1);
+	font-weight: normal;
+	font-style: normal;
+}
+
+
+
+.lido{
+	background-color: transparent;
+}
+
+.nao-lido{
+	background-color: rgba(255, 255, 255, 0.1);
+	font-weight: bold;
+}
+
+.nao-lido .checkbox-mensagem:hover{
+	background-color: rgba(255,255,255, 0.6);
+	cursor: pointer;
+}
+
+.nao-lido .checkbox-mensagem{
+}
+.tarefa-geral .descricao,	
+.nao-lido .descricao{
+	font-weight: normal;
+	font-style: normal;
+}
+
+.lido .checkbox-mensagem:hover{
+	background-color: rgba(255, 255, 255, 0.6);
+	cursor: not-allowed;
+}
+.lido .checkbox-mensagem{
+	background-color: rgba(255, 255, 255, 0.6);
+}
+.tarefa-geral {
+	font-weight: bold;
+	font-style: italic;
+	background-color: rgba(0,0,0,0.3);
+}
+.checkbox-mensagem-muted{
+	border: none;
+	height: 19px;
+	width: 18px;
+	float: left;
+	margin-right: 10px;
+	margin-top: 10px;
+}
+
+#mensagens-top-list{
+	
 }

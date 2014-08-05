@@ -1,5 +1,7 @@
 package br.com.min.dao;
 
+import java.util.List;
+
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -7,6 +9,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import br.com.min.entity.Role;
 import br.com.min.entity.Usuario;
 import br.com.min.utils.Utils;
 
@@ -55,6 +58,13 @@ public class UsuarioDAO {
 		criteria.add(Restrictions.eq("login", login));
 		Usuario usuario = (Usuario) criteria.uniqueResult();
 		return usuario;
+	}
+
+	public List<Usuario> findByRole(Role role) {
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(Usuario.class);
+		criteria.add(Restrictions.eq("role", role));
+		return criteria.list();
 	}
 	
 }

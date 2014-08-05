@@ -1,6 +1,7 @@
 package br.com.min.dao;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -51,6 +52,24 @@ public class PessoaDAO {
 			}
 			if(entity.getFuncionario() != null){
 				andPredicates.add(Restrictions.eq("funcionario", entity.getFuncionario()));
+			}
+			if(entity.getAniversario() != null){
+				Calendar fim = Calendar.getInstance();
+				fim.setTime(entity.getAniversario());
+				fim.set(Calendar.HOUR_OF_DAY, 23);
+				fim.set(Calendar.MINUTE, 59);
+				fim.set(Calendar.SECOND, 59);
+				fim.set(Calendar.MILLISECOND, 999);
+				fim.set(Calendar.YEAR, 1900);
+				Calendar inicio = Calendar.getInstance();
+				inicio.setTime(entity.getAniversario());
+				inicio.set(Calendar.HOUR_OF_DAY, 0);
+				inicio.set(Calendar.MINUTE, 0);
+				inicio.set(Calendar.SECOND, 0);
+				inicio.set(Calendar.MILLISECOND, 0);
+				inicio.set(Calendar.YEAR, 1900);
+				
+				andPredicates.add(Restrictions.between("aniversario", inicio.getTime(), fim.getTime()));
 			}
 			Criterion[] orPredicatesArray = new Criterion[orPredicates.size()];
 			orPredicatesArray = orPredicates.toArray(orPredicatesArray);

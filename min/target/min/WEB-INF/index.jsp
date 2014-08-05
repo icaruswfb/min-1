@@ -18,72 +18,15 @@
 
 		<jsp:include page="template/sidebar.jsp"></jsp:include>
 
-
-
-
 		<!-- Content -->
 		<section id="content" class="container">
-
+			
 			<h4 class="page-title">HOME</h4>
 
 			<div class="block-area">
 				<div class="row">
-					<div class="col-md-12">
-						<!-- Main Chart -->
-						<div class="tile">
-							<h2 class="tile-title">Estatísticas Clientes x Semana</h2>
-							<div class="tile-config dropdown">
-								<a data-toggle="dropdown" href="" class="tile-menu"></a>
-								<ul class="dropdown-menu animated pull-right text-right">
-									<li><a class="tile-info-toggle" href="">Chart
-											Information</a></li>
-									<li><a href="">Refresh</a></li>
-									<li><a href="">Settings</a></li>
-								</ul>
-							</div>
-							<div class="p-10">
-								<div id="line-chart" class="main-chart" style="height: 250px"></div>
-
-								<div class="chart-info">
-									<ul class="list-unstyled">
-										<li class="m-b-10">Total Sales 1200 <span
-											class="pull-right text-muted t-s-0"> <i
-												class="fa fa-chevron-up"></i> +12%
-										</span>
-										</li>
-										<li><small> Local 640 <span
-												class="pull-right text-muted t-s-0"><i
-													class="fa m-l-15 fa-chevron-down"></i> -8%</span>
-										</small>
-											<div class="progress progress-small">
-												<div class="progress-bar progress-bar-warning"
-													role="progressbar" aria-valuenow="40" aria-valuemin="0"
-													aria-valuemax="100" style="width: 40%"></div>
-											</div></li>
-										<li><small> Foreign 560 <span
-												class="pull-right text-muted t-s-0"> <i
-													class="fa m-l-15 fa-chevron-up"></i> -3%
-											</span>
-										</small>
-											<div class="progress progress-small">
-												<div class="progress-bar progress-bar-info"
-													role="progressbar" aria-valuenow="40" aria-valuemin="0"
-													aria-valuemax="100" style="width: 60%"></div>
-											</div></li>
-									</ul>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="clearfix"></div>
-			</div>
-
-			<div class="block-area">
-				<div class="row">
 					<!-- Calendario do dia -->
-					<div class="col-md-9 clearfix">
+					<div class="col-md-8 clearfix">
 
 						<div id="calendar" class="p-relative p-10 m-b-20">
 							<!-- Calendar Views -->
@@ -102,83 +45,21 @@
 					</div>
 
 					<!-- Tasks TO DO -->
-					<div class="col-md-3">
+					<div class="col-md-4">
 						<div class="tile">
-							<h2 class="tile-title">Tasks to do</h2>
+							<h2 class="tile-title">Próximas tarefas</h2>
 							<div class="tile-config dropdown">
 								<a data-toggle="dropdown" href="" class="tile-menu"></a>
 								<ul class="dropdown-menu animated pull-right text-right">
-									<li id="todo-add"><a href="">Add New</a></li>
-									<li id="todo-refresh"><a href="">Refresh</a></li>
-									<li id="todo-clear"><a href="">Clear All</a></li>
+									<li id="todo-add"><a href="/min/web/tarefas/">Ver todas/Enviar mensagens</a></li>
+									<li id="todo-refresh"><a href="javascript:Home.exibirProximasTarefas()">Atualizar</a></li>
 								</ul>
 							</div>
 
-							<div class="listview todo-list sortable">
-								<div class="media">
-									<div class="checkbox m-0">
-										<label class="t-overflow"> <input type="checkbox">
-											Curabitur quis nisi ut nunc gravida suscipis
-										</label>
-									</div>
-								</div>
-								<div class="media">
-									<div class="checkbox m-0">
-										<label class="t-overflow"> <input type="checkbox">
-											Suscipit at feugiat dewoo
-										</label>
-									</div>
-
-								</div>
-								<div class="media">
-									<div class="checkbox m-0">
-										<label class="t-overflow"> <input type="checkbox">
-											Gravida wendy lorem ipsum seen
-										</label>
-									</div>
-
-								</div>
-								<div class="media">
-									<div class="checkbox m-0">
-										<label class="t-overflow"> <input type="checkbox">
-											Fedrix quis nisi ut nunc gravida suscipit at feugiat purus
-										</label>
-									</div>
-
-								</div>
+							<div class="listview" id="tarefas-todo">
+							
 							</div>
 
-							<h2 class="tile-title">Completed Tasks</h2>
-
-							<div class="listview todo-list sortable">
-								<div class="media">
-									<div class="checkbox m-0">
-										<label class="t-overflow"> <input type="checkbox"
-											checked="checked"> Motor susbect win latictals bin
-											the woodat cool
-										</label>
-									</div>
-
-								</div>
-								<div class="media">
-									<div class="checkbox m-0">
-										<label class="t-overflow"> <input type="checkbox"
-											checked="checked"> Wendy mitchel susbect win
-											latictals bin the woodat cool
-										</label>
-									</div>
-
-								</div>
-								<div class="media">
-									<div class="checkbox m-0">
-										<label class="t-overflow"> <input type="checkbox"
-											checked="checked"> Latictals bin the woodat cool for
-											the win
-										</label>
-									</div>
-
-								</div>
-							</div>
 						</div>
 					</div>
 
@@ -300,6 +181,8 @@
 	
 	<script type="text/javascript">
 		$("#home-menu").addClass("active");
+		Home.isHome = true;
+		Home.exibirProximasTarefas();
 	</script>
 	
 </body>

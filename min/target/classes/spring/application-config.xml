@@ -5,12 +5,15 @@
 	xmlns:p="http://www.springframework.org/schema/p"
 	xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:task="http://www.springframework.org/schema/task"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
 	   					   http://www.springframework.org/schema/beans/spring-beans.xsd
 						   http://www.springframework.org/schema/context 
 						   http://www.springframework.org/schema/context/spring-context.xsd
 						   http://www.springframework.org/schema/security
 						   http://www.springframework.org/schema/security/spring-security.xsd
+						    http://www.springframework.org/schema/task
+						   http://www.springframework.org/schema/task/spring-task.xsd
 						   http://www.springframework.org/schema/tx
 						   http://www.springframework.org/schema/tx/spring-tx.xsd">
 
@@ -68,5 +71,33 @@
 	
 	<bean id="logonProvider" class="br.com.min.controller.LogonProvider" />
  -->
+	
+	<bean id="aniversarioSchedule" class="br.com.min.schedule.AniversarioSchedule">
+	</bean>
+	<bean id="estoqueSchedule" class="br.com.min.schedule.EstoqueSchedule">
+	</bean>
+	<task:scheduler id="scheduler" pool-size="10"/>
+	<task:executor id="executor" pool-size="10"/>
+	<task:annotation-driven scheduler="scheduler" executor="executor" />
+	
+	<task:scheduled-tasks>
+	<!-- 
+		<task:scheduled ref="aniversarioSchedule" method="avisarProximosAniversarios" cron="1 0 0 * * *"/>
+	 -->
+	 	<task:scheduled ref="aniversarioSchedule" method="avisarProximosAniversarios" fixed-rate="86400000" initial-delay="0"/>
+	 	<task:scheduled ref="estoqueSchedule" method="avisarEstoqueBaixo" fixed-rate="86400000" initial-delay="0"/>
+	</task:scheduled-tasks>
+	
+	<!-- 
+	<bean id="aniversarioJob" class="org.springframework.scheduling.timer.MethodInvokingTimerTaskFactoryBean">
+		<property name="targetObject" ref="aniversarioSchedule" ></property>
+		<property name="targetMethod" value="avisarProximosAniversarios" ></property>
+	</bean>
+	<bean id="aniversarioTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+		<property name="jobDetail" ref="aniversarioJob" />
+		<property name="repeatInterval" value="5" />
+		<property name="startDelay" value="1" />
+	</bean>
+	 -->
 	
 </beans>

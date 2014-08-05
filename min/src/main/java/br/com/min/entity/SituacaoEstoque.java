@@ -38,7 +38,7 @@ public enum SituacaoEstoque {
 			return "danger";
 		}
 		public String getTexto(){
-			return "O estoque está muito baixo da quantidade mínima aceitável.";
+			return "O estoque está muito abaixo da quantidade mínima aceitável.";
 		}
 		public String getNome(){
 			return "Crítica";

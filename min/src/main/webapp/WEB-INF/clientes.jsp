@@ -21,11 +21,13 @@
 		<section id="content" class="container">
 
 			<h4 class="page-title">CLIENTES</h4>
-			<div class="block-area" id="buttons">
-                 <a href="<spring:url value='/web/clientes/novo/p' />">
-	                 <button class="btn m-r-5" >Novo cliente</button>
-                 </a>
-             </div>
+			<c:if test="${ hasRole['CAIXA'] }">
+				<div class="block-area" id="buttons">
+	                 <a href="<spring:url value='/web/clientes/novo/p' />">
+		                 <button class="btn m-r-5" >Novo cliente</button>
+	                 </a>
+	             </div>
+			</c:if>
 			 <!-- Table Hover -->
                 <div class="block-area" id="tableHover">
                         <table class="table table-hover tile">

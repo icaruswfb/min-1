@@ -42,20 +42,22 @@
 	<bean id="txManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
+    <bean id="multipartResolver"
+        class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    </bean>
+    
 	<tx:annotation-driven transaction-manager="txManager"/>
 <!-- 
 	    
 	
-	
- -->
-	<security:http auto-config="true"  use-expressions="true" access-denied-page="/login">
+	<security:http auto-config="true"  use-expressions="true" access-denied-page="/login.jsp">
 		<security:intercept-url pattern="/**" access="hasRole('ADMIN') || hasRole('CAIXA') || hasRole('OPERACIONAL')"/>
 		
 		<security:form-login 
-			login-page="/web/login" 
+			login-page="/login.jsp" 
 			default-target-url="/"
-			authentication-failure-url="/web/login?error=true"/>
-		<security:logout invalidate-session="true"  logout-success-url="/web/login" logout-url="/web/logout"/>
+			authentication-failure-url="/login.jsp?error=true"/>
+		<security:logout invalidate-session="true"  logout-success-url="/login.jsp" logout-url="/web/logout"/>
 		
 	</security:http>
 	
@@ -65,5 +67,18 @@
 	</security:authentication-manager>
 	
 	<bean id="logonProvider" class="br.com.min.controller.LogonProvider" />
+ -->
+	
+	<bean id="aniversarioSchedule" class="br.com.min.schedule.AniversarioSchedule">
+	</bean>
+	<bean id="aniversarioJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="aniversarioSchedule" ></property>
+		<property name="targetMethod" value="avisarProximosAniversarios" ></property>
+	</bean>
+	<bean id="aniversarioTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+		<property name="jobDetail" ref="aniversarioJob" />
+		<property name="repeatInterval" value="5000" />
+		<property name="startDelay" value="1000" />
+	</bean>
 	
 </beans>

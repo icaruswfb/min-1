@@ -14,6 +14,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
+import br.com.min.utils.Utils;
+
 
 @Entity
 public class Pessoa implements Serializable{
@@ -22,9 +24,6 @@ public class Pessoa implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 7439432709290331921L;
-
-	@Transient
-	private static final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM");
 	
 	private Long id;
 	private String nome;
@@ -97,14 +96,15 @@ public class Pessoa implements Serializable{
 		if(aniversario == null){
 			return null;
 		}
-		return sdf.format(aniversario);
+		return Utils.dayMonthFormat.format(aniversario);
 	}
 	public void setAniversarioStr(String data){
 		try {
 			if(data == null || data.isEmpty()){
 				return;
 			}
-			aniversario = sdf.parse(data);
+			data += "/1900";
+			aniversario = Utils.dateFormat.parse(data);
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
 		}
