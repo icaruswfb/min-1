@@ -3,7 +3,6 @@ package br.com.min.utils;
 import java.text.SimpleDateFormat;
 import java.util.Map;
 
-import javax.persistence.Transient;
 import javax.servlet.http.HttpServletRequest;
 
 import br.com.itau.internet.seguranca.jarvis.sectoken.JarvisToken;
@@ -27,6 +26,10 @@ public class Utils {
 			throw new RuntimeException(e);
 		}
 		return encryptedPassword;
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(encriyt("admin"));
 	}
 	
 	public static boolean isTokenValid(String encrypted, String compare){
