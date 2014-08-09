@@ -31,7 +31,7 @@ import br.com.min.utils.Utils;
 public class AgendaController {
 
 	@Autowired
-	private HomeController homeController;
+	private FuncionarioController funcionarioController;
 	@Autowired
 	private ServicoService servicoService;
 	@Autowired
@@ -40,8 +40,8 @@ public class AgendaController {
 	private PessoaService pessoaService;
 	
 	@RequestMapping("/")
-	public ModelAndView index(){
-		ModelAndView mv = criarViewAgenda();
+	public ModelAndView index(HttpServletRequest request){
+		ModelAndView mv = criarViewAgenda(request);
 		Date hoje = new Date();
 		mv.addObject("dataMillis", hoje.getTime());
 		mv.addObject("dataStr", Utils.dateFormat.format(hoje));
@@ -52,9 +52,10 @@ public class AgendaController {
 		pessoa.setUsuario(null);
 	}
 	
-	private ModelAndView criarViewAgenda(){
+	private ModelAndView criarViewAgenda(HttpServletRequest request){
 		ModelAndView mv = new ModelAndView("agenda");
-		List<Pessoa> pessoas = homeController.pesquisar(null, null);
+		List<Pessoa> pessoas = pessoaService.listarClientes();
+		pessoas.addAll(funcionarioController.listarFuncionariosParaAgenda(request));
 		List<Servico> servicos = servicoService.listar();
 		mv.addObject("pessoas", pessoas);
 		mv.addObject("servicos", servicos);
@@ -65,8 +66,8 @@ public class AgendaController {
 	public ModelAndView exibirAgenda(
 			@PathVariable("dia") Integer dia, 
 			@PathVariable("mes")Integer mes, 
-			@PathVariable("ano") Integer ano){
-		ModelAndView mv = criarViewAgenda();
+			@PathVariable("ano") Integer ano, HttpServletRequest request){
+		ModelAndView mv = criarViewAgenda(request);
 		Calendar data = Calendar.getInstance();
 		data.set(Calendar.DAY_OF_MONTH, dia);
 		data.set(Calendar.MONTH, mes - 1);
@@ -196,7 +197,7 @@ public class AgendaController {
 	private void verificarDisponibilidade(Horario horario){
 		List<Horario> search = horarioService.findHorario(horario);
 		if(search != null && !search.isEmpty()){
-			throw new HorarioOcupadoException("Hor·rio j· ocupado");
+			throw new HorarioOcupadoException("Hor√°rio j√° ocupado");
 		}
 	}
 	

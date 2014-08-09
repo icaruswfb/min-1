@@ -48,7 +48,7 @@ Agenda = {
 				
 				var funcionario = Agenda.funcionarios[funcionarioIndex];
 				$("#funcionario-select").val(funcionario.id).change();
-				
+				Agenda.calcularHorario();
 				$("a[href='#modalWider']").click();
 				
 				Agenda.selecionarData();
@@ -63,7 +63,7 @@ Agenda = {
 						var html = "<table class='calendario-table table tile'></table>";
 						$("#calendar").html(html);
 						
-						//Colunas por funcion·rios
+						//Colunas por funcion√°rios
 						var header = "<thead><tr><th class='first'></th>";
 						var width = $(".calendario-table").width() - 50 / funcionarios.length;
 						for(var i = 0; i < funcionarios.length; i++){
