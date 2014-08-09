@@ -133,6 +133,9 @@ Agenda = {
 				Agenda.horariosPorCliente = {};
 				for(var i = 0; i < horarios.length; i++){
 					var horario = horarios[i];
+					if(horario.folga){
+						continue;
+					}
 					var horariosCliente = Agenda.horariosPorCliente[horario.cliente.id];
 					if(!horariosCliente){
 						horariosCliente = [];
@@ -236,15 +239,22 @@ Agenda = {
 			},
 			criarTooltip:function(horario, divHorario){
 				divHorario.attr('style', 'border-radius: 4px 4px 0 0 !important;');
-				var div = "<div class='titulo-horario'><a href='/min/web/clientes/editar/"+horario.cliente.id+"'>" + horario.cliente.nome + 
-									"</a></div>";
+				var div = "<div class='titulo-horario'>";
+				if( horario.folga){
+					div += "<a>Folga</a>";
+				}else{
+					div += "<a href='/min/web/clientes/editar/"+horario.cliente.id+"'>" + horario.cliente.nome + 
+					"</a>";
+				}
+				div += "</div>";
 				divHorario.html(div);
 				var tooltip = "<div class='tooltip-popup' style='width:"+divHorario.width()+"px'>";
-				var horariosCliente = Agenda.horariosPorCliente[horario.cliente.id];
-				for(var x = 0; x < horariosCliente.length; x++){
-					tooltip += "<div class='horarios-cliente'>";
+				if( ! horario.folga){
+					var horariosCliente = Agenda.horariosPorCliente[horario.cliente.id];
+					for(var x = 0; x < horariosCliente.length; x++){
+						tooltip += "<div class='horarios-cliente'>";
 						var horarioCliente = horariosCliente[x];
-
+						
 						var inicioData = new Date(horarioCliente.inicio);
 						var terminoDate = new Date(horarioCliente.termino);
 						
@@ -252,7 +262,7 @@ Agenda = {
 						var inicioMin = inicioData.getMinutes();
 						var terminoHora = terminoDate.getHours();
 						var terminoMin = terminoDate.getMinutes();
-
+						
 						tooltip += '<div style="height: 10px; width: 100%; margin-bottom: 10px; background-color: '+horarioCliente.funcionario.cor+';"></div>';
 						tooltip += "<p>";
 						tooltip += "" + inicioHora + ":" + (inicioMin < 10 ? "0" + inicioMin : inicioMin) + " - " + terminoHora + ":" + (terminoMin < 10 ? "0" + terminoMin : terminoMin) + "" ;
@@ -269,6 +279,14 @@ Agenda = {
 							tooltip += "<p>" + horarioCliente.observacao + "</p>";
 							
 						}
+						tooltip += "</div>";
+					}
+				}else{
+					tooltip += "<div class='horarios-cliente'>";
+					tooltip += "<a href='javascript:Agenda.delelarHorario("+horario.id+")'class='m-r-5' style='float: right;'><img src='/min/img/icon/delete.png' /></a>";
+					if(horario.observacao){
+						tooltip += "<p>" + horario.observacao + "</p>";
+					}
 					tooltip += "</div>";
 				}
 				tooltip + "</div>";
@@ -315,16 +333,34 @@ Agenda = {
 				var horarioFim = $("#horario-fim-agenda").val();
 				var servicos = $("#servico-select").val();
 				var obs = $("#observacao").val();
-				if(clienteId == null || horarioFim == '' || servicos == null){
-					Utils.showError("Preencha todos os campos para agendar um novo hor&aacute;rio");
-					return false;
+				var folga = $("#folga").val();
+				if(folga == "true"){
+					if(horarioFim == '' || horarioInicio == ''){
+						Utils.showError("Preencha todos os campos para agendar um novo hor&aacute;rio");
+						return false;
+					}
+				}else{
+					if(clienteId == null || horarioFim == '' || servicos == null || horarioInicio == ''){
+						Utils.showError("Preencha todos os campos para agendar um novo hor&aacute;rio");
+						return false;
+					}
 				}
-				var request = {
+				var request = folga == "true" ?
+				{
+					funcionarioId: funcionarioId.toString(),
+					inicio: dataStr + " " + horarioInicio,
+					termino: dataStr + " " + horarioFim,
+					folga: folga,
+					observacao: obs
+				}
+				: 
+				{
 						clienteId : clienteId.toString(),
 						funcionarioId: funcionarioId.toString(),
 						inicio: dataStr + " " + horarioInicio,
 						termino: dataStr + " " + horarioFim,
 						servicosId: servicos.toString(),
+						folga: folga,
 						observacao: obs
 				};
 				
@@ -339,5 +375,18 @@ Agenda = {
 						Utils.showError("Hor&aacute;rio j&aacute; est&aacute; ocupado.");
 					}
 				});
+			},
+			
+			showFolga:function(){
+				var checked = !($("#folga").val() == "true");
+				$("#folga").val( checked );
+				if(checked){
+					$("#checkbox-folga").addClass("checkbox-checked");
+					$(".horario-trabalho").hide(300);
+				}else{
+					$("#checkbox-folga").removeClass("checkbox-checked");
+					$(".horario-trabalho").show(300);
+				}
 			}
+			
 };

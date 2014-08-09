@@ -28,6 +28,7 @@ public class Horario implements Serializable{
 	private Date termino;
 	private String observacao;
 	private Date dataCriacao;
+	private Boolean folga;
 	
 	public Long getId() {
 		return id;
@@ -76,6 +77,12 @@ public class Horario implements Serializable{
 	}
 	public void setDataCriacao(Date dataCriacao) {
 		this.dataCriacao = dataCriacao;
+	}
+	public Boolean getFolga() {
+		return folga;
+	}
+	public void setFolga(Boolean folga) {
+		this.folga = folga;
 	}
 	
 }

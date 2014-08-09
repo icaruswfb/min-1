@@ -42,6 +42,7 @@ public class ProdutoDAO {
 			predicatesArray = predicates.toArray(predicatesArray);
 			criteria = criteria.add(Restrictions.or(predicatesArray));
 		}
+		criteria.addOrder(Order.asc("data"));
 		List<Produto> entities = criteria.list();
 		return entities;
 	}

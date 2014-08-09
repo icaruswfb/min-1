@@ -161,18 +161,28 @@ public class AgendaController {
 	
 	@RequestMapping(value="/agendar", method=RequestMethod.POST)
 	@ResponseBody()
-	public String agendar(Long clienteId, Long funcionarioId, String inicio, String termino, String  servicosId, String observacao){
+	public String agendar(Long clienteId, Long funcionarioId, String inicio, String termino, String  servicosId, String observacao, Boolean folga){
 		 try {
 			 Horario horario = new Horario();
-			 Pessoa cliente = pessoaService.findById(clienteId);
+			 horario.setFolga(folga);
+			 if( ! horario.getFolga()){
+				 Pessoa cliente = pessoaService.findById(clienteId);
+				 horario.setCliente(cliente);
+				 horario.getServicos().addAll(findServicos(servicosId));
+			 }
 			 Pessoa funcionario = pessoaService.findById(funcionarioId);
-			 horario.setCliente(cliente);
 			 horario.setFuncionario(funcionario);
 			Date dataInicio = Utils.dateTimeFormat.parse(inicio);
+			Calendar dataInicioCalendar = Calendar.getInstance();
+			dataInicioCalendar.setTime(dataInicio);
+			if(dataInicioCalendar.get(Calendar.HOUR_OF_DAY) < 8){
+				dataInicioCalendar.set(Calendar.HOUR_OF_DAY, 8);
+				dataInicioCalendar.set(Calendar.MINUTE, 0);
+				dataInicio = dataInicioCalendar.getTime();
+			}
 			Date dataTermino = Utils.dateTimeFormat.parse(termino);
 			horario.setInicio(dataInicio);
 			horario.setTermino(dataTermino);
-			horario.getServicos().addAll(findServicos(servicosId));
 			horario.setObservacao(observacao);
 			verificarDisponibilidade(horario);
 			horarioService.persist(horario);

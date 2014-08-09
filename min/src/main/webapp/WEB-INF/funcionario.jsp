@@ -63,6 +63,23 @@
 			                	
 			                	 </div>
 							</form>
+							<c:if test="${ loggedUser.pessoa.id eq funcionario.id }">
+								<div class="tile m-t-20 w-100-p">
+									<h2 class="tile-title">Próximas tarefas</h2>
+									<div class="tile-config dropdown">
+										<a data-toggle="dropdown" href="" class="tile-menu"></a>
+										<ul class="dropdown-menu animated pull-right text-right">
+											<li id="todo-add"><a href="/min/web/tarefas/">Ver todas/Enviar mensagens</a></li>
+											<li id="todo-refresh"><a href="javascript:Home.exibirProximasTarefas()">Atualizar</a></li>
+										</ul>
+									</div>
+		
+									<div class="listview overflow" id="tarefas-todo" style="height: 400px">
+									
+									</div>
+		
+								</div>
+							</c:if>
 	           			</div>
 	           			<div class="col-md-9">
 	           				<c:if test="${ canEdit }">
@@ -282,6 +299,8 @@
 		<c:forEach var="error" items="${ errorMessages }">
 			Utils.showError("${error}");
 		</c:forEach> 
+		Home.isHome = true;
+		Home.exibirProximasTarefas();
 	</script>
 </body>
 </html>

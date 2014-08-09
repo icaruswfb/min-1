@@ -51,7 +51,7 @@
 			<div class="s-widget-body" id="feed-agenda">
 			</div>
 		</div>
-		<!-- Feeds -->
+		<!-- Feeds 
 		<div class="s-widget m-b-25">
 			<h2 class="tile-title">Notícias</h2>
 
@@ -59,6 +59,7 @@
 				<div id="news-feed"></div>
 			</div>
 		</div>
+		-->
 
 	</div>
 
@@ -81,6 +82,9 @@
 	             <c:if test="${ hasRole['ADMIN'] or hasRole['CAIXA'] }">
     	         	<li><a id="caixa-menu" href="<spring:url value='/web/report/caixa' />">Caixa</a></li>
              	</c:if>
+             	<c:if test="${ hasRole['ADMIN'] }">
+   	         		<li><a id="fluxo-menu" href="<spring:url value='/web/report/fluxoFinanceiro' />">Fluxo financeiro</a></li>
+   	         	</c:if>
 				<li><a id="comissao-menu" href="<spring:url value='/web/report/comissao' />">Comissão</a></li>
              </ul>
          </li>

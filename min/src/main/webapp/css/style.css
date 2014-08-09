@@ -393,7 +393,7 @@ blockquote small {
     padding: 2px 3px 3px;
     border-radius: 2px !important;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.06);
-    margin: 7px 0 0 -13px;
+    margin: 7px 0 0 27px;
     font-style: normal;
     line-height: 100%;
     -webkit-animation-name: bounceIn;
@@ -2529,6 +2529,7 @@ a.list-group-item.active > .badge,
 	background-color: rgba(0,0,0,0.1);
 	font-weight: normal;
 	font-style: normal;
+	cursor: pointer;
 }
 
 
@@ -2542,9 +2543,8 @@ a.list-group-item.active > .badge,
 	font-weight: bold;
 }
 
-.nao-lido .checkbox-mensagem:hover{
-	background-color: rgba(255,255,255, 0.6);
-	cursor: pointer;
+.checkbox-mensagem:hover{
+	border: 1px solid rgba(255,255,255,0.8);
 }
 
 .nao-lido .checkbox-mensagem{
@@ -2578,4 +2578,53 @@ a.list-group-item.active > .badge,
 
 #mensagens-top-list{
 	
+}
+
+.checkbox-checked{
+	background-color: rgba(255, 255, 255, 0.6);
+}
+
+.saldo{
+	background-color: transparent;
+	
+}
+.debito{
+	color: #ff7676;
+}
+
+.valor{
+	text-align: right;
+}
+
+.data-comissao{
+	float: left;
+	margin-right: 10px;
+	margin-top: 8px;
+}
+
+.descricao-comissao{
+	float: left;
+	margin-right: 10px;
+	margin-top: 8px;
+}
+.valor-comissao{
+	float: right;
+	margin-right: 10px;
+	margin-top: 8px;
+}
+.valor-comissao .mask-money{
+	float: right;
+}
+
+.valor-comissao .prefix-money {
+	float: left;
+}
+
+.comissao-detalhe{
+	float: left;
+	width: 100%;
+}
+
+.comissao-detalhe .pago{
+	cursor: not-allowed; 
 }

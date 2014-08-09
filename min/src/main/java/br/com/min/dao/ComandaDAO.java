@@ -16,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import br.com.min.entity.Comanda;
-import br.com.min.entity.LancamentoComissao;
 import br.com.min.entity.Pagamento;
-import br.com.min.entity.Pessoa;
-import br.com.min.entity.TipoComissao;
 
 @Repository
 public class ComandaDAO {

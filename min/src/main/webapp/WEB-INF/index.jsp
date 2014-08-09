@@ -56,7 +56,7 @@
 								</ul>
 							</div>
 
-							<div class="listview" id="tarefas-todo">
+							<div class="listview overflow" id="tarefas-todo" style="height: 400px">
 							
 							</div>
 

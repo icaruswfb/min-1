@@ -37,50 +37,58 @@
                                     <form >
 					
 										<!-- Novo horário -->
-									                 <label>Data</label>
-					                                <input  type="text" readonly="readonly" disabled="disabled" class="form-control input-sm"  id="dia-agenda" value="${ dataStr }"/>
-					                                <input type="hidden" id="dia-agenda-millis" value="${ dataMillis }"/>
-					                                <br />
-									                 <label>Cliente</label>
-									                 <select data-placeholder="Selecionar cliente..." class="tag-select-limited" multiple="multiple" id="cliente-select">
-									                 	<c:forEach var="cliente" items="${ pessoas }">
-									                 		<c:if test="${ cliente.funcionario eq false }">
-										                 		<option value="${ cliente.id }">${ cliente.nome } [${cliente.id }]</option>
-									                 		</c:if>
-									                 	</c:forEach>
-								                    </select>
-									                 <label class="m-t-10">Funcionário</label>
-									                  <select data-placeholder="Selecionar funcionário..." class="select custom-select" id="funcionario-select">
-									                 	<c:forEach var="funcionario" items="${ pessoas }">
-									                 		<c:if test="${ funcionario.funcionario eq true }">
-										                 		<option value="${ funcionario.id }">${ funcionario.nome }</option>
-									                 		</c:if>
-									                 	</c:forEach>
-								                    </select>
-								            
-								                 <label class="m-t-10">Horário</label>
-								                 <div class="input-icon datetime-pick time-only">
-					                                <input data-format="hh:mm" type="text" class="form-control input-sm" id="horario-inicio-agenda"/>
-					                                <span class="add-on">
-					                                    <i class="sa-plus"></i>
-					                                </span>
-					                            </div>
-								                 <label class="m-t-10">Serviços</label>
-								                  <select data-placeholder="Selecionar serviços..." class="tag-select" multiple="multiple" id="servico-select" onchange="Agenda.calcularHorario()">
-								                 	<c:forEach var="servico" items="${ servicos }">
-								                 		<option value="${ servico.id }">${ servico.nome }</option>
+							                 <label>Data</label>
+			                                <input  type="text" readonly="readonly" disabled="disabled" class="form-control input-sm"  id="dia-agenda" value="${ dataStr }"/>
+			                                <input type="hidden" id="dia-agenda-millis" value="${ dataMillis }"/>
+			                                <br />
+			                                <div class="m-b-10">
+                    							<div class="checkbox-mensagem" id="checkbox-folga" style="margin-top: 0px" onclick="Agenda.showFolga();" ></div>
+                    							<input type="hidden" name="folga" value="false" id="folga"/> Folga
+			                                </div>
+			                                <div class="horario-trabalho">
+								                 <label>Cliente</label>
+								                 <select data-placeholder="Selecionar cliente..." class="tag-select-limited" multiple="multiple" id="cliente-select">
+								                 	<c:forEach var="cliente" items="${ pessoas }">
+								                 		<c:if test="${ cliente.funcionario eq false }">
+									                 		<option value="${ cliente.id }">${ cliente.nome } [${cliente.id }]</option>
+								                 		</c:if>
 								                 	</c:forEach>
 							                    </select>
-								                 <label class="m-t-10">Horário de término</label>
-								                 <div class="input-icon datetime-pick time-only">
-					                                <input data-format="hh:mm" type="text" class="form-control input-sm" id="horario-fim-agenda"/>
-					                                <span class="add-on">
-					                                    <i class="sa-plus"></i>
-					                                </span>
-					                            </div>
-					                            
-							                    <label class="m-t-10">Observações</label>
-							                    <textarea class="form-control overflow" rows="3"  id="observacao"></textarea>
+			                                </div>
+							                 <label class="m-t-10 ">Funcionário</label>
+							                  <select data-placeholder="Selecionar funcionário..." class="select custom-select" id="funcionario-select">
+							                 	<c:forEach var="funcionario" items="${ pessoas }">
+							                 		<c:if test="${ funcionario.funcionario eq true }">
+								                 		<option value="${ funcionario.id }">${ funcionario.nome }</option>
+							                 		</c:if>
+							                 	</c:forEach>
+						                    </select>
+						            
+						                 <label class="m-t-10">Horário</label>
+						                 <div class="input-icon datetime-pick time-only">
+			                                <input data-format="hh:mm" type="text" class="form-control input-sm" id="horario-inicio-agenda"/>
+			                                <span class="add-on">
+			                                    <i class="sa-plus"></i>
+			                                </span>
+			                            </div>
+			                            <div class="horario-trabalho">
+							                 <label class="m-t-10">Serviços</label>
+							                  <select data-placeholder="Selecionar serviços..." class="tag-select" multiple="multiple" id="servico-select" onchange="Agenda.calcularHorario()">
+							                 	<c:forEach var="servico" items="${ servicos }">
+							                 		<option value="${ servico.id }">${ servico.nome }</option>
+							                 	</c:forEach>
+						                    </select>
+			                            </div>
+						                 <label class="m-t-10">Horário de término</label>
+						                 <div class="input-icon datetime-pick time-only">
+			                                <input data-format="hh:mm" type="text" class="form-control input-sm" id="horario-fim-agenda"/>
+			                                <span class="add-on">
+			                                    <i class="sa-plus"></i>
+			                                </span>
+			                            </div>
+			                            
+					                    <label class="m-t-10">Observações</label>
+					                    <textarea class="form-control overflow" rows="3"  id="observacao"></textarea>
 									</form>
                                 </div>
                                 <div class="modal-footer">
@@ -152,7 +160,7 @@
 								duracao: ${servico.duracao}
 							};
 	             	</c:forEach>
-	                
+
 				});
 	</script>
 	

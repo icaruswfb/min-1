@@ -26,6 +26,7 @@ public class LancamentoComissao {
 	private Date dataCriacao;
 	@Enumerated(EnumType.STRING)
 	private TipoComissao tipo;
+	private Date dataPagamento;
 	
 	public Long getId() {
 		return id;
@@ -84,6 +85,12 @@ public class LancamentoComissao {
 	
 	public String toString(){
 		return getPercentual() + "% de " + getValorVenda();
+	}
+	public Date getDataPagamento() {
+		return dataPagamento;
+	}
+	public void setDataPagamento(Date dataPagamento) {
+		this.dataPagamento = dataPagamento;
 	}
 	
 }

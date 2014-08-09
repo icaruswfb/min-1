@@ -79,5 +79,12 @@ public class ComissaoDAO {
 		
 		return resultado;
 	}
+
+	public LancamentoComissao findById(Long id) {
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(LancamentoComissao.class);
+		criteria.add(Restrictions.eq("id", id));
+		return (LancamentoComissao) criteria.uniqueResult();
+	}
 	
 }

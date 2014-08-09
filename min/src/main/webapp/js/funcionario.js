@@ -49,15 +49,7 @@ Funcionario = {
 			valor = valor.replace("%", "");
 			$(percent).val(valor);
 		}
-		var money = $(".mask-money");
-		for(var i = 0; i < money.length; i++){
-			var m = money[i];
-			var valor = $(m).val();
-			valor = valor.replace(".", "");
-			valor = valor.replace(",", ".");
-			valor = valor.replace("R$", "");
-			$(m).val(valor);
-		}
+		Utils.unmaskMoney();
 		
 		$("#funcionario-form").submit();
 	}	

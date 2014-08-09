@@ -5,13 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import br.com.min.entity.LancamentoComissao;
 import br.com.min.entity.Pessoa;
 
 public class ComissoesPorFuncionarioVO {
 
 	private Pessoa funcionario;
-	private List<LancamentoComissao> comissoes = new ArrayList<>();
 	private Double total = 0.0;
 	private Double totalServico = 0.0;
 	private Double totalServicoAuxiliado = 0.0;
@@ -25,12 +23,6 @@ public class ComissoesPorFuncionarioVO {
 	}
 	public void setFuncionario(Pessoa funcionario) {
 		this.funcionario = funcionario;
-	}
-	public List<LancamentoComissao> getComissoes() {
-		return comissoes;
-	}
-	public void setComissoes(List<LancamentoComissao> comissoes) {
-		this.comissoes = comissoes;
 	}
 	public Double getTotal() {
 		return total;

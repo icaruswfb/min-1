@@ -76,6 +76,8 @@
 	<script src="<spring:url value='/js/funcionario.js' />"></script>
 	<script src="<spring:url value='/js/tarefa.js' />"></script>
 	<script src="<spring:url value='/js/home.js' />"></script>
+	<script src="<spring:url value='/js/financeiro.js' />"></script>
+	<script src="<spring:url value='/js/comissao.js' />"></script>
 	
 	<script type="text/javascript">
 		$(document).ready(function(){

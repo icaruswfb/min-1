@@ -64,6 +64,7 @@
                                     <th>Vendas</th>
                                     <th>Percentuais de venda</th>
                                     <th>Total</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -97,12 +98,47 @@
 	                                    <td>
 	                                    	R$<fmt:formatNumber minFractionDigits="2" value="${ comissao.total }" />
 	                                    </td>
+	                                    <td>
+	                                    	<a data-toggle="modal" href="#modalWider" onclick="Comissao.exibirComissoesPorFuncionario('${comissao.funcionario.id}')" class="btn btn-sm">Detalhes</a>
+	                                    </td>
 	                                </tr>
                             	</c:forEach>
                             </tbody>
                         </table>
                 	</div>
 			
+					<div class="modal fade" id="modalWider" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                    <h4 class="modal-title">PAGAMENTO DE COMISSÕES</h4>
+                                </div>
+                                <div class="modal-body" >
+                                	<div class="listview list-container" id="pagamento-comissao"></div>
+                                	<div class="listview list-container">
+                                		<div class="media">
+                                			<div class="comissao-detalhe">
+                                				<div class="valor-comissao">
+                                					<div class="prefix-money">Total: R$</div>
+                                					<div class="mask-money" id="comissao-pagamento-total">
+                                						0,00
+                                					</div>
+                                				</div>
+                                			</div>
+                                		</div>
+                                	</div>
+                                </div>
+                                <div class="modal-footer">
+					                 <button class="btn " type="button" onclick="Comissao.pagarComissoes()">Pagar</button>
+					                 <button class="btn " type="button" onclick="Comissao.pagarComissoes(true)">Pagar todas</button>
+                                    <button type="button" class="btn btn-sm" data-dismiss="modal" >Cancelar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+            
 
 		</section>
 

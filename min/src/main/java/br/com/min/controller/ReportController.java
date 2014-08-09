@@ -15,18 +15,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import br.com.min.controller.vo.ComissoesPorFuncionarioVO;
 import br.com.min.entity.Comanda;
+import br.com.min.entity.FluxoPagamento;
 import br.com.min.entity.FormaPagamento;
 import br.com.min.entity.LancamentoComissao;
 import br.com.min.entity.Pagamento;
 import br.com.min.entity.Pessoa;
 import br.com.min.entity.Role;
 import br.com.min.entity.TipoComissao;
+import br.com.min.entity.Usuario;
 import br.com.min.service.ComandaService;
 import br.com.min.service.ComissaoService;
+import br.com.min.service.PagamentoService;
 import br.com.min.service.PessoaService;
 import br.com.min.utils.Utils;
 
@@ -40,11 +44,14 @@ public class ReportController {
 	private ComissaoService comissaoServico;
 	@Autowired
 	private PessoaService pessoaService;
+	@Autowired
+	private PagamentoService pagamentoService;
 	
 	@RequestMapping(value="/caixa", method=RequestMethod.GET)
 	public ModelAndView listarCaixa(HttpServletRequest request){
 		return criarViewCaixa(new Date(), request);
 	}
+	
 	@RequestMapping(value="/caixa/data", method=RequestMethod.POST)
 	public ModelAndView listarCaixa(String data, HttpServletRequest request){
 		try {
@@ -78,6 +85,108 @@ public class ReportController {
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	@RequestMapping(value="/comissao", method=RequestMethod.POST)
+	public @ResponseBody List<LancamentoComissao> listarComissoes(Long funcionarioId, String dataInicio, String dataFim, HttpServletRequest request){
+		Usuario logado = Utils.getUsuarioLogado(request);
+		if(Utils.hasRole(Role.ADMIN, request) || logado.getPessoa().getId().equals(funcionarioId)){
+			Date inicio;
+			try {
+				inicio = Utils.dateFormat.parse(dataInicio);
+				Date fim = Utils.dateFormat.parse(dataFim);
+				Pessoa funcionario = pessoaService.findById(funcionarioId);
+				List<LancamentoComissao> comissoes = comissaoServico.findByPeriodo(inicio, fim, funcionario);
+				for(LancamentoComissao comissao : comissoes){
+					limparComandaJSON(comissao.getComanda());
+					comissao.getFuncionario().setUsuario(null);
+				}
+				return comissoes;
+			} catch (ParseException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return null;
+	}
+	
+	@RequestMapping("/comissao/pagar")
+	public @ResponseBody String pagar(String ids, String dataInicio, String dataFim, HttpServletRequest request){
+		if(Utils.hasRole(Role.ADMIN, request)){
+			String[] idsStr = ids.split(",");
+			Double valorTotal = 0.0;
+			Pessoa funcionario = null;
+			for(String idStr : idsStr){
+				Long id = Long.parseLong(idStr);
+				LancamentoComissao comissao = comissaoServico.findById(id);
+				if(comissao.getDataPagamento() == null){
+					comissao.setDataPagamento(new Date());
+					comissaoServico.persist(comissao);
+					valorTotal += comissao.getValor();
+					funcionario = comissao.getFuncionario();
+				}
+			}
+			if(funcionario != null){
+				Pagamento pagamento = new Pagamento();
+				pagamento.setFluxoPagamento(FluxoPagamento.SAIDA);
+				pagamento.setFormaPagamento(FormaPagamento.Dinheiro);
+				pagamento.setParcelamento(1);
+				pagamento.setObservacao("Comissão para " + funcionario.getNome() + " de " + dataInicio + " até " + dataFim);
+				pagamento.setValor(valorTotal);
+				pagamentoService.persist(pagamento);
+			}
+		}
+		return "ok";
+	}
+	
+	private Comanda limparComandaJSON(Comanda comanda){
+		if(comanda != null){
+			comanda.setProdutos(null);
+			comanda.setServicos(null);
+			comanda.setEstoque(null);
+			comanda.setCriador(null);
+			comanda.setPagamentos(null);
+			comanda.setComissoes(null);
+		}
+		return comanda;
+	}
+	
+	@RequestMapping(value="/fluxoFinanceiro/data")
+	public ModelAndView listarFluxoCaixa(String dataInicio, String dataFim, HttpServletRequest request){
+		try {
+			Date inicio =Utils.dateFormat.parse(dataInicio);
+			Date fim = Utils.dateFormat.parse(dataFim);
+			return listarFluxoCaixa(inicio, fim, request);
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	@RequestMapping(value="/fluxoFinanceiro")
+	public ModelAndView listarFluxoCaixa(HttpServletRequest request){
+		Calendar inicio = Calendar.getInstance();
+		inicio.add(Calendar.DAY_OF_YEAR, -3);
+		Calendar fim = Calendar.getInstance();
+		return listarFluxoCaixa(inicio.getTime(), fim.getTime(), request);
+	}
+	
+	@RequestMapping(value="/addLancamento")
+	public @ResponseBody String adicionarLancamento(String tipo, Double valor, String observacao){
+		Pagamento pagamento = new Pagamento();
+		pagamento.setFluxoPagamento(FluxoPagamento.valueOf(tipo));
+		pagamento.setObservacao(observacao);
+		pagamento.setValor(valor);
+		pagamentoService.persist(pagamento);
+		return "ok";
+	}
+	private ModelAndView listarFluxoCaixa(Date inicio, Date fim, HttpServletRequest request){
+		if(Utils.hasRole(Role.ADMIN, request)){
+			ModelAndView mv = new ModelAndView("fluxoFinanceiro");
+			List<Pagamento> pagamentos = pagamentoService.find(inicio, fim);
+			mv.addObject("pagamentos", pagamentos);
+			mv.addObject("dataInicio", inicio);
+			mv.addObject("dataFim", fim);
+			return mv;
+		}
+		throw new RuntimeException("Sem permissão para vizualizar o fluxo financeiro");
 	}
 	
 	private ModelAndView listarComissoes(Date inicio, Date fim, HttpServletRequest request){
@@ -118,7 +227,6 @@ public class ReportController {
 		Map<Long, ComissoesPorFuncionarioVO> vosPorFuncionario = iniciarVosPorFuncionario(request);
 		for(LancamentoComissao comissao : comissoes){
 			ComissoesPorFuncionarioVO vo = vosPorFuncionario.get(comissao.getFuncionario().getId());
-			vo.getComissoes().add(comissao);
 			vo.setTotal(vo.getTotal() + comissao.getValor());
 			if(comissao.getTipo().equals(TipoComissao.AUXILIAR)){
 				vo.setTotalAuxilar(vo.getTotalAuxilar() + comissao.getValor());

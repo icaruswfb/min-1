@@ -50,5 +50,17 @@ Utils = {
 		str += " " + ((date.getHours() < 10 ? "0" : "") + date.getHours());
 		str += ":" + ((date.getMinutes() < 10 ? "0" : "") + date.getMinutes());
 		return str;
+	},
+	
+	unmaskMoney:function(){
+		var money = $(".mask-money");
+		for(var i = 0; i < money.length; i++){
+			var m = money[i];
+			var valor = $(m).val();
+			valor = valor.replace(".", "");
+			valor = valor.replace(",", ".");
+			valor = valor.replace("R$", "");
+			$(m).val(valor);
+		}
 	}
 };

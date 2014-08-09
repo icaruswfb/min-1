@@ -82,10 +82,11 @@
 	
 	<task:scheduled-tasks>
 	<!-- 
-		<task:scheduled ref="aniversarioSchedule" method="avisarProximosAniversarios" cron="1 0 0 * * *"/>
-	 -->
 	 	<task:scheduled ref="aniversarioSchedule" method="avisarProximosAniversarios" fixed-rate="86400000" initial-delay="0"/>
 	 	<task:scheduled ref="estoqueSchedule" method="avisarEstoqueBaixo" fixed-rate="86400000" initial-delay="0"/>
+	 -->
+		<task:scheduled ref="aniversarioSchedule" method="avisarProximosAniversarios" cron="1 0 0 * * *"/>
+		<task:scheduled ref="estoqueSchedule" method="avisarEstoqueBaixo" cron="1 1 0 * * *"/>
 	</task:scheduled-tasks>
 	
 	<!-- 

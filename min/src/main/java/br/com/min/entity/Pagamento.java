@@ -22,6 +22,11 @@ public class Pagamento {
 	private Integer parcelamento;
 	@ManyToOne
 	private Comanda comanda;
+	@Enumerated(EnumType.STRING)
+	private FluxoPagamento fluxoPagamento;
+	private String observacao;
+	
+	
 	public Long getId() {
 		return id;
 	}
@@ -80,6 +85,18 @@ public class Pagamento {
 	}
 	public void setParcelamento(Integer parcelamento) {
 		this.parcelamento = parcelamento;
+	}
+	public FluxoPagamento getFluxoPagamento() {
+		return fluxoPagamento;
+	}
+	public void setFluxoPagamento(FluxoPagamento fluxoPagamento) {
+		this.fluxoPagamento = fluxoPagamento;
+	}
+	public String getObservacao() {
+		return observacao;
+	}
+	public void setObservacao(String observacao) {
+		this.observacao = observacao;
 	}
 	
 	

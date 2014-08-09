@@ -35,9 +35,9 @@ Tarefa = {
 				success: function(quantidade){
 					if(quantidade > 0){
 						$(".n-count").html(quantidade);
-						$(".n-count").show(300);
+						$(".n-count").show();
 					}else{
-						$(".n-count").hide(300);
+						$(".n-count").hide();
 					}
 				}
 			});
