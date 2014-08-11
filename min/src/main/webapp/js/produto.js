@@ -1,4 +1,8 @@
 Produto = {
+		submit:function(){
+			Utils.unmaskMoney();
+			$("#produto-form").submit();
+		},
 		findEstoque: function(){
 			var produtoId = $("#produto-id").val();
 			$.ajax({

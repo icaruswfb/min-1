@@ -95,7 +95,7 @@
 						                 <br />
 						                 <br />
 						                 <label>Valor</label>
-		                                <input type="text" class="form-control input-sm mask-number" name="valor"/>
+		                                <input type="text" class="form-control input-sm mask-money" name="valor"/>
 									</form>
                                 </div>
                                 <div class="modal-footer">
@@ -141,67 +141,69 @@
                      </div>
                  </div>
                   <c:if test="${ hasRole['ADMIN'] }">
-					<h4 class="page-title m-t-10" id="historico-title"><a href="javascript:Cliente.exibirHistorico()" >HISTÓRICO <span id="historico-title-action">[-]</span></a></h4>
-					<div class="block-area">
-						<div class="row">
-								<!-- Main Chart -->
-	                        <div class="col-sm-6" >
-								<div class="tile m-b-20 w-100-p" id="dados-compilados">
-		                            <h2 class="tile-title">DADOS COMPILADOS</h2>
+					<h4 class="page-title m-t-10" id="historico-title"><a href="javascript:Cliente.exibirHistorico()" >HISTÓRICO <span id="historico-title-action">[+]</span></a></h4>
+					<div id="historico-block" style="display: none;">
+						<div class="block-area">
+							<div class="row">
+									<!-- Main Chart -->
+		                        <div class="col-sm-6" >
+									<div class="tile m-b-20 w-100-p" id="dados-compilados">
+			                            <h2 class="tile-title">DADOS COMPILADOS</h2>
+			                        </div>
 		                        </div>
-	                        </div>
-	                        <div class="col-sm-6" >
-								<div class="tile">
-									<h2 class="tile-title">Visitas x Mês</h2>
-									<div class="p-10">
-										<div id="grafico-frequencia" class="main-chart" style="height: 200px"></div>
-		
+		                        <div class="col-sm-6" >
+									<div class="tile">
+										<h2 class="tile-title">Visitas x Mês</h2>
+										<div class="p-10">
+											<div id="grafico-frequencia" class="main-chart" style="height: 200px"></div>
+			
+										</div>
 									</div>
 								</div>
+								<div class="col-sm-6">
+			                        <div class="tile">
+		                                <h2 class="tile-title">Servicos</h2>
+		                                <div class="p-10">
+		                                    <div id="servicos-pizza" class="main-chart" style="height: 200px"></div>
+		                                </div>
+		                            </div>
+		                        </div>
+		                        <div class="col-sm-6">
+			                        <div class="tile">
+		                                <h2 class="tile-title">Atendimentos</h2>
+		                                <div class="p-10">
+		                                    <div id="funcionarios-pizza" class="main-chart" style="height: 200px"></div>
+		                                </div>
+		                            </div>
+		                        </div>
+		                        <div class="col-sm-6">
+									<a data-toggle="modal" href="#modalLog" onclick="Cliente.findHistorico();" class="btn btn-lg m-b-20">Ver histórico detalhado de atividades cliente</a>
+			                         <div class="modal fade" id="modalLog" tabindex="-1" role="dialog" aria-hidden="true">
+				                        <div class="modal-dialog modal-lg">
+				                            <div class="modal-content">
+				                                <div class="modal-header">
+				                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				                                    <h4 class="modal-title">Histórico detalhado de ${ cliente.nome }</h4>
+				                                </div>
+				                                <div class="modal-body">
+													<div class="listview list-container" id="historico-list">
+									                </div>
+				                                </div>
+				                                <div class="modal-footer">
+				                                    <button type="button" class="btn btn-sm" data-dismiss="modal">Fechar</button>
+				                                </div>
+				                            </div>
+				                        </div>
+				                    </div>
+	                       		</div>
 							</div>
-							<div class="col-sm-6">
-		                        <div class="tile">
-	                                <h2 class="tile-title">Servicos</h2>
-	                                <div class="p-10">
-	                                    <div id="servicos-pizza" class="main-chart" style="height: 200px"></div>
-	                                </div>
-	                            </div>
-	                        </div>
-	                        <div class="col-sm-6">
-		                        <div class="tile">
-	                                <h2 class="tile-title">Atendimentos</h2>
-	                                <div class="p-10">
-	                                    <div id="funcionarios-pizza" class="main-chart" style="height: 200px"></div>
-	                                </div>
-	                            </div>
-	                        </div>
-	                        <div class="col-sm-6">
-								<a data-toggle="modal" href="#modalLog" onclick="Cliente.findHistorico();" class="btn btn-lg m-b-20">Ver histórico detalhado de atividades cliente</a>
-		                         <div class="modal fade" id="modalLog" tabindex="-1" role="dialog" aria-hidden="true">
-			                        <div class="modal-dialog modal-lg">
-			                            <div class="modal-content">
-			                                <div class="modal-header">
-			                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-			                                    <h4 class="modal-title">Histórico detalhado de ${ cliente.nome }</h4>
-			                                </div>
-			                                <div class="modal-body">
-												<div class="listview list-container" id="historico-list">
-								                </div>
-			                                </div>
-			                                <div class="modal-footer">
-			                                    <button type="button" class="btn btn-sm" data-dismiss="modal">Fechar</button>
-			                                </div>
-			                            </div>
-			                        </div>
-			                    </div>
-                       		</div>
+							<div class="clearfix"></div>
 						</div>
-						<div class="clearfix"></div>
 					</div>
 						
                		 </c:if>
 				<h4 class="page-title m-t-10">AGENDA</h4>
-				<div id="historico-block">
+				<div id="agenda-block">
 		            <div class="block-area">
 						<div class="row">
 							<div class="col-md-12" id="block-calendar">
@@ -254,7 +256,8 @@
 		$(document).ready(function(){
              $('.mask-date').mask('00/00');
              $('.mask-cep').mask('00000-000');
-             $('.mask-number').mask('#####0');
+             $('.mask-number').mask('#0');
+             $('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
             <c:if test="${ cliente.id ne null }">
 	     		Comanda.init();
 
@@ -269,10 +272,6 @@
              		</c:if>
              	</c:forEach>
              	Cliente.mostrarParcelamento();
-             	<c:if test="${ hasRole['ADMIN'] }">
-	            	//Histórico
-					Cliente.gerarDados();
-             	</c:if>
 				Cliente.abrirAgendaCliente();
             </c:if>
 		});

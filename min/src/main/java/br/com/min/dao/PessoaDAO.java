@@ -15,6 +15,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import br.com.min.entity.Funcao;
 import br.com.min.entity.Pessoa;
 
 @Repository
@@ -23,7 +24,7 @@ public class PessoaDAO {
 	@Autowired
 	private SessionFactory sessionFactory;
 	
-	public List<Pessoa> findPessoa(Pessoa entity){
+	public List<Pessoa> findPessoa(Pessoa entity, Funcao... funcoesExcluidas){
 		Session session = sessionFactory.openSession();
 		Criteria criteria = session.createCriteria(Pessoa.class);
 		if(entity != null){
@@ -31,6 +32,9 @@ public class PessoaDAO {
 			List<Criterion> andPredicates = new ArrayList<>();
 			if(entity.getId() != null){
 				criteria = criteria.add(Restrictions.eq("id", entity.getId()));
+			}
+			if(funcoesExcluidas != null && funcoesExcluidas.length > 0){
+				criteria = criteria.add( Restrictions.not(Restrictions.in("funcaoPrincipal", funcoesExcluidas)) );
 			}
 			if(StringUtils.isNotBlank(entity.getNome())){
 				orPredicates.add(Restrictions.ilike("nome", entity.getNome(), MatchMode.ANYWHERE));

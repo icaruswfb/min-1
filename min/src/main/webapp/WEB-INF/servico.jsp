@@ -21,10 +21,10 @@
 		<section id="content" class="container">
 
 			<h4 class="page-title">SERVIÇO</h4>
-            <form:form method="post" action="../salvar" commandName="servico">
+            <form:form method="post" action="../salvar" commandName="servico" id="servico-form">
             	<form:hidden path="id" />
 				<div class="block-area" id="buttons">
-	                 <button class="btn m-r-5" type="submit">Salvar</button>
+	                 <a class="btn m-r-5" onclick="Servico.submit()">Salvar</a>
 	                 <a href="<spring:url value='/web/servicos/' />" >
 		                 <button class="btn btn-alt m-r-5" type="button">Cancelar</button>
 	                 </a>
@@ -40,7 +40,7 @@
                  	<form:input path="duracaoMinutos" cssClass="form-control m-b-10 mask-number" placeholder="Duração em minutos"/>
                 </div>
                 <div class="col-lg-2">
-                 	<form:input path="preco" cssClass="form-control m-b-10 validate[required,custom[number]]" placeholder="Preço sugerido" />
+                 	<input name="preco" class="form-control m-b-10 mask-money" id="preco" placeholder="Preço sugerido" value="<fmt:formatNumber minFractionDigits="2" value="${ servico.preco }" />"/>
                 </div>
                 
              </form:form>
@@ -121,7 +121,15 @@
 
 		$(document).ready(function(){
              $('.mask-number').mask('##0');
+             $('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
 		});
+
+		Servico = {
+			submit:function(){
+				Utils.unmaskMoney();
+				$("#servico-form").submit();
+			}
+		};
 		
 	</script>
 	

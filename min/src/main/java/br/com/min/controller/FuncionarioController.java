@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import br.com.min.entity.Comissao;
+import br.com.min.entity.Funcao;
 import br.com.min.entity.Imagem;
 import br.com.min.entity.Pessoa;
 import br.com.min.entity.Role;
@@ -50,7 +51,7 @@ public class FuncionarioController {
 	@RequestMapping(value="/listarParaAgenda",method=RequestMethod.GET)
 	public @ResponseBody List<Pessoa> listarFuncionariosParaAgenda(HttpServletRequest request){
 		Pessoa funcionario = criarPesquisaAgenda(request);
-		List<Pessoa> pessoas = pessoaService.findPessoa(funcionario);
+		List<Pessoa> pessoas = pessoaService.findPessoa(funcionario, Funcao.Administrador);
 		limparPessoasJSON(pessoas);
 		return pessoas;
 	}

@@ -7,6 +7,7 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -42,7 +43,7 @@ public class PagamentoDAO {
 		if(fluxo != null){
 			criteria.add(Restrictions.eq("fluxoPagamento", fluxo));
 		}
-		
+		criteria.addOrder(Order.asc("data"));
 		List<Pagamento> entities = criteria.list();
 		return entities;
 	}

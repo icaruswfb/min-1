@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import br.com.min.controller.vo.ComissoesPorFuncionarioVO;
+import br.com.min.controller.vo.TotaisPorFormaPagamentoVO;
+import br.com.min.controller.vo.TotalParcelamentoVO;
 import br.com.min.entity.Comanda;
 import br.com.min.entity.FluxoPagamento;
 import br.com.min.entity.FormaPagamento;
@@ -258,25 +261,40 @@ public class ReportController {
 		if( Utils.hasRole(Role.ADMIN, request) || Utils.hasRole(Role.CAIXA, request)){
 			List<Comanda> comandas = comandaService.findFechamento(data);
 			mv.addObject("comandas", comandas);
-			Map<FormaPagamento, Double> totais = new HashMap<FormaPagamento, Double>();
+			Map<FormaPagamento, TotaisPorFormaPagamentoVO> totais = new LinkedHashMap<>();
 			for(FormaPagamento fp : FormaPagamento.values()){
-				totais.put(fp, 0d);
+				TotaisPorFormaPagamentoVO vo = new TotaisPorFormaPagamentoVO();
+				vo.setFormaPagamento(fp);
+				totais.put(fp, vo);
 			}
 			Double totalLancado = 0d;
 			Double totalPago = 0d;
 			for(Comanda comanda : comandas){
 				totalLancado += comanda.getValorCobrado();
 				for(Pagamento pagamento : comanda.getPagamentos()){
-					Double total = totais.get(pagamento.getFormaPagamento());
-					total += pagamento.getValor();
+					TotaisPorFormaPagamentoVO total = totais.get(pagamento.getFormaPagamento());
+					total.setTotal( total.getTotal() + pagamento.getValor());
 					totalPago += pagamento.getValor();
+					if(pagamento.getFormaPagamento().isParcelavel()){
+						TotalParcelamentoVO parcelaParaAtualizar = null;
+						for(TotalParcelamentoVO parcelaVO : total.getParcelas()){
+							if(parcelaVO.getParcelas().equals(pagamento.getParcelamento())){
+								parcelaParaAtualizar = parcelaVO;
+							}
+						}
+						if(parcelaParaAtualizar == null){
+							parcelaParaAtualizar = new TotalParcelamentoVO();
+							parcelaParaAtualizar.setParcelas(pagamento.getParcelamento());
+							total.getParcelas().add(parcelaParaAtualizar);
+							Collections.sort(total.getParcelas());
+						}
+						parcelaParaAtualizar.setTotal( parcelaParaAtualizar.getTotal() + pagamento.getValor() );
+					}
 					totais.put(pagamento.getFormaPagamento(), total);
 				}
 			}
 			
-			for(FormaPagamento formaPagamento : totais.keySet()){
-				mv.addObject("total" + formaPagamento.name(), totais.get(formaPagamento));
-			}
+			mv.addObject("totais", totais.values());
 			
 			mv.addObject("totalLancado", totalLancado);
 			mv.addObject("totalPago", totalPago);

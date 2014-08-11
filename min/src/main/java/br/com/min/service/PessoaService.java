@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.min.dao.GenericDAO;
 import br.com.min.dao.ImagemDAO;
 import br.com.min.dao.PessoaDAO;
+import br.com.min.entity.Funcao;
 import br.com.min.entity.Imagem;
 import br.com.min.entity.Pessoa;
 
@@ -35,8 +36,8 @@ public class PessoaService {
 	}
 	
 	@Transactional
-	public List<Pessoa> findPessoa(Pessoa pessoa){
-		return dao.findPessoa(pessoa);
+	public List<Pessoa> findPessoa(Pessoa pessoa, Funcao... funcoesExcluidas){
+		return dao.findPessoa(pessoa, funcoesExcluidas);
 	}
 	
 	public List<Pessoa> listarClientes(){

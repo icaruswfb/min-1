@@ -20,6 +20,7 @@ public class Pagamento {
 	@Enumerated(EnumType.STRING)
 	private FormaPagamento formaPagamento;
 	private Integer parcelamento;
+	private Integer parcela;
 	@ManyToOne
 	private Comanda comanda;
 	@Enumerated(EnumType.STRING)
@@ -97,6 +98,12 @@ public class Pagamento {
 	}
 	public void setObservacao(String observacao) {
 		this.observacao = observacao;
+	}
+	public Integer getParcela() {
+		return parcela;
+	}
+	public void setParcela(Integer parcela) {
+		this.parcela = parcela;
 	}
 	
 	

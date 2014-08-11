@@ -89,23 +89,30 @@
                     <table class="table table-hover tile">
                         <thead>
                             <tr>
-                                <th style="width: 105px">Data</th>
+                                <th style="width: 45px">Data</th>
                                 <th>Descrição</th>
+                                <th style="width: 120px;">Forma de Pgto</th>
                                 <th>Valor</th>
                                 <th>Saldo (do período)</th>
                             </tr>
                         </thead>
                         <tbody>
                         	<c:set var="saldo" value="0" />
-                        	<c:set var="multiplicador" value="1" />
                         	<c:forEach var="pagamento" items="${ pagamentos }">
+	                        	<c:set var="multiplicador" value="1" />
 	                             <tr>
 	                             	<td>
-	                             		<fmt:formatDate value="${ pagamento.data }" pattern="dd/MM/yyyy HH:mm"/>
+	                             		<fmt:formatDate value="${ pagamento.data }" pattern="dd/MM"/>
 	                             	</td>
 	                             	 <td>
 	                                 	 ${ pagamento.comanda.cliente.nome }
 	                                 	 ${ pagamento.observacao }
+	                                 </td>
+	                                 <td>
+	                                 	${ pagamento.formaPagamento.nome } 
+	                                 	<c:if test="${ pagamento.formaPagamento.parcelavel }">
+	                                 		(${pagamento.parcela }/${pagamento.parcelamento })
+	                                 	</c:if>
 	                                 </td>
 	                                 <td class="valor">
 	                                 	<c:choose>
@@ -128,7 +135,7 @@
 	                             			</c:when>
 	                             			<c:otherwise>
 	                                 			<i class="debito">
-	              	                   				-<fmt:formatNumber minFractionDigits="2" value="${ saldo }" />
+	              	                   				<fmt:formatNumber minFractionDigits="2" value="${ saldo }" />
 		                                 		</i>
 	                             			</c:otherwise>
 	                             		</c:choose>
@@ -138,7 +145,22 @@
                         </tbody>
                     </table>
 				</div>
-               	</div>
+				<div class="col-lg-6">
+					
+                    <div class="tile">
+                        <h2 class="tile-title">Entradas, saídas e lucro X mês (referente ao período selecionado)</h2>
+                        <div class="p-10">
+							<div id="grafico-entrada" class="main-chart" style="height: 200px"></div>
+						</div>
+					</div>
+                    <div class="tile">
+                        <h2 class="tile-title">Formas de pagamento (referente aos dados sendo exibidos)</h2>
+                        <div class="p-10">
+							<div id="grafico-formasPagamento" class="main-chart" style="height: 200px"></div>
+						</div>
+					</div>
+				</div>
+           	</div>
 			
 
 		</section>
@@ -153,6 +175,18 @@
 		$("#fluxo-menu").addClass("active");
 
 		$(document).ready(function(){
+				<c:forEach var="pagamento" items="${ pagamentos}">
+					Financeiro.pagamentos.push({
+						mes: '<fmt:formatDate value="${ pagamento.data }" pattern="MM"/>',
+						ano: <fmt:formatDate value="${ pagamento.data }" pattern="yyyy"/>,
+						valor: 	${pagamento.valor},
+						tipo: '${ pagamento.fluxoPagamento }',
+						formaPagamento: '${pagamento.formaPagamento.nome}'
+					});
+				</c:forEach>
+
+				Financeiro.criarGrafico();
+				Financeiro.criarGraficoFormasPagamento();
             	$('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
 				$("#data-fim").on('blur', function(){
 					var dataInicio = $("#data-inicio").val();
@@ -169,7 +203,6 @@
 					}
 				});
 			});
-		
 	</script>
 	
 </body>

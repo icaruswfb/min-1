@@ -9,6 +9,9 @@ public enum FormaPagamento {
 		public String getNome() {
 			return "Dinheiro";
 		}
+		public boolean isCartaoCredito() {
+			return false;
+		}
 	},	
 	Visa {
 		public boolean isParcelavel() {
@@ -16,6 +19,9 @@ public enum FormaPagamento {
 		}
 		public String getNome() {
 			return "Visa";
+		}
+		public boolean isCartaoCredito() {
+			return true;
 		}
 	},
 	VisaElectron {
@@ -25,6 +31,9 @@ public enum FormaPagamento {
 		public String getNome() {
 			return "Visa Electron";
 		}
+		public boolean isCartaoCredito() {
+			return false;
+		}
 	},
 	MasterCard {
 		public boolean isParcelavel() {
@@ -32,6 +41,9 @@ public enum FormaPagamento {
 		}
 		public String getNome() {
 			return "MasterCard";
+		}
+		public boolean isCartaoCredito() {
+			return true;
 		}
 	},
 	Maestro {
@@ -41,6 +53,9 @@ public enum FormaPagamento {
 		public String getNome() {
 			return "Maestro";
 		}
+		public boolean isCartaoCredito() {
+			return false;
+		}
 	},
 	Diners {
 		public boolean isParcelavel() {
@@ -48,6 +63,9 @@ public enum FormaPagamento {
 		}
 		public String getNome() {
 			return "Diners";
+		}
+		public boolean isCartaoCredito() {
+			return true;
 		}
 	},
 	Amex {
@@ -57,6 +75,9 @@ public enum FormaPagamento {
 		public String getNome() {
 			return "Amex";
 		}
+		public boolean isCartaoCredito() {
+			return true;
+		}
 	},
 	Cheque {
 		public boolean isParcelavel() {
@@ -64,6 +85,9 @@ public enum FormaPagamento {
 		}
 		public String getNome() {
 			return "Cheque";
+		}
+		public boolean isCartaoCredito() {
+			return false;
 		}
 	},
 	Credito {
@@ -73,8 +97,12 @@ public enum FormaPagamento {
 		public String getNome() {
 			return "Crédito";
 		}
+		public boolean isCartaoCredito() {
+			return false;
+		}
 	};
 	
 	public abstract boolean isParcelavel();
 	public abstract String getNome();
+	public abstract boolean isCartaoCredito();
 }

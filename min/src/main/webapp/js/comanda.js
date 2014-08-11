@@ -107,6 +107,7 @@ Comanda = {
 //            max_selected_options: 1
 //        });
 		$(".mask-number").mask("##########0");
+        $('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
 	},
 	appendLinhaProduto:function(linha, id){
 		id = id == undefined ? '' : id;
@@ -116,6 +117,7 @@ Comanda = {
 //        });
 
 		$(".mask-number").mask("##########0");
+        $('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
 	},
 	criarLinhaServico: function(lancamentoServico, readOnly, comandaId){
 		readOnly = readOnly == undefined ? "" : readOnly;
@@ -168,9 +170,9 @@ Comanda = {
 		form += "</select>";
 		form += "</div><div class='col-md-1'>";
 		form += "<p>Valor (R$):</p>";
-		form += "<input name='valorServico' class='form-control input-sm m-b-10' readonly='readonly' id='valor-"+id+"' ";
+		form += "<input name='valorServico' class='form-control input-sm m-b-10  mask-money' readonly='readonly' id='valor-"+id+"' ";
 		if(servicoSelecionado){
-			form+= "value='" + servicoSelecionado.preco + "' ";
+			form+= "value='" + new Number(servicoSelecionado.preco).toFixed(2) + "' ";
 		}
 		form += "/>";
 		form += "</div>";
@@ -194,23 +196,27 @@ Comanda = {
 	},
 	
 	buscarValorServico: function(id, comandaId){
+		Utils.unmaskMoney();
 		var servicoId = $("#" + id + " select[name='servicoId']").val();
 		if(servicoId != "-"){
 			for(var i = 0; i < Comanda.servicos.length; i++){
 				var servico = Comanda.servicos[i];
 				if(servico.id == servicoId){
-					$("#" + id + " input[name='valorServico']").val(servico.preco);
+					$("#" + id + " input[name='valorServico']").val(new Number(servico.preco).toFixed(2));
 				}
 			}
 		}else{
 			$("#" + id + " input[name='valorServico']").val("");
 		}
+		$('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
 		Comanda.preencherTotais(comandaId);
 		Comanda.salvarComanda();
+
 		return true;
 	},
 	
 	buscarValorProduto: function(id, servico){
+		Utils.unmaskMoney();
 		servico = servico == null ? '' : servico;
 		var produtoId = $("#" + id + " select[name='produto"+servico+"Id']").val();
 		if(produtoId != "-"){
@@ -224,7 +230,7 @@ Comanda = {
 					}else{
 						quantidade = $("#" + id + " input[name='quantidadeProduto"+servico+"']").val();
 					}
-					$("#" + id + " input[name='valorProduto"+servico+"']").val((produto.precoRevenda * quantidade));
+					$("#" + id + " input[name='valorProduto"+servico+"']").val(new Number(produto.precoRevenda * quantidade).toFixed(2));
 					$("#quantidade-" + id).html("Quantidade (" + produto.unidade + "):");
 					break;
 				}
@@ -234,13 +240,16 @@ Comanda = {
 			$("#quantidade-" + id).html("Quantidade:");
 			$("#" + id + " input[name='quantidadeProduto"+servico+"']").val("");
 		}
+		$('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
 		Comanda.preencherTotais($("#comanda-form input[name='comandaId']").val());
 		Comanda.salvarComanda();
+
 		return true;
 	},
 	
 	preencherTotais:function(comandaId){
-		var total = 0;
+		Utils.unmaskMoney();
+		var total = new Number(0.00);
 		var valoresServicos = $("#bloco-geral-comanda-"+comandaId+" input[name='valorServico']");
 		for(var i = 0; i < valoresServicos.length; i++){
 			var valorServico = $(valoresServicos[i]).val();
@@ -257,10 +266,12 @@ Comanda = {
 			total += new Number(valorProdutoServico);
 		}
 		var desconto = $("#descontos-" + comandaId).val();
-		$("#valorTotal-" + comandaId).val(total);
-		$("#valorCobrado-" + comandaId).val(total - desconto);
+		$("#valorTotal-" + comandaId).val(new Number(total).toFixed(2));
+		$("#valorCobrado-" + comandaId).val(new Number(total - desconto).toFixed(2));
 		var pago = $("#valorPago-" + comandaId).val();
-		$("#valorFaltante-" + comandaId).val((total - desconto) - pago);
+		$("#valorPago-" + comandaId).val(new Number(pago).toFixed(2));
+		$("#valorFaltante-" + comandaId).val(new Number(((total - desconto) - pago)).toFixed(2));
+        $('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
 	},
 	
 	criarLinhaProduto: function(lancamentoProduto, readOnly, comandaId){
@@ -279,7 +290,7 @@ Comanda = {
 		
 		form += "<div class='col-md-3'>";
 		form += "<p>Produto:</p>";
-		form += "<select name='produtoId' "+readOnly+" " + disabled + " onchange='Comanda.buscarValorProduto(\""+id+"\")' class='form-control input-sm m-b-10' placeholder='Selecione um produto' >";
+		form += "<select name='produtoId' "+readOnly+" " + disabled + " onchange='Comanda.buscarValorProduto(\""+id+"\")' class='form-control input-sm m-b-10 ' placeholder='Selecione um produto' >";
 		form += "<option value='-' ></option>";
 		var produtoSelecionado = null;
 		for(var s = 0; s < Comanda.produtos.length; s++){
@@ -318,7 +329,7 @@ Comanda = {
 		form += "/>";
 		form += "</div><div class='col-md-1'>";
 		form += "<p>Valor (R$):</p>";
-		form += "<input name='valorProduto' class='form-control input-sm m-b-10' readonly='readonly' ";
+		form += "<input name='valorProduto' class='form-control input-sm m-b-10 mask-money' readonly='readonly' ";
 		if(produtoSelecionado){
 			form+= "value='" + ((produtoSelecionado.precoRevenda * lancamentoProduto.quantidadeUtilizada).toFixed(2)) + "' ";
 		}
@@ -334,11 +345,13 @@ Comanda = {
 		return form;
 	},
 	detalhesFechamento: function(){
+		Utils.unmaskMoney();
 		$.ajax({
 			url: '/min/web/clientes/verificarComanda',
 			type: 'POST',
 			data: $("#comanda-form").serialize(),
 			success: function(verificacoes){
+		        $('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
 				Utils.removeMessageBlock("#fechamento-comanda-observacoes");
 				if(verificacoes.criticalError){
 					$("#fechar-comanda-button").hide();
@@ -423,37 +436,37 @@ Comanda = {
 		}
 		
 		//Totais
-		info += "<div class='col-md-7'>";
+		info += "<div class='col-md-5'>";
 		info += "<p class='total'>Total:</p>";
 		info += "</div>";
-		info += "<div class='col-md-1'>";
-		info += "<input class='form-control input-sm m-b-10' id='valorTotal-"+comanda.id+"' name='total' readonly value='"+(comanda.valorTotal ? comanda.valorTotal : 0)+"' />";
+		info += "<div class='col-md-2'>";
+		info += "<input class='form-control input-sm m-b-10 mask-money' id='valorTotal-"+comanda.id+"' name='total' readonly value='"+ new Number((comanda.valorTotal ? comanda.valorTotal : 0)).toFixed(2)+"' />";
 		info += "</div>";
 		info += "<div class='col-md-3'>";
 		info += "<p class='total'>Descontos:</p>";
 		info += "</div>";
-		info += "<div class='col-md-1'>";
-		info += "<input class='form-control input-sm m-b-10' id='descontos-"+comanda.id+"' " +
-						"name='descontos' value='"+(comanda.desconto ? comanda.desconto : 0)+"' " +
+		info += "<div class='col-md-2'>";
+		info += "<input class='form-control input-sm m-b-10 mask-money' id='descontos-"+comanda.id+"' " +
+						"name='descontos' value='"+new Number((comanda.desconto ? comanda.desconto : 0)).toFixed(2)+"' " +
 						"onblur='Comanda.preencherTotais("+comanda.id+");' "+(isComandaAberta ? '' : 'readonly')+"  />";
 		info += "</div>";
-		info += "<div class='col-md-7'>";
+		info += "<div class='col-md-5'>";
 		info += "<p class='total'>Valor cobrado:</p>";
 		info += "</div>";
-		info += "<div class='col-md-1'>";
-		info += "<input class='form-control input-sm m-b-10' id='valorCobrado-"+comanda.id+"' name='valorCobrado' readonly value='"+(comanda.valorCobrado ? comanda.valorCobrado : 0)+"' />";
+		info += "<div class='col-md-2'>";
+		info += "<input class='form-control input-sm m-b-10 mask-money' id='valorCobrado-"+comanda.id+"' name='valorCobrado' readonly value='"+ new Number((comanda.valorCobrado ? comanda.valorCobrado : 0)).toFixed(2)+"' />";
 		info += "</div>";
 		info += "<div class='col-md-3'>";
 		info += "<p class='total'>Valor pago:</p>";
 		info += "</div>";
-		info += "<div class='col-md-1'>";
-		info += "<input class='form-control input-sm m-b-10' id='valorPago-"+comanda.id+"' name='valorPago' readonly value='"+(comanda.valorPago ? comanda.valorPago : 0)+"' />";
+		info += "<div class='col-md-2'>";
+		info += "<input class='form-control input-sm m-b-10 mask-money' id='valorPago-"+comanda.id+"' name='valorPago' readonly value='"+ new Number((comanda.valorPago ? comanda.valorPago : 0)).toFixed(2)+"' />";
 		info += "</div>";
-		info += "<div class='col-md-11'>";
+		info += "<div class='col-md-10'>";
 		info += "<p class='total'>Falta:</p>";
 		info += "</div>";
-		info += "<div class='col-md-1'>";
-		info += "<input class='form-control input-sm m-b-10' id='valorFaltante-"+comanda.id+"' name='valorFaltante' readonly value='0' />";
+		info += "<div class='col-md-2'>";
+		info += "<input class='form-control input-sm m-b-10 mask-money' id='valorFaltante-"+comanda.id+"' name='valorFaltante' readonly value='0.00' />";
 		info += "</div>";
 		info += "</div>";
 		
@@ -490,6 +503,7 @@ Comanda = {
 	},
 	
 	pagar:function(){
+		Utils.unmaskMoney();
 		var valor = $("#novo-pagamento-form input[name='valor']").val();
 		Utils.removeMessageBlock("#novo-pagamento-form");
 		if(valor == '' || valor <= 0){
@@ -501,6 +515,7 @@ Comanda = {
 			type: 'POST',
 			data: $("#novo-pagamento-form").serialize(),
 			success:function(comanda){
+				$('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
 				Comanda.refreshPagamentos(comanda);
 				Comanda.salvarComanda();
 				$("#fechar-popup-pagamento").click();
@@ -509,25 +524,29 @@ Comanda = {
 	},
 	
 	refreshPagamentos: function(comanda){
+		Utils.unmaskMoney();
 		var isComandaAberta = comanda.fechamento == null ? true : false;
 		$("#comanda-form" +(isComandaAberta ? '' : comanda.id)+ " tbody").html("");
 		for(var i = 0; i < comanda.pagamentos.length; i++){
 			var pagamento = comanda.pagamentos[i];
 			Comanda.addPagamento(pagamento, (isComandaAberta ? '' : comanda.id));
 		}
-		$("#valorPago-" + comanda.id).val(comanda.valorPago);
-		var cobrado = $("#valorCobrado-" + comanda.id).val();
-		$("#valorFaltante-" + comanda.id).val(cobrado - comanda.valorPago);
+		var valorPago = new Number(comanda.valorPago);
+		$("#valorPago-" + comanda.id).val(valorPago.toFixed(2));
+		var cobrado = new Number($("#valorCobrado-" + comanda.id).val());
+		var faltante = cobrado - valorPago;
+		$("#valorFaltante-" + comanda.id).val(new Number(faltante).toFixed(2));
+		$(".mask-money").mask("#.##0,00", {reverse: true, maxlength: false});
 	},
 	
 	addPagamento:function(pagamento, comandaId){
 		var linha = "<tr id='pagamento-"+pagamento.id+"'>";
 		linha += "<td>" + pagamento.formaPagamento;
 		if(pagamento.parcelamento){
-			linha += " (" +pagamento.parcelamento+"x)";
+			linha += " ("+pagamento.parcela + "/" +pagamento.parcelamento+")";
 		}
 		linha += "</td>";
-		linha += "<td>" + pagamento.valor + "</td>";
+		linha += "<td class='mask-money'>" + new Number(pagamento.valor).toFixed(2) + "</td>";
 		linha += "<td>";
 		if(comandaId == ''){
 			linha += "<a href='javascript:Comanda.deletarPagamento("+pagamento.id+", \""+comandaId+"\")'class='tooltips'><span class='icon' style='font-size: 14px'>&#61918;</span></a>";
@@ -555,6 +574,7 @@ Comanda = {
 	},
 	
 	novoPagamento:function(){
+		Utils.unmaskMoney();
 		$("#novo-pagamento-form input[name='comandaId']").val($("#comanda-form input[name='comandaId']").val());
 		var cobrado = $("#comanda-form input[name='valorCobrado']").val();
 		var pago = $("#comanda-form input[name='valorPago']").val();
@@ -562,8 +582,10 @@ Comanda = {
 		if(valor < 0){
 			valor = 0;
 		}
-		$("#novo-pagamento-form input[name='valor']").val(valor);
+		$("#novo-pagamento-form input[name='valor']").val(new Number(valor).toFixed(2));
 		$("a[href='#modalWider']").click();
+
+        $('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});		
 	},
 	comandasDetalhadas : {},
 	mostrarComandaFechada: function(id){
@@ -678,7 +700,7 @@ Comanda = {
 		form += "</div>";
 		form += "<div class='col-md-1'>";
 		form += '<p>Valor (R$):</p>';
-		form += '<input name="valorProdutoServico" class="form-control input-sm m-b-10" readonly ';
+		form += '<input name="valorProdutoServico" class="form-control input-sm m-b-10 mask-money" readonly ';
 		if(produtoUtilizado && produtoUtilizado.produto){
 			form+= "value='" + ((produtoUtilizado.produto.precoRevenda * produtoUtilizado.quantidadeUtilizada).toFixed(2))+ "' ";
 		}
@@ -707,23 +729,26 @@ Comanda = {
 	},
 	
 	salvarComanda: function(id){
+		Utils.unmaskMoney();
 		$.ajax({
 			url: '/min/web/clientes/salvarComanda',
 			type: 'POST',
 			data: $("#comanda-form" + (id ? id : '')).serialize(),
 			success: function(comanda){
-				;
+		        $('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
 			}
 		});
 	},
 	
 	fecharComanda:function(){
+		Utils.unmaskMoney();
 		$.ajax({
 			url: '/min/web/clientes/fecharComanda',
 			type: 'POST',
 			data: $("#comanda-form").serialize(),
 			success: function(comanda){
 				$("#comanda-form").html("");
+		        $('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
 				if($("#comandas-fechadas").css('display') == 'block'){
 					Comanda.findComandas();
 				}

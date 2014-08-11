@@ -163,7 +163,7 @@ Tarefa = {
 				});
 			}
 		},
-		fecharTarefa:function(id){
+		fecharTarefa:function(id, holdRefresh){
 			$.ajax({
 				url: '/min/web/tarefas/fecharTarefa/' + id,
 				type: 'GET',
@@ -172,7 +172,9 @@ Tarefa = {
 						$("#tarefa-" + id).removeClass("nao-lido");
 						$("#tarefa-" + id).addClass("lido");
 					}
-					Tarefa.refreshTopo();
+					if(holdRefresh != true){
+						Tarefa.refreshTopo();
+					}
 				}
 			});
 		},
@@ -181,8 +183,9 @@ Tarefa = {
 			var naoLidos = $("#tarefas-block .nao-lido");
 			$.each(naoLidos, function(index, value){
 			   var id = $("#" + $(value).attr('id') + " input[name='tarefaId']").val();
-			   Tarefa.fecharTarefa(id);
+			   Tarefa.fecharTarefa(id, true);
 			});
+			$(".sa-list-refresh").click();
 		},
 		
 		pesquisar:function(){

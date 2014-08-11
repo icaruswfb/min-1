@@ -39,59 +39,24 @@
 				<div class="row m-b-10">
 					<p>Total por forma de pagamento</p>
 					<div class="col-lg-12">
-						<div class="col-lg-2">
-							<div class="tile">
-								<div class="tile-title">Dinheiro</div>
-								<p class="p-10" >R$<fmt:formatNumber value="${ totalDinheiro }" minFractionDigits="2" /></p>
-							</div>
-						</div>
-						<div class="col-lg-2">
-							<div class="tile">
-								<div class="tile-title">Visa</div>
-								<p class="p-10">R$<fmt:formatNumber value="${ totalVisa }" minFractionDigits="2" /></p>
-							</div>
-						</div>
-						<div class="col-lg-2">
-							<div class="tile">
-								<div class="tile-title">Visa Electron</div>
-								<p class="p-10">R$<fmt:formatNumber value="${ totalVisaElectron }" minFractionDigits="2" /></p>
-							</div>
-						</div>
-						<div class="col-lg-2">
-							<div class="tile">
-								<div class="tile-title">MasterCard</div>
-								<p class="p-10">R$<fmt:formatNumber value="${ totalMasterCard }" minFractionDigits="2" /></p>
-							</div>
-						</div>
-						<div class="col-lg-2">
-							<div class="tile">
-								<div class="tile-title">Maestro</div>
-								<p class="p-10">R$<fmt:formatNumber value="${ totalMaestro }" minFractionDigits="2" /></p>
-							</div>
-						</div>
-						<div class="col-lg-2">
-							<div class="tile">
-								<div class="tile-title">Diners</div>
-								<p class="p-10">R$<fmt:formatNumber value="${ totalDiners }" minFractionDigits="2" /></p>
-							</div>
-						</div>
-						<div class="col-lg-2">
-							<div class="tile">
-								<div class="tile-title">Amex</div>
-								<p class="p-10">R$<fmt:formatNumber value="${ totalAmex }" minFractionDigits="2" /></p>
-							</div>
-						</div>
-						<div class="col-lg-2">
-							<div class="tile">
-								<div class="tile-title">Cheque</div>
-								<p class="p-10">R$<fmt:formatNumber value="${ totalCheque }" minFractionDigits="2" /></p>
-							</div>
-						</div>
-						<div class="col-lg-2">
-							<div class="tile">
-								<div class="tile-title">Crédito</div>
-								<p class="p-10">R$<fmt:formatNumber value="${ totalCredito }" minFractionDigits="2" /></p>
-							</div>
+						<div class="col-lg-6">
+		                    <table class="table table-hover tile">
+		                        <tbody>
+									<c:forEach var="total" items="${ totais }">
+										<tr>
+											<td>
+												${ total.formaPagamento.nome }
+											</td>
+											<td>
+												Total: R$<fmt:formatNumber value="${ total.total }" minFractionDigits="2" />
+												<c:forEach var="parcela" items="${ total.parcelas }">
+													<p class="p-l-10 p-t-10  m-0">Total em ${ parcela.parcelas }x: R$<fmt:formatNumber value="${ parcela.total }" minFractionDigits="2" /></p>
+												</c:forEach>
+											</td>
+										</tr>
+									</c:forEach>
+								</tbody>
+							</table>
 						</div>
 						<div class="col-lg-12">
 							<div class="row">

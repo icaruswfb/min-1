@@ -2,6 +2,7 @@ package br.com.min.controller;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 import br.com.min.controller.vo.MessageVO;
 import br.com.min.controller.vo.VerificacaoVO;
 import br.com.min.entity.Comanda;
+import br.com.min.entity.FluxoPagamento;
 import br.com.min.entity.FormaPagamento;
 import br.com.min.entity.Historico;
 import br.com.min.entity.LancamentoProduto;
@@ -122,6 +124,7 @@ public class ClienteController {
 				pagamento.setComanda(comanda);
 				pagamento.setData(new Date());
 				pagamento.setFormaPagamento(FormaPagamento.valueOf(formaPagamento));
+				pagamento.setFluxoPagamento(FluxoPagamento.ENTRADA);
 				
 				if(pagamento.getFormaPagamento().equals(FormaPagamento.Credito)){
 					Double credito = comandaService.getCreditoCliente(comanda.getCliente().getId());
@@ -132,11 +135,27 @@ public class ClienteController {
 				if(pagamento.getFormaPagamento().isParcelavel()){
 					if(parcelas == null || parcelas <= 0){
 						parcelas = 1;
+					}else{
+						Double valorParcela = valor / parcelas;
+						Calendar dataPagamento = Calendar.getInstance();
+						dataPagamento.setTime(new Date());
+						for(int i = 1; i <= parcelas; i++){
+							Pagamento parcelado = new Pagamento();
+							parcelado.setFluxoPagamento(FluxoPagamento.ENTRADA);
+							parcelado.setComanda(comanda);
+							dataPagamento.add(Calendar.MONTH, 1);
+							parcelado.setData(dataPagamento.getTime());
+							parcelado.setFormaPagamento(FormaPagamento.valueOf(formaPagamento));
+							parcelado.setParcelamento(parcelas);
+							parcelado.setParcela(i);
+							parcelado.setValor(valorParcela);
+							comanda.getPagamentos().add(parcelado);
+						}
 					}
-					pagamento.setParcelamento(parcelas);
+				}else{
+					pagamento.setValor(valor);
+					comanda.getPagamentos().add(pagamento);
 				}
-				pagamento.setValor(valor);
-				comanda.getPagamentos().add(pagamento);
 				comanda = comandaService.persist(comanda, Utils.getUsuarioLogado(request).getPessoa());
 			}
 			limparComandaJSON(comanda);

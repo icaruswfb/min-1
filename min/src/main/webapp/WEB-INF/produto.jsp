@@ -21,10 +21,10 @@
 		<section id="content" class="container">
 
 			<h4 class="page-title">PRODUTO</h4>
-            <form:form method="post" action="../salvar" commandName="produto">
+            <form:form method="post" action="../salvar" commandName="produto" id="produto-form">
             	<form:hidden path="id" id="produto-id" />
 				<div class="block-area" id="buttons">
-	                 <button class="btn m-r-5" type="submit">Salvar</button>
+	                 <a class="btn m-r-5" onclick="Produto.submit()">Salvar</a>
 	                 <a class="btn btn-alt m-r-5" href="<spring:url value='/web/produtos/' />" >Cancelar</a>
 	             </div>
 			 	<!-- Table Hover -->
@@ -43,11 +43,11 @@
                 </div>
                 <div class="col-lg-2">
                  	<p>Custo unitário (R$)</p>
-                 	<form:input path="custoUnitario" cssClass="form-control m-b-10 validate[required,custom[number]]" placeholder="Custo unitário" />
+                 	<input name="custoUnitario" id="custoUnitario" class="form-control m-b-10 mask-money" placeholder="Custo unitário" value="<fmt:formatNumber minFractionDigits="2" value="${ produto.custoUnitario }" />" />
                 </div>
                 <div class="col-lg-2">
                  	<p>Preço revenda (R$)</p>
-                 	<form:input path="precoRevenda" cssClass="form-control m-b-10 validate[required,custom[number]]" placeholder="Preço sugerido" />
+                 	<input name="precoRevenda" id="precoRevenda" class="form-control m-b-10 mask-money" placeholder="Preço sugerido" value="<fmt:formatNumber minFractionDigits="2" value="${ produto.precoRevenda }" />" />
                 </div>
                 <div class="col-lg-4">
                  	<p>Quantidade mínima para gerar alertas de estoque</p>
@@ -154,6 +154,7 @@
 
 		$(document).ready(function(){
              $('.mask-number').mask('########0');
+             $('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
 		});
 		
 	</script>
