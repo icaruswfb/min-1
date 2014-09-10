@@ -275,7 +275,7 @@ blockquote small {
     width: 233px;
     height: 50px;
     text-align: center;
-    padding: 14px 0 12px 40px;
+    padding: 0px 0 12px 40px;
     font-size: 16px;
     margin-right: 9px !important;
     background: rgba(0, 0, 0, 0.23);
@@ -393,7 +393,7 @@ blockquote small {
     padding: 2px 3px 3px;
     border-radius: 2px !important;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.06);
-    margin: 7px 0 0 27px;
+    margin: 7px 0 0 -10px;
     font-style: normal;
     line-height: 100%;
     -webkit-animation-name: bounceIn;
@@ -1871,8 +1871,13 @@ a.list-group-item.active > .badge,
         background-attachment: fixed;
     }
 
+    #vumbs {
+        background-image: url(../img/body/temp.jpg);
+    }
+    
     #skin-blur-violate {
-        background-image: url(../img/body/violate.jpg);
+  		background: url(../img/body/cloth.png);
+        /*background-image: url(../img/body/violate.jpg);*/
     }
 
     #skin-blur-lights {
@@ -2112,7 +2117,12 @@ a.list-group-item.active > .badge,
 }
 
 @media (max-width: 780px) {
-    /* Content */
+    #messages{
+    	width: 100% !important;
+    }
+    .acaoLancamento{
+    	margin: 0 0 30px 0 !important;
+    }
     #main {
         min-height: 100%;
         min-height: calc(100% - 100px);
@@ -2176,7 +2186,7 @@ a.list-group-item.active > .badge,
     }
     
     #sidebar .s-widget:not(#profile-menu) {
-        display: none;
+        /*display: none;*/
     }
 
     #sidebar.toggled {
@@ -2396,6 +2406,10 @@ a.list-group-item.active > .badge,
 .acaoLancamento{
 	float: left;
 	margin: 30px 10px 0 0;
+}
+
+#comandas-fechadas .acaoLancamento{
+	display: none;
 }
 
 .lancamento{

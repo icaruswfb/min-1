@@ -9,6 +9,7 @@ public class VerificacaoVO implements Serializable{
 	private boolean success;
 	private boolean criticalError;
 	private List<MessageVO> messages = new ArrayList<>();
+	private Long ultimaAtualizacao;
 	
 	public void addMessage(String severity, String message){
 		messages.add(new MessageVO(severity, message));
@@ -33,6 +34,14 @@ public class VerificacaoVO implements Serializable{
 
 	public void setCriticalError(boolean criticalError) {
 		this.criticalError = criticalError;
+	}
+
+	public Long getUltimaAtualizacao() {
+		return ultimaAtualizacao;
+	}
+
+	public void setUltimaAtualizacao(Long ultimaAtualizacao) {
+		this.ultimaAtualizacao = ultimaAtualizacao;
 	}
 	
 }

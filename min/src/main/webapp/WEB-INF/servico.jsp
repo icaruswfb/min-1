@@ -33,6 +33,7 @@
                 <div class="block-area" id="text-input">
                 	<p>Preencha os dados do serviço e clique em Salvar</p>
                 </div>
+                <div class="clearfix"></div>
                  <div class="col-lg-12">
                  	<form:input path="nome" cssClass="form-control input-lg m-b-10" placeholder="Nome"/>
                 </div>
@@ -47,54 +48,6 @@
               <div class="clearfix"></div>
             <br /><br />
             <c:if test="${ servico.id ne null }">
-	            <div class="block-area">
-					<div class="row">
-						<div class="col-md-9">
-							<!-- Main Chart -->
-							<div class="tile">
-								<h2 class="tile-title">Visitas x Mês</h2>
-								<div class="p-10">
-									<div id="line-chart" class="main-chart" style="height: 100px"></div>
-	
-								</div>
-							</div>
-						</div>
-						
-						<div class="col-md-3">
-							<div class="tile">
-	                            <h2 class="tile-title">DADOS COMPILADOS</h2>
-	                            <div class="listview narrow">
-	                                <div class="media p-l-5">
-	                                    <div class="media-body">
-	                                        <small class="text-muted">Total de visitas:</small><br/>
-	                                        10
-	                                    </div>
-	                                </div>
-	                            </div>
-	                            <div class="listview narrow">
-	                                <div class="media p-l-5">
-	                                    <div class="media-body">
-	                                        <small class="text-muted">Quantia total gasta:</small><br/>
-	                                        R$1.320,00
-	                                    </div>
-	                                </div>
-	                            </div>
-	                            <div class="listview narrow">
-	                                <div class="media p-l-5">
-	                                    <div class="media-body">
-	                                        <small class="text-muted">Quantia média gasta por visita:</small><br/>
-	                                        R$132,00
-	                                    </div>
-	                                </div>
-	                            </div>
-	                        </div>
-						</div>​
-						
-					</div>
-	
-					<div class="clearfix"></div>
-				</div>
-	            <div class="clearfix"></div>
             </c:if>
             
 		</section>

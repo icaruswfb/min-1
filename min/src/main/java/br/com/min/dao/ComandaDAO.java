@@ -1,5 +1,6 @@
 package br.com.min.dao;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -16,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import br.com.min.entity.Comanda;
+import br.com.min.entity.LancamentoProduto;
+import br.com.min.entity.LancamentoServico;
 import br.com.min.entity.Pagamento;
 
 @Repository
@@ -48,6 +51,34 @@ public class ComandaDAO {
 			return 0d;
 		}
 		return result;
+	}
+	
+	public Long findUltimaAtualizacao(Long comandaId){
+		Session session = sessionFactory.openSession();
+		Query query = session.createSQLQuery("select c.ultimaAtualizacao from Comanda c where c.id = " + comandaId);
+		Long result = ((BigInteger) query.uniqueResult()).longValue();
+		return result;
+	}
+	
+	public LancamentoServico findLancamentoServicoById(Long id){
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(LancamentoServico.class);
+		criteria.add(Restrictions.eq("id", id));
+		return (LancamentoServico) criteria.uniqueResult();
+	}
+	
+	public LancamentoProduto findLancamentoProdutoById(Long id) {
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(LancamentoProduto.class);
+		criteria.add(Restrictions.eq("id", id));
+		return (LancamentoProduto) criteria.uniqueResult();
+	}
+	
+	public LancamentoServico findLancamentoServicoByLancamentoProdutoId(Long id){
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(LancamentoServico.class);
+		criteria.createCriteria("produtosUtilizados").add(Restrictions.eq("id", id));
+		return (LancamentoServico) criteria.uniqueResult();
 	}
 	
 	public List<Comanda> findFechamento(Date date){

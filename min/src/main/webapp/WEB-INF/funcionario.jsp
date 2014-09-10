@@ -38,7 +38,7 @@
 	            	
 	           	<div class="block-area">
 	           		<div class="row">
-	           			<div class="col-md-3">
+	           			<div class="col-md-3 clearfix" style="z-index: 100">
 							<form id="upload">
 								<div class="block-area m-b-10">
 				            	 <p>Imagem do perfil</p>

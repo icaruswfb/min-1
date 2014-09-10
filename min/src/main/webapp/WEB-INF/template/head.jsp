@@ -14,9 +14,10 @@
 <meta name="description" content="Violate Responsive Admin Template">
 <meta name="keywords" content="Super Admin, Admin, Template, Bootstrap">
 
-<title>21min</title>
+<title>21min | Admin</title>
 
 <!-- CSS -->
+<link rel="icon" type="image/png" href="<spring:url value='/img/favicon.png' />">
 <link href="<spring:url value='/css/bootstrap.min.css' />" rel="stylesheet">
 <link href="<spring:url value='/css/animate.min.css' />" rel="stylesheet">
 <link href="<spring:url value='/css/font-awesome.min.css' />" rel="stylesheet">

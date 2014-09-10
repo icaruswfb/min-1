@@ -28,20 +28,12 @@
 					<!-- Calendario do dia -->
 					<div class="col-md-8 clearfix">
 
-						<div id="calendar" class="p-relative p-10 m-b-20">
-							<!-- Calendar Views -->
-							<ul class="calendar-actions list-inline clearfix">
-								<li class="p-r-0"><a data-view="month" href="#"
-									class="tooltips" title="Month"> <i class="sa-list-month"></i>
-								</a></li>
-								<li class="p-r-0"><a data-view="agendaWeek" href="#"
-									class="tooltips" title="Week"> <i class="sa-list-week"></i>
-								</a></li>
-								<li class="p-r-0"><a data-view="agendaDay" href="#"
-									class="tooltips" title="Day"> <i class="sa-list-day"></i>
-								</a></li>
-							</ul>
-						</div>
+						<div class="jumbotron tile-light">
+                          <div class="container">
+                               <h1>Olá, ${ loggedUser.pessoa.nome }!</h1>
+                               <p><a class="btn btn-alt btn-lg" href="/min/web/agenda/">Agenda de hoje</a></p>
+                          </div>
+	                     </div>
 					</div>
 
 					<!-- Tasks TO DO -->
@@ -56,7 +48,7 @@
 								</ul>
 							</div>
 
-							<div class="listview" id="tarefas-todo">
+							<div class="listview overflow" id="tarefas-todo" style="height: 400px">
 							
 							</div>
 

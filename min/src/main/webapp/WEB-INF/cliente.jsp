@@ -38,6 +38,7 @@
                 <div class="block-area" id="text-input">
                 	<p>Preencha os dados do cliente e clique em Salvar</p>
                 </div>
+                <div class="clearfix"></div>
                  <div class="col-lg-12">
                  	<form:input path="nome" cssClass="form-control input-lg m-b-10" placeholder="Nome" readonly="${ not canEdit }"/>
                 </div>
@@ -111,16 +112,194 @@
             
             
 					<div id="comandas" class="">
+						<div class="modal fade " id="modalComandaServico" tabindex="-1" role="dialog" aria-hidden="true">
+		                     <div class="modal-dialog">
+		                         <div class="modal-content">
+		                             <div class="modal-header">
+		                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		                                 <h4 class="modal-title">Adicionar serviço</h4>
+		                             </div>
+		                             <div class="modal-body">
+										<div class="listview list-container" id="add-servico-msg">
+						                </div>
+										<p>Preencha os dados do serviço a ser adicionado</p>
+										<c:if test="${ ! hasRole[''] }">
+											<p>Depois de lançado um serviço só pode ser excluído por um administrador.</p>
+										</c:if>
+										<form action="" id="form-servico" method="post">
+										
+											<input type="hidden" name="clienteId" value="${ cliente.id }"/>
+							                 <label>Serviço</label>
+							                 <select class="form-control input-sm m-b-10" name="servicoId" onchange="Comanda.buscarValorServico()" >
+							                 	<option value=""></option>
+							                 </select>
+							                 <label>Funcionário</label>
+							                 <select class="form-control input-sm m-b-10" name="funcionarioId" id="forma-pagamento">
+							                 	<option value=""></option>
+							                 </select>
+							                 <label>Assistente (opcional)</label>
+							                 <select class="form-control input-sm m-b-10" name="assistenteId" id="forma-pagamento">
+							                 	<option value=""></option>
+							                 </select>
+							                 <label>Valor</label>
+			                                <input type="text" class="form-control input-sm mask-money" name="valor" disabled="disabled" readonly="readonly"/>
+			                                
+										</form>
+		                             </div>
+		                             <div class="modal-footer">
+		                                 <button type="button" class="btn btn-sm" onclick="Lancamento.addServico()" id="fechar-comanda-button">Lançar</button>
+		                                 <button type="button" class="btn btn-sm" data-dismiss="modal" id="fechar-modal-servico">Cancelar</button>
+		                             </div>
+		                         </div>
+		                     </div>
+		                 </div>
+	                 	<!-- Modal de serviços -->
+		                 <div class="modal fade " id="modalComandaServico" tabindex="-1" role="dialog" aria-hidden="true">
+		                     <div class="modal-dialog">
+		                         <div class="modal-content">
+		                             <div class="modal-header">
+		                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		                                 <h4 class="modal-title">Adicionar serviço</h4>
+		                             </div>
+		                             <div class="modal-body">
+										<div class="listview list-container" id="add-servico-msg">
+						                </div>
+										<p>Preencha os dados do serviço a ser adicionado</p>
+										<c:if test="${ ! hasRole['ADMIN'] }">
+											<p>Depois de lançado, o serviço só poderá ser excluído por um administrador.</p>
+										</c:if>
+										<form action="" id="form-servico" method="post">
+										
+											<input type="hidden" name="clienteId" value="${ cliente.id }"/>
+							                 <label>Serviço</label>
+							                 <select class="form-control input-sm m-b-10" name="servicoId" onchange="Comanda.buscarValorServico()" >
+							                 	<option value=""></option>
+							                 </select>
+							                 <label>Funcionário</label>
+							                 <select class="form-control input-sm m-b-10" name="funcionarioId" >
+							                 	<option value=""></option>
+							                 </select>
+							                 <label>Assistente (opcional)</label>
+							                 <select class="form-control input-sm m-b-10" name="assistenteId" >
+							                 	<option value=""></option>
+							                 </select>
+							                 <label>Valor</label>
+			                                <input type="text" class="form-control input-sm mask-money" name="valor" disabled="disabled" readonly="readonly"/>
+			                                
+										</form>
+		                             </div>
+		                             <div class="modal-footer">
+		                                 <button type="button" class="btn btn-sm" onclick="Lancamento.addServico()" >Lançar</button>
+		                                 <button type="button" class="btn btn-sm" data-dismiss="modal" id="fechar-modal-servico">Cancelar</button>
+		                             </div>
+		                         </div>
+		                     </div>
+		                 </div>
+		                 <!-- Modal de produtos -->
+		                 <div class="modal fade " id="modalComandaProduto" tabindex="-1" role="dialog" aria-hidden="true">
+		                     <div class="modal-dialog">
+		                         <div class="modal-content">
+		                             <div class="modal-header">
+		                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		                                 <h4 class="modal-title">Adicionar produto</h4>
+		                             </div>
+		                             <div class="modal-body">
+										<div class="listview list-container" id="add-produto-msg">
+						                </div>
+										<p>Preencha os dados do produto a ser adicionado</p>
+										<c:if test="${ ! hasRole['ADMIN'] }">
+											<p>Depois de lançado, o produto só poderá ser excluído por um administrador.</p>
+										</c:if>
+										<form action="" id="form-produto" method="post">
+										
+											<input type="hidden" name="clienteId" value="${ cliente.id }"/>
+							                 <label>Produto</label>
+							                 <select class="form-control input-sm m-b-10" name="produtoId" onchange="Comanda.buscarValorProduto()" >
+							                 	<option value=""></option>
+							                 </select>
+							                 <label>Vendedor</label>
+							                 <select class="form-control input-sm m-b-10" name="vendedorId">
+							                 	<option value=""></option>
+							                 </select>
+							                 <label class="label-quantidade">Quantidade</label>
+			                                <input type="text" class="form-control input-sm m-b-10 mask-number" name="quantidade" onchange="Comanda.buscarValorProduto()"/>			                                
+							                 <label>Valor</label>
+			                                <input type="text" class="form-control input-sm mask-money" name="valor" disabled="disabled" readonly="readonly"/>
+			                                
+										</form>
+		                             </div>
+		                             <div class="modal-footer">
+		                                 <button type="button" class="btn btn-sm" onclick="Lancamento.addProduto()" >Lançar</button>
+		                                 <button type="button" class="btn btn-sm" data-dismiss="modal" id="fechar-modal-produto">Cancelar</button>
+		                             </div>
+		                         </div>
+		                     </div>
+		                 </div>
+		                  <!-- Modal de produtos de produtos-->
+		                 <div class="modal fade " id="modalComandaProdutoServico" tabindex="-1" role="dialog" aria-hidden="true">
+		                     <div class="modal-dialog">
+		                         <div class="modal-content">
+		                             <div class="modal-header">
+		                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		                                 <h4 class="modal-title">Adicionar produto</h4>
+		                             </div>
+		                             <div class="modal-body">
+										<div class="listview list-container" id="add-produto-servico-msg">
+						                </div>
+										<p>Preencha os dados do produto a ser adicionado</p>
+										<c:if test="${ ! hasRole['ADMIN'] }">
+											<p>Depois de lançado, o produto só poderá ser excluído por um administrador.</p>
+										</c:if>
+										<form action="" id="form-produto-servico" method="post">
+										
+											<input type="hidden" name="clienteId" value="${ cliente.id }"/>
+											<input type="hidden" name="servicoId" />
+							                 <label>Produto</label>
+							                 <select class="form-control input-sm m-b-10" name="produtoId" onchange="Comanda.buscarValorProduto('servico')" >
+							                 	<option value=""></option>
+							                 </select>
+							                 <label class="label-quantidade">Quantidade</label>
+			                                <input type="text" class="form-control input-sm m-b-10 mask-number" name="quantidade" onchange="Comanda.buscarValorProduto('servico')"/>			                                
+							                 <label>Valor</label>
+			                                <input type="text" class="form-control input-sm mask-money" name="valor" disabled="disabled" readonly="readonly"/>
+			                                
+										</form>
+		                             </div>
+		                             <div class="modal-footer">
+		                                 <button type="button" class="btn btn-sm" onclick="Lancamento.addProdutoServico()" >Lançar</button>
+		                                 <button type="button" class="btn btn-sm" data-dismiss="modal" id="fechar-modal-produto-servico">Cancelar</button>
+		                             </div>
+		                         </div>
+		                     </div>
+		                 </div>
 						<form action="" method="post" id="comanda-form">
 							
 						</form>
-						<c:if test="${ hasRole['ADMIN'] }">
-							<h4 class='page-title'><a href='javascript:Comanda.expandirComandasAntigas()'>COMANDAS ANTIGAS <span id='comandas-fechadas-acao'>[+]</span></a></h4>
-							<div id='comandas-fechadas' class='block-area'></div>
-						</c:if>
+						<h4 class='page-title'><a href='javascript:Comanda.expandirComandasAntigas()'>COMANDAS ANTIGAS <span id='comandas-fechadas-acao'>[+]</span></a></h4>
+						<div id='comandas-fechadas' class='block-area'></div>
 					</div>
              	 <div class="clearfix"></div>
-             	 
+             	 <!-- Modal erro de comanda desatualizada -->
+             	 <div class="modal fade" id="modalComandaErro" tabindex="-1" role="dialog" aria-hidden="true">
+                     <div class="modal-dialog modal-lg">
+                         <div class="modal-content">
+                             <div class="modal-header">
+                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                 <h4 class="modal-title">AVISO</h4>
+                             </div>
+                             <div class="modal-body">
+								<p>Foi dectado que você está editando uma comanda desatualizada.</p>
+								<p>Para evitar perda de dados, atualize os dados da comanda.</p>
+                             </div>
+                             <div class="modal-footer">
+                                 <button type="button" class="btn btn-sm" data-dismiss="modal" onclick="Comanda.findComandaAberta()" id="fechar-comanda-button">Atualizar a comanda</button>
+                                 <button type="button" class="btn btn-sm" data-dismiss="modal">Cancelar</button>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+                 <a class="btn btn-lg btn-alt m-r-5" data-toggle="modal" href="#modalComandaErro" id="linkModalComandaErro" style="display: none" ></a>
+                 
              	 <!-- Modal de fechamento de comanda -->
                    <div class="modal fade" id="modalFechamento" tabindex="-1" role="dialog" aria-hidden="true">
                      <div class="modal-dialog modal-lg">

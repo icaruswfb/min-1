@@ -72,8 +72,8 @@ public class ProdutoController {
 	@RequestMapping(value="/salvar", method=RequestMethod.POST)
 	public ModelAndView salvar(@ModelAttribute("servico") Produto produto, HttpServletRequest request){
 		if(Utils.hasRole(Role.ADMIN, request)){
-			service.persist(produto);
-			service.addEstoque(produto.getId(), 0L, TipoLancamentoEstoque.ENTRADA);
+			produto = service.persist(produto);
+			service.atualizarSituacaoEstoque(produto);;
 		}
 		return listar(request);
 	}

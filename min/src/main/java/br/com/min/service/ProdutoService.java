@@ -23,8 +23,8 @@ public class ProdutoService {
 	private GenericDAO genericDao;
 	
 	@Transactional
-	public void persist(Produto entity){
-		genericDao.persist(entity);
+	public Produto persist(Produto entity){
+		return (Produto)genericDao.persist(entity);
 	}
 	
 	@Transactional

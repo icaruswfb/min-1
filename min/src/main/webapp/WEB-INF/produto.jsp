@@ -31,6 +31,7 @@
                 <div class="block-area" id="text-input">
                 	<p>Preencha os dados do produto e clique em Salvar</p>
                 </div>
+                <div class="clearfix"></div>
                  <div class="col-lg-12">
                  	<form:input path="nome" cssClass="form-control input-lg m-b-10" placeholder="Nome"/>
                 </div>

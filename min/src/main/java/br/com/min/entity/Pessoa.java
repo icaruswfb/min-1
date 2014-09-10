@@ -2,8 +2,9 @@ package br.com.min.entity;
 
 import java.io.Serializable;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -11,6 +12,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
@@ -40,6 +42,7 @@ public class Pessoa implements Serializable{
 	private Comissao comissao;
 	private Imagem imagem;
 	private Usuario usuario;
+	private List<ImagemCliente> imagens = new ArrayList<>();
 
 	@Id
 	@GeneratedValue
@@ -154,6 +157,14 @@ public class Pessoa implements Serializable{
 	}
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
+	}
+
+	@OneToMany
+	public List<ImagemCliente> getImagens() {
+		return imagens;
+	}
+	public void setImagens(List<ImagemCliente> imagens) {
+		this.imagens = imagens;
 	}
 	@Override
 	public int hashCode() {

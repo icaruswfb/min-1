@@ -25,7 +25,7 @@
 					<i class="icon right">&#61815;</i>
 				</li>
 				<li>
-					<a href="">Notificações</a> 
+					<a href="/min/web/tarefas/">Notificações</a> 
 					<i class="icon left">&#61903;</i>
 					<i 	class="icon right">&#61815;</i>
 				</li>

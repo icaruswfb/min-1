@@ -57,11 +57,56 @@ public class ComandaService {
 		return dao.pagar(pagamento);
 	}
 	
+	public Comanda addServico(LancamentoServico servico, Comanda comanda, Pessoa usuarioLogado){
+		comanda.getServicos().add(servico);
+		comanda = persist(comanda, usuarioLogado);
+		
+		Historico historico = new Historico();
+		historico.setCliente(comanda.getCliente());
+		historico.setData(new Date());
+		historico.setFuncionario(historico.getFuncionario());
+		historico.setTexto("Serviço adicionada à comanda " + comanda.getId() + ": " + servico.getServico().getNome() + " no valor de R$" + servico.getValor());
+		historico.setCriador(usuarioLogado);
+		historico.setTextoPequeno(Utils.dateTimeFormat.format(historico.getData()) + " - por "+usuarioLogado.getNome());
+		genericDao.persist(historico);
+		return comanda;
+	}
+	
+	public Comanda addProduto(LancamentoProduto lancamentoProduto,
+			Comanda comanda, Pessoa usuarioLogado) {
+		comanda.getProdutos().add(lancamentoProduto);
+		comanda = persist(comanda, usuarioLogado);
+		
+		crearHistoricoLancamentoProduto(comanda, lancamentoProduto, usuarioLogado);
+		
+		return comanda;
+	}
+
+	public Comanda addProdutoServico(LancamentoProduto lancamentoProduto,
+			Comanda comanda, Pessoa usuarioLogado) {
+		comanda = persist(comanda, usuarioLogado);
+		
+		crearHistoricoLancamentoProduto(comanda, lancamentoProduto, usuarioLogado);
+		return comanda;
+	}
+	
+	private void crearHistoricoLancamentoProduto(Comanda comanda, LancamentoProduto lancamentoProduto, Pessoa usuarioLogado){
+		Historico historico = new Historico();
+		historico.setCliente(comanda.getCliente());
+		historico.setData(new Date());
+		historico.setFuncionario(historico.getFuncionario());
+		historico.setTexto("Produto adicionada à comanda " + comanda.getId() + ": " + lancamentoProduto.getProduto().getNome() + " no valor de R$" + lancamentoProduto.getValor());
+		historico.setCriador(usuarioLogado);
+		historico.setTextoPequeno(Utils.dateTimeFormat.format(historico.getData()) + " - por "+usuarioLogado.getNome());
+		genericDao.persist(historico);
+	}
+	
 	@Transactional
 	public Comanda persist(Comanda entity, boolean isFechamento, Pessoa usuarioLogado){
 		if(entity.getId() == null){
 			gravarHistoricoAbertura(entity, usuarioLogado);
 		}
+		entity.setUltimaAtualizacao(new Date().getTime());
 		if(isFechamento){
 			gravarHistoricoFechamento(entity, usuarioLogado);
 		}
@@ -93,6 +138,10 @@ public class ComandaService {
 	
 	public Comanda findComandaAberta(Long clienteId){
 		return dao.findComandaAberta(clienteId);
+	}
+	
+	public Long findUltimaAtualizacao(Long comandaId){
+		return dao.findUltimaAtualizacao(comandaId);
 	}
 	
 	private LancamentoComissao criarComissao(Double valor, Pessoa funcionario, Pessoa auxiliar, TipoComissao tipo, Comanda comanda){
@@ -378,15 +427,93 @@ public class ComandaService {
 		}
 	}
 
-	public void delete(Long id) {
-		Comanda entity = new Comanda();
-		entity.setId(id);
-		genericDao.delete(entity);
+	public void delete(Long id, Pessoa usuarioLogado) {
+		Comanda entity = findById(id);
+		Historico historico = new Historico();
+		historico.setCliente(entity.getCliente());
+		historico.setData(new Date());
+		historico.setFuncionario(historico.getFuncionario());
+		historico.setTexto("Comanda " + entity.getId() + " no valor de R$" + entity.getValorCobrado() 
+				+ ", aberta em " + Utils.dateTimeFormat.format(entity.getAbertura()) + " onde o valor pago foi R$" + entity.getValorPago() 
+				+ " foi excluída por " + usuarioLogado.getNome());
+		historico.setCriador(usuarioLogado);
+		historico.setTextoPequeno(Utils.dateTimeFormat.format(historico.getData()) + " - Comanda "+entity.getId()+" excluída");
+		entity.getPagamentos().clear();
+		entity.getComissoes().clear();
+		entity.getEstoque().clear();
+		entity.getProdutos().clear();
+		entity.getServicos().clear();
+		persist(entity, usuarioLogado);
+		Comanda toDelete = new Comanda();
+		toDelete.setId(id);
+		genericDao.delete(toDelete);
+
+		genericDao.persist(historico);
 	}
 	public void deletePagamento(Long id) {
 		Pagamento entity = new Pagamento();
 		entity.setId(id);
 		genericDao.delete(entity);
+	}
+
+	public LancamentoServico findLancamentoServicoById(Long id){
+		LancamentoServico entity = dao.findLancamentoServicoById(id);
+		return entity;
+	}
+	
+	private Historico criarHistoricoExclusao(Comanda comanda, Pessoa usuarioLogado){
+		Historico historico = new Historico();
+		historico.setCliente(comanda.getCliente());
+		historico.setCriador(usuarioLogado);
+		historico.setData(new Date());
+		historico.setTextoPequeno(Utils.dateTimeFormat.format(new Date()) + " - por " + usuarioLogado.getNome());
+		
+		return historico;
+	}
+	
+	public void deleteLancamentoServico(Long id, Pessoa usuarioLogado) {
+		LancamentoServico entity = findLancamentoServicoById(id);
+		Comanda comanda = entity.getComanda();
+		if(comanda.getFechamento() != null){
+			return;
+		}
+		Historico historico = criarHistoricoExclusao(comanda, usuarioLogado);
+		historico.setTexto("Lançamento do serviço " + entity.getServico().getNome() + " no valor de R$" + entity.getValor() + " foi excluído.");
+		comanda.getServicos().remove(entity);
+		persist(comanda, usuarioLogado);
+		genericDao.persist(historico);
+	}
+
+	public void deleteLancamentoProduto(Long id, Pessoa usuarioLogado) {
+		LancamentoProduto entity = dao.findLancamentoProdutoById(id);
+		Comanda comanda = entity.getComanda();
+		if(comanda.getFechamento() != null){
+			return;
+		}
+		Historico historico = criarHistoricoExclusao(comanda, usuarioLogado);
+		historico.setTexto("Lançamento do produto " + entity.getProduto().getNome() + " no valor de R$" + entity.getValor() + " foi excluído.");
+		comanda.getProdutos().remove(entity);
+		persist(comanda, usuarioLogado);
+		genericDao.persist(historico);
+	}
+
+	public void deleteLancamentoProdutoServico(Long id, Pessoa usuarioLogado) {
+		LancamentoServico servico = dao.findLancamentoServicoByLancamentoProdutoId(id);
+		if(servico.getComanda().getFechamento() != null){
+			return;
+		}
+		LancamentoProduto produto = null;
+		for(LancamentoProduto p : servico.getProdutosUtilizados()){
+			if(p.getId().equals(id)){
+				produto = p;
+				break;
+			}
+		}
+		servico.getProdutosUtilizados().remove(produto);
+		Historico historico = criarHistoricoExclusao(servico.getComanda(), usuarioLogado);
+		historico.setTexto("Lançamento do serviço " + produto.getProduto().getNome() + " no valor de R$" + produto.getValor() + " foi excluído.");
+		genericDao.persist(servico);
+		genericDao.persist(historico);
 	}
 	
 }

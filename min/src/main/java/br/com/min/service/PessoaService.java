@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.min.dao.GenericDAO;
+import br.com.min.dao.HistoricoDAO;
 import br.com.min.dao.ImagemDAO;
 import br.com.min.dao.PessoaDAO;
 import br.com.min.entity.Funcao;
@@ -22,7 +23,7 @@ public class PessoaService {
 	private GenericDAO genericDao;
 	@Autowired
 	private ImagemDAO imagemDao;
-	
+
 	@Transactional
 	public void persist(Pessoa pessoa){
 		if(pessoa.getImagem() != null){

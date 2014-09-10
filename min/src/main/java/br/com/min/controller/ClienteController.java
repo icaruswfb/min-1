@@ -1,24 +1,20 @@
 package br.com.min.controller;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.sql.rowset.serial.SerialArray;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -46,7 +42,6 @@ import br.com.min.utils.Utils;
 @RequestMapping("/clientes")
 public class ClienteController {
 	
-	private static final String NOTHING_SELECTED = "-";
 	@Autowired
 	private PessoaService pessoaService;
 	@Autowired
@@ -57,10 +52,6 @@ public class ClienteController {
 	private ServicoService servicoService;
 	@Autowired
 	private ProdutoService produtoService;
-	
-	private Map<Long, Pessoa> pessoas = new HashMap<>();
-	private Map<Long, Servico> servicos = new HashMap<>();
-	private Map<Long, Produto> produtos = new HashMap<>();
 	
 	@RequestMapping("/")
 	public ModelAndView listar(){
@@ -164,10 +155,10 @@ public class ClienteController {
 		throw new RuntimeException("Sem permissão para pagar a comanda");
 	}
 
-	@RequestMapping(value="/deletarPagamento/{id}/{comandaId}", method=RequestMethod.GET)
-	public @ResponseBody Comanda deletarPagamento(@PathVariable("id") Long id, @PathVariable("comandaId") Long comandaId, HttpServletRequest request){
+	@RequestMapping(value="/deletarPagamento/{id}/{clienteId}", method=RequestMethod.GET)
+	public @ResponseBody Comanda deletarPagamento(@PathVariable("id") Long id, @PathVariable("clienteId") Long clienteId, HttpServletRequest request){
 		if(Utils.hasRole(Role.CAIXA, request)){
-			Comanda comanda = comandaService.findById(comandaId);
+			Comanda comanda = comandaService.findComandaAberta(clienteId);
 			Pagamento pagamento = new Pagamento();
 			pagamento.setId(id);
 			comanda.getPagamentos().remove(pagamento);
@@ -200,6 +191,15 @@ public class ClienteController {
 		return listar();
 	}
 	
+	@RequestMapping(value="/deleteComanda/{id}", method=RequestMethod.GET)
+	public @ResponseBody String deletarComanda(@PathVariable("id") Long id, HttpServletRequest request){
+		if(Utils.hasRole(Role.ADMIN, request)){
+			comandaService.delete(id, Utils.getUsuarioLogado(request).getPessoa());
+			return "OK";
+		}
+		return "NOT";
+	}
+	
 	@RequestMapping(value="/findComandas/{id}", method=RequestMethod.GET)
 	public @ResponseBody List<Comanda> findComandas(@PathVariable("id") Long id, HttpServletRequest request){
 		if(Utils.hasRole(Role.ADMIN, request)){
@@ -226,15 +226,12 @@ public class ClienteController {
 	
 	@RequestMapping(value="/findComandasFechadas/{id}", method=RequestMethod.GET)
 	public @ResponseBody List<Comanda> findComandasFechadas(@PathVariable("id") Long id, HttpServletRequest request){
-		if(Utils.hasRole(Role.ADMIN, request)){
-			Comanda comanda = new Comanda();
-			Pessoa cliente = pessoaService.findById(id);
-			comanda.setCliente(cliente);
-			List<Comanda> comandas = comandaService.find(comanda, true);
-			limparComandasSimplificadaJSON(comandas);
-			return comandas;
-		}
-		return new ArrayList<>();
+		Comanda comanda = new Comanda();
+		Pessoa cliente = pessoaService.findById(id);
+		comanda.setCliente(cliente);
+		List<Comanda> comandas = comandaService.find(comanda, true);
+		limparComandasSimplificadaJSON(comandas);
+		return comandas;
 	}
 	
 	@RequestMapping(value="/findComandaAberta/{id}", method=RequestMethod.GET)
@@ -245,13 +242,16 @@ public class ClienteController {
 	
 	@RequestMapping(value="/abrirComanda/{id}", method=RequestMethod.GET)
 	public @ResponseBody Comanda abrirComanda(@PathVariable("id") Long id, HttpServletRequest request){
-		Comanda comanda = new Comanda();
-		Pessoa cliente = pessoaService.findById(id);
-		comanda.setCliente(cliente);
-		comanda.setAbertura(new Date());
-		comanda.setCredito(comandaService.getCreditoCliente(id));
-		
-		comanda = comandaService.persist(comanda, Utils.getUsuarioLogado(request).getPessoa());
+		Comanda comanda = comandaService.findComandaAberta(id);
+		if(comanda == null){
+			comanda = new Comanda();
+			Pessoa cliente = pessoaService.findById(id);
+			comanda.setCliente(cliente);
+			comanda.setAbertura(new Date());
+			comanda.setCredito(comandaService.getCreditoCliente(id));
+			
+			comanda = comandaService.persist(comanda, Utils.getUsuarioLogado(request).getPessoa());
+		}
 		limparComandaJSON(comanda);
 		return comanda;
 	}
@@ -259,7 +259,7 @@ public class ClienteController {
 	@RequestMapping(value="/salvarComanda", method=RequestMethod.POST)
 	public @ResponseBody Comanda salvarComanda(HttpServletRequest request){
 		Comanda comanda = criarComanda(request);
-		comanda = comandaService.persist(comanda, Utils.getUsuarioLogado(request).getPessoa());
+//		comanda = comandaService.persist(comanda, Utils.getUsuarioLogado(request).getPessoa());
 		limparComandaJSON(comanda);
 		return comanda;
 	}
@@ -324,7 +324,7 @@ public class ClienteController {
 			vo.setSuccess(true);
 			vo.addMessage(MessageVO.SUCCESS, "A comanda está pronta para ser fechada.");
 		}
-		
+		vo.setUltimaAtualizacao(comanda.getUltimaAtualizacao());
 		return vo;
 	}
 	
@@ -361,144 +361,141 @@ public class ClienteController {
 	
 	private Comanda criarComanda(HttpServletRequest request){
 		Long comandaId = Long.parseLong(request.getParameter("comandaId"));
-		Double descontos = Double.parseDouble(request.getParameter("descontos"));
 		Comanda comanda = comandaService.findById(comandaId);
 		if(comanda.getFechamento() != null){
 			throw new RuntimeException("Alteração de comanda já fechada");
 		}
-		comanda.setDesconto(descontos);
+		return comanda;
+		/*
+		Long ultimaAtualizacao = Long.parseLong(request.getParameter("ultimaAtualizacao"));
+		Long diferencaTempo = ultimaAtualizacao - comanda.getUltimaAtualizacao();
+		if(diferencaTempo > 1000 || diferencaTempo < -1000){
+			throw new RuntimeException("Comanda desatualizada. Atualize antes de fazer as alterações.");
+		}
+
+		Collection<LancamentoServico> servicos = criarServicos(request, comanda);
+		Collection<LancamentoProduto> produtos = criarProdutos(request, comanda);
+		
+		if(Utils.hasRole(Role.ADMIN, request)){
+			Double descontos = Double.parseDouble(request.getParameter("descontos"));
+			comanda.setDesconto(descontos);
+		}else{
+			//verificarPermissaoAlteracaoComanda(comanda, produtos, servicos);
+		}
+		
 		comanda.getServicos().clear();
 		comanda.getProdutos().clear();
-		Collection<LancamentoServico> servicos = criarServicos(request, comanda);
 		comanda.getServicos().addAll(servicos);
-		Collection<LancamentoProduto> produtos = criarProdutos(request, comanda);
 		comanda.getProdutos().addAll(produtos);
-		
 		return comanda;
+		 */
 	}
 	
-	private Collection<LancamentoProduto> criarProdutos(HttpServletRequest request, Comanda comanda){
-		String[] ids = request.getParameterValues("guidProduto");
-		if(ids == null){
-			return new ArrayList<>();
-		}
-		String[] datasCriacao = request.getParameterValues("dataCriacaoProduto");
-		String[] produtosIds = request.getParameterValues("produtoId");
-		String[] vendedoresIds = request.getParameterValues("vendedorId");
-		String[] quantidades = request.getParameterValues("quantidadeProduto");
-		Map<String, LancamentoProduto> result = new LinkedHashMap<String, LancamentoProduto>();
-		for(int i = 0; i < ids.length; i++){
-			LancamentoProduto lancamentoProduto = new LancamentoProduto();
-			
-			try {
-				lancamentoProduto.setComanda(comanda);
-				lancamentoProduto.setDataCriacao(Utils.dateTimeFormat.parse(datasCriacao[i]));
-				if(produtosIds != null && (produtosIds.length >= i + 1) && ! produtosIds[i].equals(NOTHING_SELECTED)){
-					lancamentoProduto.setProduto(findProduto(Long.parseLong(produtosIds[i])));
-				}
-				if(vendedoresIds != null && (vendedoresIds.length >= i + 1) && ! vendedoresIds[i].equals(NOTHING_SELECTED)){
-					lancamentoProduto.setVendedor(findPessoa(Long.parseLong(vendedoresIds[i])));
-				}
-				if(StringUtils.isNotBlank(quantidades[i])){
-					lancamentoProduto.setQuantidadeUtilizada(Long.parseLong(quantidades[i]));
-				}
-			} catch (ParseException e) {
-				throw new RuntimeException(e);
-			}
-			
-			
-			result.put(ids[i], lancamentoProduto);
-		}
-		
-		return result.values();
+	@RequestMapping(value="/ultimaAtualizacao/{comandaId}", method=RequestMethod.GET)
+	public @ResponseBody Long findUltimaAtualizacao(@PathVariable("comandaId") Long comandaId){
+		return comandaService.findUltimaAtualizacao(comandaId);
 	}
 	
-	private Collection<LancamentoServico> criarServicos(HttpServletRequest request, Comanda comanda){
-		String[] ids = request.getParameterValues("guidServico");
-		if(ids == null){
-			return new ArrayList<>();
+	@RequestMapping(value="/addServico", method=RequestMethod.POST)
+	public @ResponseBody Comanda addServico(@RequestParam(required=true) Long servicoId, 
+																				@RequestParam(required=true)Long funcionarioId, 
+																				@RequestParam(required=false)Long assistenteId, 
+																				@RequestParam(required=true)Long clienteId, HttpServletRequest request){
+		LancamentoServico lancamentoServico = new LancamentoServico();
+		Pessoa funcionario = pessoaService.findById(funcionarioId);
+		Pessoa assistente = null;
+		if(assistenteId != null){
+			assistente = pessoaService.findById(assistenteId);
 		}
-		String[] datasCriacao = request.getParameterValues("dataCriacaoServico");
-		String[] servicosIds = request.getParameterValues("servicoId");
-		String[] funcionariosIds = request.getParameterValues("funcionarioId");
-		String[] assistentesIds = request.getParameterValues("assistenteId");
-		Map<String, LancamentoServico> result = new LinkedHashMap<>();
-		for(int i = 0; i < ids.length; i++){
-			String id = ids[i];
-			LancamentoServico lancamento = new LancamentoServico();
-			
-			try {
-				lancamento.setComanda(comanda);
-				lancamento.setDataCriacao(Utils.dateTimeFormat.parse(datasCriacao[i]));
-				if(funcionariosIds != null && (funcionariosIds.length >= i + 1) && ! funcionariosIds[i].equals(NOTHING_SELECTED)){
-					lancamento.setFuncionario(findPessoa(Long.parseLong(funcionariosIds[i])));
-				}
-				if(servicosIds != null && (servicosIds.length >= i + 1) && ! servicosIds[i].equals(NOTHING_SELECTED)){
-					lancamento.setServico(findServico(Long.parseLong(servicosIds[i])));
-				}
-				if(assistentesIds != null && (assistentesIds.length >= i + 1) && ! assistentesIds[i].equals(NOTHING_SELECTED)){
-					lancamento.setAssistente(findPessoa(Long.parseLong(assistentesIds[i])));
-				}
-			} catch (ParseException e) {
-				throw new RuntimeException(e);
-			}
-			
-			result.put(id, lancamento);
-		}
+		Servico servico = servicoService.findById(servicoId);
 		
-		result = criarLancamentosProdutosServicos(request, result);
+		lancamentoServico.setAssistente(assistente);
+		lancamentoServico.setDataCriacao(new Date());
+		lancamentoServico.setFuncionario(funcionario);
+		lancamentoServico.setServico(servico);
+		lancamentoServico.setValor(servico.getPreco());
 		
-		return result.values();
-	}
-	
-	private Map<String, LancamentoServico> criarLancamentosProdutosServicos(HttpServletRequest request, Map<String, LancamentoServico> lancamentos){
-		String[] ids = request.getParameterValues("guidProdutoServico");
-		if(ids == null){
-			return lancamentos;
-		}
-		String[] produtodIds = request.getParameterValues("produtoServicoId");
-		String[] quantidades = request.getParameterValues("quantidadeProdutoServico");
-		for(int i = 0; i < ids.length; i++){
-			LancamentoProduto lancamentoProduto = new LancamentoProduto();
-			if(produtodIds != null && (produtodIds.length >= i + 1) && ! produtodIds[i].equals(NOTHING_SELECTED)){
-				lancamentoProduto.setProduto(findProduto(Long.parseLong(produtodIds[i])));
-			}
-			if(StringUtils.isNotBlank(quantidades[i])){
-				lancamentoProduto.setQuantidadeUtilizada(Long.parseLong(quantidades[i]));
-			}
-			lancamentoProduto.setDataCriacao(new Date());
-			LancamentoServico lancamentoServico = lancamentos.get(ids[i]);
-			lancamentoServico.getProdutosUtilizados().add(lancamentoProduto);
-		}
+		Comanda comanda = comandaService.findComandaAberta(clienteId);
+		lancamentoServico.setComanda(comanda);
 		
-		return lancamentos;
-	}
-	
-	private Pessoa findPessoa(Long id){
-		Pessoa pessoa = pessoas.get(id);
-		if(pessoa == null){
-			pessoa = pessoaService.findById(id);
-			pessoas.put(id, pessoa);
-		}
-		return pessoa;
+		comanda = comandaService.addServico(lancamentoServico, comanda, Utils.getUsuarioLogado(request).getPessoa());
+		return limparComandaJSON(comanda);
 	}
 
-	private Servico findServico(Long id){
-		Servico servico = servicos.get(id);
-		if(servico == null){
-			servico = servicoService.findById(id);
-			servicos.put(id, servico);
-		}
-		return servico;
+
+	@RequestMapping(value="/addProduto", method=RequestMethod.POST)
+	public @ResponseBody Comanda addProduto(@RequestParam(required=true) Long produtoId, 
+																				@RequestParam(required=true)Long vendedorId, 
+																				@RequestParam(required=true)Long quantidade, 
+																				@RequestParam(required=true)Long clienteId, HttpServletRequest request){
+		LancamentoProduto lancamentoProduto = new LancamentoProduto();
+		Pessoa vendedor = pessoaService.findById(vendedorId);
+		Produto produto = produtoService.findById(produtoId);
+		
+		lancamentoProduto.setQuantidadeUtilizada(quantidade);
+		lancamentoProduto.setDataCriacao(new Date());
+		lancamentoProduto.setProduto(produto);
+		lancamentoProduto.setValor(produto.getPrecoRevenda() * quantidade);
+		lancamentoProduto.setVendedor(vendedor);
+		
+		Comanda comanda = comandaService.findComandaAberta(clienteId);
+		lancamentoProduto.setComanda(comanda);
+		
+		comanda = comandaService.addProduto(lancamentoProduto, comanda, Utils.getUsuarioLogado(request).getPessoa());
+		
+		return limparComandaJSON(comanda);
 	}
 	
-	private Produto findProduto(Long id){
-		Produto produto = produtos.get(id);
-		if(produto == null){
-			produto = produtoService.findById(id);
-			produtos.put(id, produto);
+	@RequestMapping(value="/addProdutoServico", method=RequestMethod.POST)
+	public @ResponseBody Comanda addProdutoServico(@RequestParam(required=true) Long produtoId, 
+																				@RequestParam(required=true)Long servicoId, 
+																				@RequestParam(required=true)Long quantidade, 
+																				@RequestParam(required=true)Long clienteId, HttpServletRequest request){
+		LancamentoProduto lancamentoProduto = new LancamentoProduto();
+		Produto produto = produtoService.findById(produtoId);
+		
+		lancamentoProduto.setQuantidadeUtilizada(quantidade);
+		lancamentoProduto.setDataCriacao(new Date());
+		lancamentoProduto.setProduto(produto);
+		lancamentoProduto.setValor(produto.getPrecoRevenda() * quantidade);
+		
+		Comanda comanda = comandaService.findComandaAberta(clienteId);
+		for(LancamentoServico servico : comanda.getServicos()){
+			if(servico.getId().equals(servicoId)){
+				servico.getProdutosUtilizados().add(lancamentoProduto);
+				break;
+			}
 		}
-		return produto;
+		comanda = comandaService.addProdutoServico(lancamentoProduto, comanda, Utils.getUsuarioLogado(request).getPessoa());
+		
+		return limparComandaJSON(comanda);
+	}
+	
+	@RequestMapping(value="/deleteServico/{clienteId}/{id}", method=RequestMethod.GET)
+	public @ResponseBody Comanda deleteServico(@PathVariable("clienteId") Long clienteId, @PathVariable("id") Long id, HttpServletRequest request){
+		if(Utils.hasRole(Role.ADMIN, request)){
+			comandaService.deleteLancamentoServico(id, Utils.getUsuarioLogado(request).getPessoa());
+		}
+		Comanda comanda = comandaService.findComandaAberta(clienteId);
+		return limparComandaJSON(comanda);
+	}
+
+	@RequestMapping(value="/deleteProduto/{clienteId}/{id}", method=RequestMethod.GET)
+	public @ResponseBody Comanda deleteProduto(@PathVariable("clienteId") Long clienteId, @PathVariable("id") Long id, HttpServletRequest request){
+		if(Utils.hasRole(Role.ADMIN, request)){
+			comandaService.deleteLancamentoProduto(id, Utils.getUsuarioLogado(request).getPessoa());
+		}
+		Comanda comanda = comandaService.findComandaAberta(clienteId);
+		return limparComandaJSON(comanda);
+	}
+
+	@RequestMapping(value="/deleteProdutoServico/{clienteId}/{id}", method=RequestMethod.GET)
+	public @ResponseBody Comanda deleteProdutoServico(@PathVariable("clienteId") Long clienteId, @PathVariable("id") Long id, HttpServletRequest request){
+		if(Utils.hasRole(Role.ADMIN, request)){
+			comandaService.deleteLancamentoProdutoServico(id, Utils.getUsuarioLogado(request).getPessoa());
+		}
+		Comanda comanda = comandaService.findComandaAberta(clienteId);
+		return limparComandaJSON(comanda);
 	}
 	
 	private List<Comanda> limparComandasJSON(List<Comanda> comandas){

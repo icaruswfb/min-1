@@ -168,23 +168,25 @@ Agenda = {
 							&& agora.getMonth() == inicio.getMonth()
 							&& agora.getFullYear() == inicio.getFullYear()	){
 						if(agora.getHours() < inicio.getHours() || (agora.getHours() == inicio.getHours() && agora.getMinutes() <= inicio.getMinutes())){
-							var content = "";
-							
-							content += "<div class='side-border'>";
-							content += "	<div class=''media-body'>";
-							content += "		<small class='text-muted'>";
-							content += 				Utils.formatTime(inicio);
-							content += "			com ";
-							content += "		<a href='/min/web/funcionarios/editar/"+horario.funcionario.id+"'>";
-							content += 				horario.funcionario.nome;
-							content += "		</a>";
-							content += "		</small><br />";
-							content += "		<a class='t-overflow' href='/min/web/clientes/editar/"+horario.cliente.id+"'>";
-							content += 				horario.cliente.nome;
-							content += "		</a>";
-							content += "	</div>";
-							content += "</div>";
-							$("#feed-agenda").append(content);
+							if(!horario.folga){
+								var content = "";
+								
+								content += "<div class='side-border'>";
+								content += "	<div class=''media-body'>";
+								content += "		<small class='text-muted'>";
+								content += 				Utils.formatTime(inicio);
+								content += "			com ";
+								content += "		<a href='/min/web/funcionarios/editar/"+horario.funcionario.id+"'>";
+								content += 				horario.funcionario.nome;
+								content += "		</a>";
+								content += "		</small><br />";
+								content += "		<a class='t-overflow' href='/min/web/clientes/editar/"+horario.cliente.id+"'>";
+								content += 				horario.cliente.nome;
+								content += "		</a>";
+								content += "	</div>";
+								content += "</div>";
+								$("#feed-agenda").append(content);
+							}
 						}
 					}
 				}
@@ -248,7 +250,7 @@ Agenda = {
 				}
 				div += "</div>";
 				divHorario.html(div);
-				var tooltip = "<div class='tooltip-popup' style='width:"+divHorario.width()+"px'>";
+				var tooltip = "<div class='tooltip-popup' >";
 				if( ! horario.folga){
 					var horariosCliente = Agenda.horariosPorCliente[horario.cliente.id];
 					for(var x = 0; x < horariosCliente.length; x++){
@@ -268,7 +270,7 @@ Agenda = {
 						tooltip += "" + inicioHora + ":" + (inicioMin < 10 ? "0" + inicioMin : inicioMin) + " - " + terminoHora + ":" + (terminoMin < 10 ? "0" + terminoMin : terminoMin) + "" ;
 						tooltip += " com " + horarioCliente.funcionario.nome;
 						
-						tooltip += "<a href='javascript:Agenda.delelarHorario("+horarioCliente.id+")' style='float: right;margin-right: 5px;'><img src='/min/img/icon/delete.png' /></a>";
+						tooltip += "<a href='javascript:Agenda.delelarHorario("+horarioCliente.id+")' style='float: right;margin: 0 10px;'><img src='/min/img/icon/delete.png' /></a>";
 						tooltip +=	"</p>";
 						tooltip += "<p>Fazendo: </p><ul>";
 						for(var i = 0; i < horarioCliente.servicos.length; i++){

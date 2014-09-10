@@ -5,12 +5,12 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 
 @Entity
 public class Comanda {
@@ -37,6 +37,8 @@ public class Comanda {
 	private Double valorCobrado;
 	private Double valorPago;
 	private Double credito = 0d;
+	@Column()
+	private Long ultimaAtualizacao;
 
 	@OneToMany(mappedBy="comanda", cascade=CascadeType.ALL,orphanRemoval=true)
 	private List<Pagamento> pagamentos = new ArrayList<Pagamento>();
@@ -130,6 +132,12 @@ public class Comanda {
 	}
 	public void setComissoes(List<LancamentoComissao> comissoes) {
 		this.comissoes = comissoes;
+	}
+	public Long getUltimaAtualizacao() {
+		return ultimaAtualizacao;
+	}
+	public void setUltimaAtualizacao(Long ultimaAtualizacao) {
+		this.ultimaAtualizacao = ultimaAtualizacao;
 	}
 	
 	

@@ -7,7 +7,7 @@
 
 <header id="header" class="media">
 		<a href="" id="menu-toggle"></a> <a class="logo pull-left"
-			href="index.html">21min</a>
+			href="index.html"><img src="/min/img/logo.png" /></a>
 
 		<div class="media-body">
 			<div class="media" id="top-menu">

@@ -10,7 +10,7 @@
     <body id="skin-blur-violate">
         <section id="login">
             <header>
-                <h1>21min</h1>
+            	<img src="/min/img/logo.png" />
                 <c:if test="${ error ne null }">
 	                <div class="alert alert-danger alert-dismissable fade in error-alert" >
 	                	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
