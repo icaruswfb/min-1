@@ -104,7 +104,7 @@ Comanda = {
 		$("#comandas-fechadas-acao").show(100);
 	},
 	appendLinhaServico:function(linha, id){
-		id = id == undefined ? "#comanda-form" : id;
+		id = id == "" ? "#comanda-form" : id;
 		$(id + " .bloco-servicos").append(linha);
 //		$(id + " .bloco-servicos select").chosen({
 //            max_selected_options: 1
@@ -113,7 +113,7 @@ Comanda = {
         $('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
 	},
 	appendLinhaProduto:function(linha, id){
-		id = id == undefined ? '' : id;
+		id = id == "" ? '' : id;
 		$(id + " .bloco-produtos").append(linha);
 //		$(id + " .bloco-produtos select").chosen({
 //            max_selected_options: 1
