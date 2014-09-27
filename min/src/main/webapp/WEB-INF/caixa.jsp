@@ -59,6 +59,7 @@
 							</table>
 						</div>
 						<div class="col-lg-12">
+						<!-- 
 							<div class="row">
 								<div class="col-lg-2">
 									<p class="total">Total lançado: </p>
@@ -67,8 +68,9 @@
 									<strong class="f-s-20">R$<fmt:formatNumber value="${ totalLancado }" minFractionDigits="2" /></strong>
 								</div>
 							</div>
+						 -->
 							<div class="row">
-								<div class="col-lg-2">
+								<div class="col-lg-2 float-left">
 									<p class="total">Total pago: </p>
 								</div>	
 								<div class="col-lg-10">

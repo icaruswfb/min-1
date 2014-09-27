@@ -44,6 +44,7 @@ public class ProdutoDAO {
 		}
 		criteria.addOrder(Order.asc("nome"));
 		List<Produto> entities = criteria.list();
+		session.close();
 		return entities;
 	}
 
@@ -53,6 +54,7 @@ public class ProdutoDAO {
 		criteria = criteria.add(Restrictions.eq("produto.id", produtoId));
 		criteria.addOrder(Order.desc("dataCriacao"));
 		List<LancamentoEstoque> lancamentos = criteria.list();
+		session.close();
 		return lancamentos;
 	}
 	

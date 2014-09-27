@@ -9,6 +9,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -36,6 +37,8 @@ public class ServicoDAO {
 			predicatesArray = predicates.toArray(predicatesArray);
 			criteria = criteria.add(Restrictions.or(predicatesArray));
 		}
+		criteria.addOrder(Order.asc("nome"));
+		
 		List<Servico> servicos = criteria.list();
 		return servicos;
 	}

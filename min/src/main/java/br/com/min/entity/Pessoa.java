@@ -42,7 +42,6 @@ public class Pessoa implements Serializable{
 	private Comissao comissao;
 	private Imagem imagem;
 	private Usuario usuario;
-	private List<ImagemCliente> imagens = new ArrayList<>();
 
 	@Id
 	@GeneratedValue
@@ -159,13 +158,6 @@ public class Pessoa implements Serializable{
 		this.usuario = usuario;
 	}
 
-	@OneToMany
-	public List<ImagemCliente> getImagens() {
-		return imagens;
-	}
-	public void setImagens(List<ImagemCliente> imagens) {
-		this.imagens = imagens;
-	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;

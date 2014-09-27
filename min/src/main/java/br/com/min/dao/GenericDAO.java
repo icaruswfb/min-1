@@ -15,6 +15,7 @@ public class GenericDAO {
 		Session session = sessionFactory.openSession();
 		entity = session.merge(entity);
 		session.flush();
+		session.close();
 		return entity;
 	}
 
@@ -22,6 +23,7 @@ public class GenericDAO {
 		Session session = sessionFactory.openSession();
 		session.delete(entity);
 		session.flush();
+		session.close();
 	}
 	
 }

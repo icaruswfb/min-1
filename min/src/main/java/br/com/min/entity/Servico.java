@@ -13,7 +13,10 @@ public class Servico implements Serializable{
 	private String nome;
 	private Long duracao;
 	private Integer duracaoMinutos;
+	private Long tempoAcaoProduto;
+	private Integer tempoAcaoProdutoMinutos;
 	private Double preco;
+	private Boolean comicionado;
 	
 	@Id
 	@GeneratedValue
@@ -51,5 +54,23 @@ public class Servico implements Serializable{
 	}
 	public void setDuracaoMinutos(Integer duracaoMinutos) {
 		this.duracaoMinutos = duracaoMinutos;
+	}
+	public Long getTempoAcaoProduto() {
+		return tempoAcaoProduto;
+	}
+	public void setTempoAcaoProduto(Long tempoAcaoProduto) {
+		this.tempoAcaoProduto = tempoAcaoProduto;
+	}
+	public Integer getTempoAcaoProdutoMinutos() {
+		return tempoAcaoProdutoMinutos;
+	}
+	public void setTempoAcaoProdutoMinutos(Integer tempoAcaoProdutoMinutos) {
+		this.tempoAcaoProdutoMinutos = tempoAcaoProdutoMinutos;
+	}
+	public Boolean getComicionado() {
+		return comicionado;
+	}
+	public void setComicionado(Boolean comicionado) {
+		this.comicionado = comicionado;
 	}
 }

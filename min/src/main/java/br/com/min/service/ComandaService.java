@@ -205,14 +205,16 @@ public class ComandaService {
 		}
 		for(LancamentoServico servico : comanda.getServicos()){
 			if(servico.getServico() != null){
-				if(servico.getFuncionario() != null){
-					TipoComissao tipo = TipoComissao.SERVICO;
-					Pessoa assistente = servico.getAssistente();
-					if(assistente != null){
-						tipo = TipoComissao.SERVICO_COM_AUXILIAR;
-						comissoes.add(criarComissao(servico.getServico().getPreco(), assistente, null, TipoComissao.AUXILIAR, comanda));
+				if(servico.getServico().getComicionado()){
+					if(servico.getFuncionario() != null){
+						TipoComissao tipo = TipoComissao.SERVICO;
+						Pessoa assistente = servico.getAssistente();
+						if(assistente != null){
+							tipo = TipoComissao.SERVICO_COM_AUXILIAR;
+							comissoes.add(criarComissao(servico.getServico().getPreco(), assistente, null, TipoComissao.AUXILIAR, comanda));
+						}
+						comissoes.add(criarComissao(servico.getServico().getPreco(), servico.getFuncionario(), assistente, tipo, comanda));
 					}
-					comissoes.add(criarComissao(servico.getServico().getPreco(), servico.getFuncionario(), assistente, tipo, comanda));
 				}
 			}
 		}

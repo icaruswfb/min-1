@@ -172,4 +172,24 @@ Lancamento = {
 				});
 			}
 		},
+		
+		lancarDesconto:function(){
+			Utils.unmaskMoney();
+			var descontos = $("#comanda-form input[name='descontos']").val();
+			var params = {
+				desconto : descontos,
+				clienteId : $("#cliente-id").val()
+			};
+			$.ajax({
+				url: '/min/web/clientes/addDesconto',
+				type: 'POST',
+				data: params,
+				success: function(comanda){
+					Comanda.criarFormComanda(comanda);
+					Comanda.preencherDadosComanda(comanda);
+					$('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
+				}
+			});
+		}
+		
 };

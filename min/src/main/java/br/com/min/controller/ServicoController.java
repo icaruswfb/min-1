@@ -22,6 +22,7 @@ import br.com.min.utils.Utils;
 @RequestMapping("/servicos")
 public class ServicoController {
 
+	private static final long MINUTO_MILLIS = 60000L;
 	@Autowired
 	private ServicoService service;
 	
@@ -67,7 +68,10 @@ public class ServicoController {
 	public ModelAndView salvar(@ModelAttribute("servico") Servico servico, HttpServletRequest request){
 		if(Utils.hasRole(Role.ADMIN, request)){
 			if(servico.getDuracaoMinutos() != null){
-				servico.setDuracao((servico.getDuracaoMinutos() * 60 * 1000L));
+				servico.setDuracao((servico.getDuracaoMinutos() * MINUTO_MILLIS));
+			}
+			if(servico.getTempoAcaoProdutoMinutos() != null){
+				servico.setTempoAcaoProduto((servico.getTempoAcaoProdutoMinutos() * MINUTO_MILLIS ));
 			}
 			service.persist(servico);
 		}

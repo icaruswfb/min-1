@@ -129,12 +129,12 @@ Comanda = {
 		form += "<input type='hidden' value='" + id + "' name='guidServico' />";
 		//form += "<input type='hidden' value='" + lancamentoServico.id + "' name='lancamentoServicoId' />";
 
-		form += "<div class='col-md-2'>";
-		var criacao = new Date(new Number(lancamentoServico.dataCriacao));
-		var criacaoFormatada = Utils.formatDateTime(criacao);
-		form += "<p>Criado em: </p>";
-		form += "<input name='dataCriacaoServico' class='form-control input-sm m-b-10' readonly='readonly' value='"+criacaoFormatada+"' />";
-		form += "</div>";
+//		form += "<div class='col-md-1'>";
+//		var criacao = new Date(new Number(lancamentoServico.dataCriacao));
+//		var criacaoFormatada = Utils.formatTime(criacao);
+//		form += "<p>Hora: </p>";
+//		form += "<input name='dataCriacaoServico' class='form-control input-sm m-b-10' readonly='readonly' value='"+criacaoFormatada+"' />";
+//		form += "</div>";
 		
 		form += "<div class='col-md-4'>";
 		form += "<p>Servi&ccedil;o:</p>";
@@ -149,15 +149,15 @@ Comanda = {
 			form +=lancamentoServico.assistente.nome;
 		}
 		form +="' />";
-		form += "</div><div class='col-md-1'>";
+		form += "</div><div class='col-md-2'>";
 		form += "<p>Valor (R$):</p>";
 		form += "<input name='valorServico' class='form-control input-sm m-b-10  mask-money' readonly='readonly' id='valor-"+id+"' ";
 		form+= "value='" + new Number(lancamentoServico.valor).toFixed(2) + "' ";
 		form += "/>";
 		form += "</div>";
-		form += "<div class='col-md-1'>";
+		form += "<div class='col-md-2'>";
 		if(readOnly == ""){
-			form += '<a title="Add" class="tooltips acaoLancamento" data-toggle="modal" href="#modalComandaProdutoServico" id="linkModalComandaProdutoServico" onclick="Lancamento.limparProdutoServico('+lancamentoServico.id+')">';
+			form += '<a title="Add" class="tooltips acaoLancamento m-r-10" data-toggle="modal" href="#modalComandaProdutoServico" id="linkModalComandaProdutoServico" onclick="Lancamento.limparProdutoServico('+lancamentoServico.id+')">';
 			form += '<i class="sa-list-add"></i></a>';
 		}
 		if(Comanda.hasRoleAdmin){
@@ -259,12 +259,12 @@ Comanda = {
 		form += "<input type='hidden' value='" + id + "' name='guidProduto' />";
 		//form += "<input type='hidden' value='" + lancamentoProduto.id + "' name='lancamentoProdutoId' />";
 		
-		form += "<div class='col-md-2'>";
-		var criacao = new Date(new Number(lancamentoProduto.dataCriacao));
-		var criacaoFormatada = Utils.formatDateTime(criacao);
-		form += "<p>Criado em: </p>";
-		form += "<input name='dataCriacaoProduto'  readonly='readonly' disabled='disabled' class='form-control input-sm m-b-10' value='"+criacaoFormatada+"' />";
-		form += "</div>";
+//		form += "<div class='col-md-1'>";
+//		var criacao = new Date(new Number(lancamentoProduto.dataCriacao));
+//		var criacaoFormatada = Utils.formatDateTime(criacao);
+//		form += "<p>Hora: </p>";
+//		form += "<input name='dataCriacaoProduto'  readonly='readonly' disabled='disabled' class='form-control input-sm m-b-10' value='"+criacaoFormatada+"' />";
+//		form += "</div>";
 		
 		form += "<div class='col-md-3'>";
 		form += "<p>Produto:</p>";
@@ -283,13 +283,13 @@ Comanda = {
 			form+= "value='" + lancamentoProduto.quantidadeUtilizada + "' ";
 		}
 		form += "/>";
-		form += "</div><div class='col-md-1'>";
+		form += "</div><div class='col-md-2'>";
 		form += "<p>Valor (R$):</p>";
 		form += "<input name='valorProduto' class='form-control input-sm m-b-10 mask-money' readonly='readonly' disabled='disabled' ";
 		form+= "value='" + ((lancamentoProduto.valor).toFixed(2)) + "' ";
 		form += "/>";
 		form += "</div>";
-		form += "<div class='col-md-1'>";
+		form += "<div class='col-md-2'>";
 		if(Comanda.hasRoleAdmin){
 			form += '<a href="javascript:Lancamento.deleteProduto(\''+lancamentoProduto.id+'\')" title="" class="tooltips acaoLancamento" >';
 			form += '<i class="sa-list-delete"></i></a>';
@@ -408,7 +408,7 @@ Comanda = {
 		info += "<div class='col-md-2'>";
 		info += "<input class='form-control input-sm m-b-10 mask-money' id='descontos-"+comanda.id+"' " +
 						"name='descontos' value='"+new Number((comanda.desconto ? comanda.desconto : 0)).toFixed(2)+"' " +
-						"onblur='Comanda.preencherTotais("+comanda.id+");' "+(isComandaAberta ? '' : 'readonly')+"  />";
+						"onblur='Lancamento.lancarDesconto()'  />";
 		info += "</div>";
 		info += "<div class='col-md-5'>";
 		info += "<p class='total'>Valor cobrado:</p>";
@@ -646,7 +646,7 @@ Comanda = {
 	criarProdutoAoServico: function(servicoId, produtoUtilizado, readonly){
 		readonly = readonly ? readonly : '';
 		var id = "produtoServico-" + Utils.guid();
-		var form = "<div class='' id='"+id+"'><div class='col-md-4'> <span class='icon' style='float: right;font-size: 20px;'>&#61807;</span></div><div class='col-md-4'>";
+		var form = "<div class='w-100 float-left' id='"+id+"'><div class='col-md-2'> <span class='icon' style='float: right;font-size: 20px;'>&#61807;</span></div><div class='col-md-4'>";
 		form += "<input type='hidden' value='" + servicoId + "' name='guidProdutoServico' />";
 		//form += "<input type='hidden' value='" + produtoUtilizado.id + "' name='lancamentoProdutoServicoId' />";
 		form += "<p>Produto:</p>";
@@ -664,7 +664,7 @@ Comanda = {
 		}
 		form += "/>";
 		form += "</div>";
-		form += "<div class='col-md-1'>";
+		form += "<div class='col-md-2'>";
 		form += '<p>Valor (R$):</p>';
 		form += '<input name="valorProdutoServico" class="form-control input-sm m-b-10 mask-money" readonly="readonly" disabled="disabled" ';
 		if(produtoUtilizado && produtoUtilizado.produto){
@@ -672,7 +672,7 @@ Comanda = {
 		}
 		form += "/>";
 		form += "</div>";
-		form += "<div class='col-md-1'>";
+		form += "<div class='col-md-2'>";
 		if(Comanda.hasRoleAdmin){
 			form += '<a href="javascript:Lancamento.deleteProdutoServico(\''+produtoUtilizado.id+'\')" title="" class="tooltips acaoLancamento" >';
 			form += '<i class="sa-list-delete"></i></a>';

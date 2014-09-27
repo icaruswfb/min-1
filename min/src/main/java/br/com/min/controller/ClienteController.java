@@ -202,25 +202,19 @@ public class ClienteController {
 	
 	@RequestMapping(value="/findComandas/{id}", method=RequestMethod.GET)
 	public @ResponseBody List<Comanda> findComandas(@PathVariable("id") Long id, HttpServletRequest request){
-		if(Utils.hasRole(Role.ADMIN, request)){
-			Comanda comanda = new Comanda();
-			Pessoa cliente = pessoaService.findById(id);
-			comanda.setCliente(cliente);
-			List<Comanda> comandas = comandaService.find(comanda);
-			limparComandasJSON(comandas);
-			return comandas;
-		}
-		return new ArrayList<>();
+		Comanda comanda = new Comanda();
+		Pessoa cliente = pessoaService.findById(id);
+		comanda.setCliente(cliente);
+		List<Comanda> comandas = comandaService.find(comanda);
+		limparComandasJSON(comandas);
+		return comandas;
 	}
 
 	@RequestMapping(value="/findComanda/{id}", method=RequestMethod.GET)
 	public @ResponseBody Comanda findComanda(@PathVariable("id") Long id, HttpServletRequest request){
-		if(Utils.hasRole(Role.ADMIN, request)){
-			Comanda comanda = comandaService.findById(id);
-			comanda = limparComandaJSON(comanda);
-			return comanda;
-		}
-		return new Comanda();
+		Comanda comanda = comandaService.findById(id);
+		comanda = limparComandaJSON(comanda);
+		return comanda;
 	}
 	
 	
@@ -394,6 +388,17 @@ public class ClienteController {
 	@RequestMapping(value="/ultimaAtualizacao/{comandaId}", method=RequestMethod.GET)
 	public @ResponseBody Long findUltimaAtualizacao(@PathVariable("comandaId") Long comandaId){
 		return comandaService.findUltimaAtualizacao(comandaId);
+	}
+	
+	@RequestMapping(value="/addDesconto", method=RequestMethod.POST)
+	public @ResponseBody Comanda addDesconto(@RequestParam(required=true) Long clienteId, 
+																					@RequestParam(required=true) Double desconto, HttpServletRequest request){
+		Comanda comanda = comandaService.findComandaAberta(clienteId);
+		if(Utils.hasRole(Role.ADMIN, request)){
+			comanda.setDesconto(desconto);
+			comandaService.persist(comanda, Utils.getUsuarioLogado(request).getPessoa());
+		}
+		return limparComandaJSON(comanda);
 	}
 	
 	@RequestMapping(value="/addServico", method=RequestMethod.POST)

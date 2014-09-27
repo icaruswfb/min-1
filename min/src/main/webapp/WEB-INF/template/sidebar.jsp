@@ -96,6 +96,7 @@
          			<c:if test="${ hasRole['ADMIN'] }">
 		             	<li><a id="servicos-menu" href="<spring:url value='/web/servicos/' />">Serviços</a></li>
 						<li><a id="produtos-menu" href="<spring:url value='/web/produtos/' />">Produtos</a></li>
+		             	<li><a id="kits-menu" href="<spring:url value='/web/kits/' />">Kits</a></li>
 						<li><a id="estoque-menu" href="<spring:url value='/web/estoque/' />">Projeção de estoque</a></li>
 			         </c:if>
 					<li><a id="employee-menu" href="<spring:url value='/web/funcionarios/' />">Funcionários</a></li>
