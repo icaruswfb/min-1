@@ -2642,3 +2642,16 @@ a.list-group-item.active > .badge,
 .comissao-detalhe .pago{
 	cursor: not-allowed; 
 }
+
+.float-left{
+	float: left;
+}
+
+.add-kit{
+	float: left;
+	margin: 10px;
+}
+
+.add-kit-img{
+	margin-top: 7px !important;
+}

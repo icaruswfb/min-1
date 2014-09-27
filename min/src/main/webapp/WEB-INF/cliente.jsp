@@ -319,7 +319,6 @@
                          </div>
                      </div>
                  </div>
-                  <c:if test="${ hasRole['ADMIN'] }">
 					<h4 class="page-title m-t-10" id="historico-title"><a href="javascript:Cliente.exibirHistorico()" >HISTÓRICO <span id="historico-title-action">[+]</span></a></h4>
 					<div id="historico-block" style="display: none;">
 						<div class="block-area">
@@ -355,6 +354,7 @@
 		                                </div>
 		                            </div>
 		                        </div>
+         				         <c:if test="${ hasRole['ADMIN'] }">
 		                        <div class="col-sm-6">
 									<a data-toggle="modal" href="#modalLog" onclick="Cliente.findHistorico();" class="btn btn-lg m-b-20">Ver histórico detalhado de atividades cliente</a>
 			                         <div class="modal fade" id="modalLog" tabindex="-1" role="dialog" aria-hidden="true">
@@ -375,12 +375,12 @@
 				                        </div>
 				                    </div>
 	                       		</div>
+		               		 </c:if>
 							</div>
 							<div class="clearfix"></div>
 						</div>
 					</div>
 						
-               		 </c:if>
 				<h4 class="page-title m-t-10">AGENDA</h4>
 				<div id="agenda-block">
 		            <div class="block-area">

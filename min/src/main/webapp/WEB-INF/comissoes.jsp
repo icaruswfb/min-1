@@ -130,8 +130,8 @@
                                 	</div>
                                 </div>
                                 <div class="modal-footer">
-					                 <button class="btn " type="button" onclick="Comissao.pagarComissoes()">Pagar</button>
-					                 <button class="btn " type="button" onclick="Comissao.pagarComissoes(true)">Pagar todas</button>
+					                 <button class="btn " type="button" onclick="if(confirm('Tem certeza que deseja efetuar este pagamento?')){Comissao.pagarComissoes()}">Pagar</button>
+					                 <button class="btn " type="button" onclick="if(confirm('Tem certeza que deseja efetuar este pagamento?')){Comissao.pagarComissoes(true)}">Pagar todas</button>
                                     <button type="button" class="btn btn-sm" data-dismiss="modal" >Cancelar</button>
                                 </div>
                             </div>

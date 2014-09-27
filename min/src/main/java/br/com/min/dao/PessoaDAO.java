@@ -42,6 +42,9 @@ public class PessoaDAO {
 			if(StringUtils.isNotBlank(entity.getEmail())){
 				orPredicates.add(Restrictions.ilike("email", entity.getEmail(), MatchMode.ANYWHERE));
 			}
+			if(StringUtils.isNotBlank(entity.getTelefone())){
+				orPredicates.add(Restrictions.ilike("telefone", entity.getTelefone(), MatchMode.ANYWHERE));
+			}
 			if(StringUtils.isNotBlank(entity.getDocumento())){
 				orPredicates.add(Restrictions.ilike("documento", entity.getDocumento(), MatchMode.ANYWHERE));
 			}

@@ -79,6 +79,7 @@
 	<script src="<spring:url value='/js/financeiro.js' />"></script>
 	<script src="<spring:url value='/js/comissao.js' />"></script>
 	<script src="<spring:url value='/js/lancamento.js' />"></script>
+	<script src="<spring:url value='/js/kit.js' />"></script>
 	
 	<script type="text/javascript">
 		$(document).ready(function(){

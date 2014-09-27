@@ -38,8 +38,8 @@
                 <div class="col-lg-2">
                  	<p>Categoria</p>
                 	<form:select path="categoria" cssClass="select custom-select" placeholder="Categoria">
-                		<form:option value="LOJA">Loja</form:option>
                 		<form:option value="SALAO">Salão</form:option>
+                		<form:option value="LOJA">Loja</form:option>
                 	</form:select>
                 </div>
                 <div class="col-lg-2">
@@ -57,9 +57,9 @@
                 <div class="col-lg-2">
                  	<p>Unidade de medida</p>
                 	<form:select path="unidade" cssClass="select custom-select" placeholder="Unidade">
+                		<form:option value="ml">Mililitro (ml)</form:option>
                 		<form:option value="un">Unidade (un)</form:option>
                 		<form:option value="g">Gramas (g)</form:option>
-                		<form:option value="ml">Mililitro (ml)</form:option>
                 	</form:select>
                 </div>
                 
