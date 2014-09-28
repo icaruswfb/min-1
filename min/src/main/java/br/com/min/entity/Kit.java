@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -17,8 +18,10 @@ public class Kit implements Serializable {
 	private Long id;
 	private String nome;
 	private Double valor;
-	@OneToMany
-	private List<ServicoProduto> servicos = new ArrayList<>();
+	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
+	private List<Servico> servicos = new ArrayList<>();
+	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
+	private List<ProdutoQuantidade> produtos = new ArrayList<>();
 	
 	public Long getId() {
 		return id;
@@ -38,11 +41,22 @@ public class Kit implements Serializable {
 	public void setValor(Double valor) {
 		this.valor = valor;
 	}
-	public List<ServicoProduto> getServicos() {
+	public List<Servico> getServicos() {
 		return servicos;
 	}
-	public void setServicos(List<ServicoProduto> servicos) {
+	public void setServicos(List<Servico> servicos) {
 		this.servicos = servicos;
+	}
+	@Override
+	public String toString() {
+		return "Kit [id=" + id + ", nome=" + nome + ", valor=" + valor
+				+ ", servicos=" + servicos + "]";
+	}
+	public List<ProdutoQuantidade> getProdutos() {
+		return produtos;
+	}
+	public void setProdutos(List<ProdutoQuantidade> produtos) {
+		this.produtos = produtos;
 	}
 	
 }

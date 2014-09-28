@@ -56,7 +56,19 @@ public enum FormaPagamento {
 		public boolean isCartaoCredito() {
 			return false;
 		}
+	},	
+	HiperCard{
+		public boolean isParcelavel() {
+			return true;
+		}
+		public String getNome() {
+			return "HiperCard";
+		}
+		public boolean isCartaoCredito() {
+			return true;
+		}
 	},
+	
 	Diners {
 		public boolean isParcelavel() {
 			return true;
@@ -95,7 +107,7 @@ public enum FormaPagamento {
 			return false;
 		}
 		public String getNome() {
-			return "Crédito";
+			return "CrÃ©dito";
 		}
 		public boolean isCartaoCredito() {
 			return false;

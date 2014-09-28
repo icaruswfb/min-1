@@ -26,38 +26,58 @@ Kit = {
 		});
 	},
 	
+	entity:{},
+	
 	calcularValor:function(){
-		var somatoria = new Number(0);
-		$.each($("select[name='servico']"), function(index, select){
-			var id = $(select).attr("id");
-			var value = $(select).val();
-			if(value != null){
-				for(var i = 0; i < Kit.servicos.length; i++){
-					var servico = Kit.servicos[i];
-					if(value == servico.id){
-						var preco = new Number(servico.preco);
-						somatoria += preco;
-						$("#preco-" + id).val(preco.toFixed(2));
-						break;
+		if(Kit.servicos.length == 0){
+			console.log("Aguardando processamento de dados para o kit...");
+			setTimeout(function(){
+				Kit.calcularValor();
+			}, 500);
+		}else{
+			Kit.entity.id = $("#id").val();
+			Kit.entity.servicos = [];
+			var somatoria = new Number(0);
+			$.each($("select[name='servico']"), function(index, select){
+				var id = $(select).attr("id");
+				var value = $(select).val();
+				var servicoEntity = {};
+				servicoEntity.id = value == null ? null : value[0];
+				if(value != null){
+					for(var i = 0; i < Kit.servicos.length; i++){
+						var servico = Kit.servicos[i];
+						if(value == servico.id){
+							var preco = new Number(servico.preco);
+							somatoria += preco;
+							$("#preco-" + id).val(preco.toFixed(2));
+							break;
+						}
 					}
+				}else{
+					$("#preco-" + id).val("0,00");
 				}
-			}else{
-				$("#preco-" + id).val("0,00");
-			}
-			$.each($("." + id), function(index, produto){
+				Kit.entity.servicos.push(servicoEntity);
+			});
+			
+			
+
+			Kit.entity.produtos = [];
+			$.each($("select[name='produto']"), function(index, produto){
 				var id = $(produto).attr("id");
 				var value = $(produto).val();
-
+				var produtoEntity = {};
+				produtoEntity.id =  value == null ? null : value[0];
+				var quantidade = $("#quantidade-" + id).val();
+				if(quantidade == ""){
+					quantidade = 1;
+					$("#quantidade-" + id).val(1);
+				}
+				produtoEntity.quantidade = quantidade;
 				if(value != null){
 					for(var i = 0; i < Kit.produtos.length; i++){
 						var produto = Kit.produtos[i];
 						if(value == produto.id){
 							var preco = new Number(produto.precoRevenda);
-							var quantidade = $("#quantidade-" + id).val();
-							if(quantidade == ""){
-								quantidade = 1;
-								$("#quantidade-" + id).val(1);
-							}
 							preco = (preco * quantidade);
 							somatoria += preco;
 							$("#preco-" + id).val(preco.toFixed(2));
@@ -66,20 +86,24 @@ Kit = {
 				}else{
 					$("#preco-" + id).val("0,00");
 				}
+				Kit.entity.produtos.push(produtoEntity);
 			});
-		});
-		$("#preco").val(new Number(somatoria).toFixed(2));
-		$('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
+			
+			
+			$("#preco").html(new Number(somatoria).toFixed(2));
+			Kit.entity.nome = $("#nome").val();
+			$('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
+		}
 	},
 	
-	addServico:function(){
-		if(Kit.servicos == []){
+	addServico:function(outterId){
+		if(Kit.servicos.length == 0){
 			console.log("Aguardando processamento de dados para o kit...");
 			setTimeout(function(){
-				Kit.addServico();
+				Kit.addServico(outterId);
 			}, 500);
 		}else{
-			var id = Utils.guid();
+			var id = outterId == null ?Utils.guid() : outterId;
 			var html = "";
 			html += "<div class='w-100 float-left' id='div-servico-"+id+"'>";
 			html += 	"<div class='col-md-9'>";
@@ -92,16 +116,9 @@ Kit = {
 			html += 		'</select>';
 			html += 	'</div>';
 			html += 	"<div class='col-md-2'>";
-			html += 		"<input class='m	ask-money form-control input-sm m-b-10' readonly disabled id='preco-servico-"+ id +"'></input>";
+			html += 		"<input class='mask-money form-control input-sm m-b-10' readonly disabled id='preco-servico-"+ id +"'></input>";
 			html += 	'</div>';
-			html += 	"<div class='col-md-1'><a href='javascript:Kit.deleteServico(\""+id+"\")'> <i class='sa-list-delete'></i></a></div>";
-			html += 	"<div class='w-100 float-left'>";
-			html += 		"<div class='col-md-1'> <span class='icon' style='float: right;font-size: 20px;'>&#61807;</span></div>";
-			html += 		'<div class="col-md-11"><a href="javascript:Kit.addProduto(\''+id+'\')" ><span class="add-kit" >Adicionar produto</span></a><a href="javascript:Kit.addServico()" ><i class="sa-list-add add-kit-img"></i></a></div>';
-			html += 	'</div>';
-
-			html += 	"<div class='w-100 float-left m-b-20' id='bloco-servico-"+id+"'>";
-			html += 	'</div>';
+			html += 	"<div class='col-md-1'><a href='#' onclick='Kit.deleteServico(\""+id+"\")'> <i class='sa-list-delete'></i></a></div>";
 			html += '</div>';
 			$("#bloco-servicos").append(html);
 
@@ -111,6 +128,8 @@ Kit = {
             
             /* Overflow */
             $('.overflow').niceScroll();
+            
+            return id;
 		}
 	},
 	
@@ -124,12 +143,11 @@ Kit = {
 		Kit.calcularValor();
 	},
 	
-	addProduto:function(servico){
-		var id = Utils.guid();
+	addProduto:function(servico, outterId){
+		var id = outterId == null ?Utils.guid() : outterId;
 		var html = "<div class='w-100 float-left' id='div-produto-"+id+"'>";
-		html += 		"<div class='col-md-1'></div>";
-		html += 		"<div class='col-md-6'>";
-		html += 			'<select name="produto" data-placeholder="Selecione um produto..." class="tag-select-limited form-control m-b-10 servico-'+servico+'" multiple onchange="Kit.calcularValor()" id="produto-'+id+'" >';
+		html += 		"<div class='col-md-7'>";
+		html += 			'<select name="produto" data-placeholder="Selecione um produto..." class="tag-select-limited form-control m-b-10 " multiple onchange="Kit.calcularValor()" id="produto-'+id+'" >';
 		var produtos = Kit.produtos;
 		for(var i = 0; i < produtos.length; i++){
 			var produto = produtos[i];
@@ -143,9 +161,9 @@ Kit = {
 		html += 		"<div class='col-md-2'>";
 		html += 			"<input class='mask-money form-control input-sm m-b-10' readonly disabled id='preco-produto-"+ id +"'></input>";
 		html += 		"</div>";
-		html += 		"<div class='col-md-1'><a href='javascript:Kit.deleteProduto(\""+id+"\")'> <i class='sa-list-delete'></i></a></div>";
+		html += 		"<div class='col-md-1'><a href='#' onclick='Kit.deleteProduto(\""+id+"\")'> <i class='sa-list-delete'></i></a></div>";
 		html += 	"</div>";
-		$("#bloco-servico-" + servico).append(html);
+		$("#bloco-produto").append(html);
 
         $(".tag-select-limited").chosen({
             max_selected_options: 1
@@ -153,10 +171,31 @@ Kit = {
         
         /* Overflow */
         $('.overflow').niceScroll();
+        return id;
 	},
 	
 	submit:function(){
 		Utils.unmaskMoney();
-		$("#kit-form").submit();
+		var valor = $("#valor").val();
+		if(valor == "" || valor == null){
+			Utils.showError("O campo Pre&ccedil;o Sugerido &eacute; obrigat&oacute;rio.");
+		}else{
+			Kit.calcularValor();
+			Kit.entity.valor = valor;
+			$.ajax({
+				url: "/min/web/kits/salvar",
+				type: 'POST',
+				data: JSON.stringify(Kit.entity),
+				contentType: 'application/json',
+				success: function(ok){
+					if(ok == "OK"){
+						window.location = "/min/web/kits/";
+					}else{
+						Utils.showError("Erro ao persistir");
+					}
+				}
+			});
+		}
+		$('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
 	}
 };

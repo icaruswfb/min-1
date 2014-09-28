@@ -29,7 +29,6 @@ public class KitDAO {
 		criteria.addOrder(Order.asc("nome"));
 		List<Kit> kits = criteria.list();
 		
-		session.close();
 		return kits;
 	}
 	

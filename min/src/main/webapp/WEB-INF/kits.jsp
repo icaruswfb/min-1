@@ -38,7 +38,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            	<c:forEach var="kits" items="${ kits }">
+                            	<c:forEach var="kit" items="${ kits }">
 	                                <tr>
 	                                    <td><a href="<spring:url value='/web/kits/editar/${kit.id}' />">${ kit.id }</a></td>
 	                                    <td><a href="<spring:url value='/web/kits/editar/${kit.id}' />">${ kit.nome }</a></td>
