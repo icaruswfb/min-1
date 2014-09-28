@@ -109,4 +109,14 @@ public class KitController {
 		return mv;
 	}
 	
+
+	@RequestMapping(value="/delete/{id}", method=RequestMethod.GET)
+	public ModelAndView delete(@PathVariable("id") Long id, HttpServletRequest request){
+		if(Utils.hasRole(Role.ADMIN, request)){
+			service.delete(id);
+		}
+		return listar(request);
+	}
+	
+	
 }
