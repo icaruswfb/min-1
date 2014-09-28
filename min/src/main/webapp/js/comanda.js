@@ -51,6 +51,11 @@ Comanda = {
 			}, 500);
 		}else{
 			Comanda.findComandaAberta();
+
+            $(".tag-select-limited").chosen({
+                max_selected_options: 1
+            });
+            $('.overflow').niceScroll();
 		}
 	},
 	findComandaAberta:function(){
@@ -114,6 +119,17 @@ Comanda = {
 	},
 	appendLinhaProduto:function(linha, id){
 		id = id == "" ? '' : id;
+		$(id + " .bloco-revenda").append(linha);
+//		$(id + " .bloco-produtos select").chosen({
+//            max_selected_options: 1
+//        });
+
+		$(".mask-number").mask("##########0");
+        $('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
+	},
+
+	appendLinhaProdutoServico:function(linha, id){
+		id = id == "" ? '' : id;
 		$(id + " .bloco-produtos").append(linha);
 //		$(id + " .bloco-produtos select").chosen({
 //            max_selected_options: 1
@@ -126,44 +142,19 @@ Comanda = {
 		readOnly = readOnly == undefined ? "" : readOnly;
 		var id = "servico-"+Utils.guid();
 		var form = "<div id='" +id+ "' class='lancamento'>";
-		form += "<input type='hidden' value='" + id + "' name='guidServico' />";
-		//form += "<input type='hidden' value='" + lancamentoServico.id + "' name='lancamentoServicoId' />";
-
-//		form += "<div class='col-md-1'>";
-//		var criacao = new Date(new Number(lancamentoServico.dataCriacao));
-//		var criacaoFormatada = Utils.formatTime(criacao);
-//		form += "<p>Hora: </p>";
-//		form += "<input name='dataCriacaoServico' class='form-control input-sm m-b-10' readonly='readonly' value='"+criacaoFormatada+"' />";
-//		form += "</div>";
-		
-		form += "<div class='col-md-4'>";
-		form += "<p>Servi&ccedil;o:</p>";
-		form += "<input name='servicoId' class='form-control input-sm m-b-10' readonly='readonly' disabled='disabled' value='"+lancamentoServico.servico.nome+"'>";
-		form += "</div><div class='col-md-2'>";
-		form += "<p>Funcion&aacute;rio:</p>";
-		form += "<input name='funcionarioId' class='form-control input-sm m-b-10' readonly='readonly' disabled='disabled' value='"+lancamentoServico.funcionario.nome+"'/>";
-		form += "</div><div class='col-md-2'>";
-		form += "<p>Assistente:</p>";
-		form += "<input name='assistenteId' readonly='readonly' disabled='disabled' class='form-control input-sm m-b-10' value='";
+		form += "<div class='col-md-12'>";
+		form += "<div class='float-left m-r-10'><strong>" + lancamentoServico.servico.nome + "</strong>, por <strong>"+lancamentoServico.funcionario.nome + "</strong>";
 		if(lancamentoServico.assistente){
-			form +=lancamentoServico.assistente.nome;
+			form += " e auxiliado por <strong>" + lancamentoServico.assistente.nome + "</strong>";
 		}
-		form +="' />";
-		form += "</div><div class='col-md-2'>";
-		form += "<p>Valor (R$):</p>";
-		form += "<input name='valorServico' class='form-control input-sm m-b-10  mask-money' readonly='readonly' id='valor-"+id+"' ";
-		form+= "value='" + new Number(lancamentoServico.valor).toFixed(2) + "' ";
-		form += "/>";
 		form += "</div>";
-		form += "<div class='col-md-2'>";
-		if(readOnly == ""){
-			form += '<a title="Add" class="tooltips acaoLancamento m-r-10" data-toggle="modal" href="#modalComandaProdutoServico" id="linkModalComandaProdutoServico" onclick="Lancamento.limparProdutoServico('+lancamentoServico.id+')">';
-			form += '<i class="sa-list-add"></i></a>';
-		}
+		form += "<div class='float-right'>";
+		form += "<strong class='m-r-10' >R$<span class='mask-money valorServico' >"+new Number(lancamentoServico.valor).toFixed(2)+"</span></strong>";
 		if(Comanda.hasRoleAdmin){
-			form += '<a href="javascript:Lancamento.deleteServico(\''+lancamentoServico.id+'\')" title="" class="tooltips acaoLancamento" >';
+			form += '<a href="javascript:Lancamento.deleteServico(\''+lancamentoServico.id+'\')" title="" class="m-l-10 float-right" >';
 			form += '<i class="sa-list-delete"></i></a>';
 		}
+		form += "</div>";
 		form += "</div>";
 		form += "<div class='clearfix' ></div>";
 		if(lancamentoServico){
@@ -171,7 +162,6 @@ Comanda = {
 				form += Comanda.criarProdutoAoServico(id, lancamentoServico.produtosUtilizados[i], readOnly);
 			}
 		}
-		
 		form += "</div>";
 		return form;
 	},
@@ -179,7 +169,7 @@ Comanda = {
 	buscarValorServico: function(){
 		Utils.unmaskMoney();
 		var servicoId = $("#form-servico select[name='servicoId']").val();
-		if(servicoId != "-"){
+		if(servicoId != null){
 			for(var i = 0; i < Comanda.servicos.length; i++){
 				var servico = Comanda.servicos[i];
 				if(servico.id == servicoId){
@@ -187,7 +177,7 @@ Comanda = {
 				}
 			}
 		}else{
-			$("#form-servico input[name='valor']").val();
+			$("#form-servico input[name='valor']").val("0.00");
 		}
 		$('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
 
@@ -228,27 +218,40 @@ Comanda = {
 	preencherTotais:function(comandaId){
 		Utils.unmaskMoney();
 		var total = new Number(0.00);
-		var valoresServicos = $("#bloco-geral-comanda-"+comandaId+" input[name='valorServico']");
+		var valoresServicos = $("#bloco-geral-comanda-"+comandaId+" .valorServico");
+		var totalServicos = 0;
 		for(var i = 0; i < valoresServicos.length; i++){
-			var valorServico = $(valoresServicos[i]).val();
-			total += new Number(valorServico);
+			var valorServico = $(valoresServicos[i]).html();
+			totalServicos += new Number(valorServico); 
 		}
-		var valoresProdutos = $("#bloco-geral-comanda-"+comandaId+" input[name='valorProduto']");
+		total += totalServicos; 
+		
+		var valoresProdutos = $("#bloco-geral-comanda-"+comandaId+" .valorProduto");
+		var totalProdutos = 0;
 		for(var i = 0; i < valoresProdutos.length; i++){
-			var valorProduto = $(valoresProdutos[i]).val();
-			total += new Number(valorProduto);
+			var valorProduto = $(valoresProdutos[i]).html();
+			totalProdutos += new Number(valorProduto);
 		}
-		var valoresProdutosServico = $("#bloco-geral-comanda-"+comandaId+" input[name='valorProdutoServico']");
+		total += totalProdutos;
+		
+		var valoresProdutosServico = $("#bloco-geral-comanda-"+comandaId+" .valorProdutoServico");
+		var totalProdutosServico = 0;
 		for(var i = 0; i < valoresProdutosServico.length; i++){
-			var valorProdutoServico = $(valoresProdutosServico[i]).val();
-			total += new Number(valorProdutoServico);
+			var valorProdutoServico = $(valoresProdutosServico[i]).html();
+			totalProdutosServico += new Number(valorProdutoServico);
 		}
+		total += totalProdutosServico;
+		
+		$("#bloco-geral-comanda-"+comandaId+" .total-servicos").html(new Number(totalServicos).toFixed(2));
+		$("#bloco-geral-comanda-"+comandaId+" .total-produtos").html(new Number(totalProdutosServico).toFixed(2));
+		$("#bloco-geral-comanda-"+comandaId+" .total-revendas").html(new Number(totalProdutos).toFixed(2));
+		
 		var desconto = $("#descontos-" + comandaId).val();
 		$("#valorTotal-" + comandaId).val(new Number(total).toFixed(2));
 		$("#valorCobrado-" + comandaId).val(new Number(total - desconto).toFixed(2));
 		var pago = $("#valorPago-" + comandaId).val();
 		$("#valorPago-" + comandaId).val(new Number(pago).toFixed(2));
-		$("#valorFaltante-" + comandaId).val(new Number(((total - desconto) - pago)).toFixed(2));
+		$("#valorFaltante-" + comandaId).html(new Number(((total - desconto) - pago)).toFixed(2));
         $('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
 	},
 	
@@ -256,48 +259,46 @@ Comanda = {
 		readOnly = readOnly == null ? "" : readOnly;
 		var id = "produto-" + Utils.guid();
 		var form = "<div id='" +id+ "' class='lancamento'>";
-		form += "<input type='hidden' value='" + id + "' name='guidProduto' />";
-		//form += "<input type='hidden' value='" + lancamentoProduto.id + "' name='lancamentoProdutoId' />";
 		
-//		form += "<div class='col-md-1'>";
-//		var criacao = new Date(new Number(lancamentoProduto.dataCriacao));
-//		var criacaoFormatada = Utils.formatDateTime(criacao);
-//		form += "<p>Hora: </p>";
-//		form += "<input name='dataCriacaoProduto'  readonly='readonly' disabled='disabled' class='form-control input-sm m-b-10' value='"+criacaoFormatada+"' />";
-//		form += "</div>";
-		
-		form += "<div class='col-md-3'>";
-		form += "<p>Produto:</p>";
-		form += "<input name='produtoId' readonly='readonly' disabled='disabled' class='form-control input-sm m-b-10 ' value='"+lancamentoProduto.produto.nome+"' />";
-		form += "</div><div class='col-md-3'>";
-		form += "<p>Vendedor:</p>";
-		form += "<input name='vendedorId'  readonly='readonly' disabled='disabled' class='form-control input-sm m-b-10' value='"+lancamentoProduto.vendedor.nome+"'/>";
-		form += "</div><div class='col-md-2'>";
-		form += "<p id='quantidade-"+id+"'>Quantidade";
-		if(lancamentoProduto && lancamentoProduto.produto){
-			form += "(" + lancamentoProduto.produto.unidade + ")";
-		}
-		form += ":</p>";
-		form += "<input name='quantidadeProduto' class='form-control input-sm m-b-10 mask-number' readonly='readonly' disabled='disabled' ";
-		if(lancamentoProduto){
-			form+= "value='" + lancamentoProduto.quantidadeUtilizada + "' ";
-		}
-		form += "/>";
-		form += "</div><div class='col-md-2'>";
-		form += "<p>Valor (R$):</p>";
-		form += "<input name='valorProduto' class='form-control input-sm m-b-10 mask-money' readonly='readonly' disabled='disabled' ";
-		form+= "value='" + ((lancamentoProduto.valor).toFixed(2)) + "' ";
-		form += "/>";
+		form += "<div class='col-md-12'>";
+		form += 	"<div class='float-left m-r-10'><strong>"+lancamentoProduto.produto.nome+"</strong>, ";
+		form += 		"<strong>" + lancamentoProduto.quantidadeUtilizada + "</strong> unidade(s) vendidida(s) por ";
+		form += 		"<strong>"+lancamentoProduto.vendedor.nome+"</strong>";
 		form += "</div>";
-		form += "<div class='col-md-2'>";
+		form += "<div class='float-right'>";
+		
+		form += 		"<strong class='m-r-10' >R$<span class='mask-money valorProduto' >"+((lancamentoProduto.valor).toFixed(2))+"</span></strong>";
 		if(Comanda.hasRoleAdmin){
-			form += '<a href="javascript:Lancamento.deleteProduto(\''+lancamentoProduto.id+'\')" title="" class="tooltips acaoLancamento" >';
+			form += '<a href="javascript:Lancamento.deleteProduto(\''+lancamentoProduto.id+'\')" title="" class="m-l-10 float-right" >';
 			form += '<i class="sa-list-delete"></i></a>';
 		}
+
+		form += 	"</div>";
 		form += "</div>";
 		form += "</div>";
 		return form;
 	},
+	
+	criarLinhaProdutoServico: function(lancamentoProduto, readOnly, comandaId){
+		readOnly = readOnly == null ? "" : readOnly;
+		var id = "produto-" + Utils.guid();
+		var form = "<div id='" +id+ "' class='lancamento'>";
+		form += "<div class='col-md-12'>";
+		form += 	"<div class='float-left m-r-10'><strong>"+lancamentoProduto.produto.nome+"</strong>, ";
+		form += 		"<strong>" + lancamentoProduto.quantidadeUtilizada + "</strong> " + lancamentoProduto.produto.unidade;
+		form += "</div>";
+		form += "<div class='float-right'>";
+		form += 		"<strong class='m-r-10' >R$<span class='mask-money valorProdutoServico' >"+((lancamentoProduto.valor).toFixed(2))+"</span></strong>";
+		if(Comanda.hasRoleAdmin){
+			form += '<a href="javascript:Lancamento.deleteProduto(\''+lancamentoProduto.id+'\')" title="" class="m-l-10 float-right" >';
+			form += '<i class="sa-list-delete"></i></a>';
+		}
+		form += 	"</div>";
+		form += "</div>";
+		form += "</div>";
+		return form;
+	},
+	
 	detalhesFechamento: function(){
 		Comanda.verificarData(function(){
 			$("#linkModalFechamento").click();
@@ -343,7 +344,7 @@ Comanda = {
 		if(!isComandaAberta){
 			var fechamento = new Date(comanda.fechamento);
 			info += " e fechada em " + Utils.formatDateTime(fechamento) ;
-			info += " no valor de R$" + comanda.valorCobrado;
+			info += " no valor de R$<span class='mask-money'>" + new Number(comanda.valorCobrado).toFixed(2) + "</span>";
 			info += " <span id='abrirComanda-"+comanda.id+"' >[+]</span>";
 			info += " <span id='fecharComanda-"+comanda.id+"' style='display:none' >[-]</span>";
 			if(Comanda.hasRoleAdmin){
@@ -355,9 +356,10 @@ Comanda = {
 		info += botoes;
 		//Servicos
 		info+='<div class="clearfix"></div>';
+		
 		info += "<div class='col-md-12' style='z-index: 100;'>";
-		info += "<div class='tile'>";
-		info += "<div class='tile-title'><div class='comanda-title'>Sevi&ccedil;os</div>";
+		info += 	"<div class='tile'>";
+		info += 	"<div class='tile-title link' data-toggle='modal' href='#modalComandaServico'><div class='comanda-title'>Sevi&ccedil;os</div>";
 		if(isComandaAberta){
 			//info += '<a href="javascript:Comanda.appendLinhaServico(Comanda.criarLinhaServico(null, null, '+comanda.id+'))" title="Add" class="tooltips" style="float: right;">';
 			info += '<a title="Add" class="tooltips" style="float: right;" data-toggle="modal" href="#modalComandaServico" id="linkModalComandaServico" style="display: none" onclick="Lancamento.limparServico()">';
@@ -369,15 +371,21 @@ Comanda = {
 		info += "</div>";
 		info += "</div>";
 		
+		info += "<div class='col-md-12'>";
+		info += "<div class='float-right m-r-10 m-b-20'>";
+		info += 	"Total servi&ccedil;os: <strong>R$<span class='mask-money total-servicos' >0,00</span></strong>";
+		info += "</div>";
+		info += "</div>";
+		
 		//Produtos
 		info+='<div class="clearfix"></div>';
 		info += "<div class='col-md-12' style='z-index: 100;'>";
 		info += "<div class='tile'>";
-		info += "<div class='tile-title'>";
-		info += "<div class='comanda-title'>Produtos</div>";
+		info += "<div class='tile-title link' data-toggle='modal' href='#modalComandaProdutoServico'>";
+		info += "<div class='comanda-title'  >Produtos</div>";
 		if(isComandaAberta){
 			//info += '<a href="javascript:Comanda.appendLinhaProduto(Comanda.criarLinhaProduto(null, null, '+comanda.id+'))" title="Add" class="tooltips" style="float: right;">';
-			info += '<a title="Add" class="tooltips" style="float: right;" data-toggle="modal" href="#modalComandaProduto" id="linkModalComandaProduto" style="display: none" onclick="Lancamento.limparProduto()">';
+			info += '<a title="Add" class="tooltips" style="float: right;" data-toggle="modal" href="#modalComandaProdutoServico" id="linkModalComandaProdutoSerivo" style="display: none" onclick="Lancamento.limparProdutoServico()">';
 			info +=  '<i class="sa-list-add"></i></a>';
 		}
 		info +=  "</div>";
@@ -388,6 +396,37 @@ Comanda = {
 		info+='<div class="clearfix"></div>';
 
 		info += "<div class='col-md-12'>";
+		info += "<div class='float-right m-r-10 m-b-20'>";
+		info += 	"Total produtos: <strong>R$<span class='mask-money total-produtos' >0,00</span></strong>";
+		info += "</div>";
+		info += "</div>";
+		
+		//Revenda
+		info+='<div class="clearfix"></div>';
+		info += "<div class='col-md-12' style='z-index: 100;'>";
+		info += "<div class='tile'>";
+		info += "<div class='tile-title link' data-toggle='modal' href='#modalComandaProduto'>";
+		info += "<div class='comanda-title'>Produtos de revenda</div>";
+		if(isComandaAberta){
+			//info += '<a href="javascript:Comanda.appendLinhaProduto(Comanda.criarLinhaProduto(null, null, '+comanda.id+'))" title="Add" class="tooltips" style="float: right;">';
+			info += '<a title="Add" class="tooltips" style="float: right;" data-toggle="modal" href="#modalComandaProduto" id="linkModalComandaProduto" style="display: none" onclick="Lancamento.limparProduto()">';
+			info +=  '<i class="sa-list-add"></i></a>';
+		}
+		info +=  "</div>";
+		info += "<div class='bloco-revenda listview narrow'>";
+		info += "</div>";
+		info += "</div>";
+		info += "</div>";
+		info+='<div class="clearfix"></div>';
+
+		info += "<div class='col-md-12'>";
+		info += "<div class='float-right m-r-10 m-b-20'>";
+		info += 	"Total revenda: <strong>R$<span class='mask-money total-revendas' >0,00</span></strong>";
+		info += "</div>";
+		info += "</div>";
+
+		info+='<div class="clearfix"></div>';
+		info += "<div class='col-md-12'>";
 
 		if(Comanda.hasRoleAdmin || Comanda.hasRoleCaixa){
 			info += "<div class='col-md-9'>";
@@ -396,38 +435,38 @@ Comanda = {
 		}
 		
 		//Totais
-		info += "<div class='col-md-5'>";
-		info += "<p class='total'>Total:</p>";
-		info += "</div>";
-		info += "<div class='col-md-2'>";
-		info += "<input class='form-control input-sm m-b-10 mask-money' id='valorTotal-"+comanda.id+"' name='total' readonly value='"+ new Number((comanda.valorTotal ? comanda.valorTotal : 0)).toFixed(2)+"' />";
-		info += "</div>";
-		info += "<div class='col-md-3'>";
-		info += "<p class='total'>Descontos:</p>";
-		info += "</div>";
-		info += "<div class='col-md-2'>";
-		info += "<input class='form-control input-sm m-b-10 mask-money' id='descontos-"+comanda.id+"' " +
+
+		info+='<div class="clearfix"></div>';
+		info += "<div class='w-100 float-left'>";
+		info += "<div class='float-right' >";
+		info += "<span style='font-size: 20px'>Descontos: </span>";
+		info += "<input class='form-control input-sm m-b-10 mask-money float-right m-l-10' id='descontos-"+comanda.id+"' " +
 						"name='descontos' value='"+new Number((comanda.desconto ? comanda.desconto : 0)).toFixed(2)+"' " +
-						"onblur='Lancamento.lancarDesconto()'  />";
+						"onblur='Lancamento.lancarDesconto()' style='width: 100px; ' />";
 		info += "</div>";
-		info += "<div class='col-md-5'>";
-		info += "<p class='total'>Valor cobrado:</p>";
 		info += "</div>";
-		info += "<div class='col-md-2'>";
-		info += "<input class='form-control input-sm m-b-10 mask-money' id='valorCobrado-"+comanda.id+"' name='valorCobrado' readonly value='"+ new Number((comanda.valorCobrado ? comanda.valorCobrado : 0)).toFixed(2)+"' />";
+
+		info+='<div class="clearfix"></div>';
+		info += "<div class='w-100 float-left'>";
+		info += "<p class='total'>Total: <strong>R$<span class='m-b-10 mask-money valorTotal' id='valorTotal-"+comanda.id+"' >"+ new Number((comanda.valorTotal ? comanda.valorTotal : 0)).toFixed(2)+"</span></strong></p>";
 		info += "</div>";
-		info += "<div class='col-md-3'>";
-		info += "<p class='total'>Valor pago:</p>";
+
+
+		info+='<div class="clearfix"></div>';
+		info += "<div class='w-100 float-left'>";
+		info += "<p class='total'>Valor cobrado: <strong>R$<span class='m-b-10 mask-money valorCobrado' id='valorCobrado-"+comanda.id+"' >"+ new Number((comanda.valorCobrado ? comanda.valorCobrado : 0)).toFixed(2)+"</span></strong></p>";
 		info += "</div>";
-		info += "<div class='col-md-2'>";
-		info += "<input class='form-control input-sm m-b-10 mask-money' id='valorPago-"+comanda.id+"' name='valorPago' readonly value='"+ new Number((comanda.valorPago ? comanda.valorPago : 0)).toFixed(2)+"' />";
+
+		info+='<div class="clearfix"></div>';
+		info += "<div class='w-100 float-left'>";
+		info += "<p class='total'>Valor pago: <strong>R$<span class='m-b-10 mask-money valorPago' id='valorPago-"+comanda.id+"' >"+ new Number((comanda.valorPago ? comanda.valorPago : 0)).toFixed(2)+"</span></strong></p>";
 		info += "</div>";
-		info += "<div class='col-md-10'>";
-		info += "<p class='total' id='labelValorFaltante-"+comanda.id+"'>Falta:</p>";
+
+		info+='<div class="clearfix"></div>';
+		info += "<div class='w-100 float-left'>";
+		info += "<p class='total' ><span id='labelValorFaltante-"+comanda.id+"' >Falta:</span> <strong>R$<span class='m-b-10 mask-money valorFaltante' id='valorFaltante-"+comanda.id+"' >0.00</span></strong></p>";
 		info += "</div>";
-		info += "<div class='col-md-2'>";
-		info += "<input class='form-control input-sm m-b-10 mask-money' id='valorFaltante-"+comanda.id+"' name='valorFaltante' readonly value='0.00' />";
-		info += "</div>";
+		
 		info += "</div>";
 		
 		//Pagamentos
@@ -508,7 +547,7 @@ Comanda = {
 		$("#valorPago-" + comanda.id).val(valorPago.toFixed(2));
 		var cobrado = new Number($("#valorCobrado-" + comanda.id).val());
 		var faltante = cobrado - valorPago;
-		$("#valorFaltante-" + comanda.id).val(new Number(faltante).toFixed(2));
+		$("#valorFaltante-" + comanda.id).html(new Number(faltante).toFixed(2));
 		if(faltante >= 0){
 			$("#labelValorFaltante-" + comanda.id).html("Falta:");
 		}else{
@@ -551,8 +590,8 @@ Comanda = {
 	novoPagamento:function(){
 		Utils.unmaskMoney();
 		$("#novo-pagamento-form input[name='comandaId']").val($("#comanda-form input[name='comandaId']").val());
-		var cobrado = $("#comanda-form input[name='valorCobrado']").val();
-		var pago = $("#comanda-form input[name='valorPago']").val();
+		var cobrado = $("#comanda-form .valorCobrado").html();
+		var pago = $("#comanda-form .valorPago").html();
 		var valor = cobrado - pago;
 		if(valor < 0){
 			valor = 0;
@@ -612,6 +651,8 @@ Comanda = {
 			$("#comandas-fechadas").append(content);
 			readonly = "readonly='readonly'";
 		}
+
+		$('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
 		
 	},
 	preencherDadosComanda:function(comanda){
@@ -624,7 +665,11 @@ Comanda = {
 		}
 		for(var j = 0; j < comanda.produtos.length; j++){
 			var lancamentoProduto = comanda.produtos[j];
-			Comanda.appendLinhaProduto(Comanda.criarLinhaProduto(lancamentoProduto, readonly, comanda.id), comandaFormId);
+			if(lancamentoProduto.revenda){
+				Comanda.appendLinhaProduto(Comanda.criarLinhaProduto(lancamentoProduto, readonly, comanda.id), comandaFormId);
+			}else{
+				Comanda.appendLinhaProdutoServico(Comanda.criarLinhaProdutoServico(lancamentoProduto, readonly, comanda.id), comandaFormId);
+			}
 		}
 		Comanda.refreshPagamentos(comanda);
 		Comanda.preencherTotais(comanda.id);
@@ -646,39 +691,19 @@ Comanda = {
 	criarProdutoAoServico: function(servicoId, produtoUtilizado, readonly){
 		readonly = readonly ? readonly : '';
 		var id = "produtoServico-" + Utils.guid();
-		var form = "<div class='w-100 float-left' id='"+id+"'><div class='col-md-2'> <span class='icon' style='float: right;font-size: 20px;'>&#61807;</span></div><div class='col-md-4'>";
-		form += "<input type='hidden' value='" + servicoId + "' name='guidProdutoServico' />";
-		//form += "<input type='hidden' value='" + produtoUtilizado.id + "' name='lancamentoProdutoServicoId' />";
-		form += "<p>Produto:</p>";
-		form += "<input name='produtoServicoId'  class='form-control input-sm m-b-10' disabled='disabled' readonly='readonly' value='"+produtoUtilizado.produto.nome+"' />";
+		var form = "<div class='w-100 float-left' id='"+id+"'><div class='col-md-2'> <span class='icon float-left m-r-5' style='font-size: 14px;'>&#61807;</span></div><div class='col-md-10'>";
+		
+		form += 	"<div class='float-left m-r-10'><strong>"+produtoUtilizado.produto.nome+"</strong>, ";
+		form += 		"<strong>" + produtoUtilizado.quantidadeUtilizada + "</strong> " + produtoUtilizado.produto.unidade;
 		form += "</div>";
-		form += "<div class='col-md-2'>";
-		form += "<p id='quantidade-"+id+"'>Quantidade";
-		if(produtoUtilizado && produtoUtilizado.produto){
-			form += " (" + produtoUtilizado.produto.unidade + ")";
-		}
-		form += ":</p>";
-		form += "<input name='quantidadeProdutoServico' class='form-control input-sm m-b-10 mask-number'  disabled='disabled' readonly='readonly' ";
-		if(produtoUtilizado){
-			form+= "value='" + (produtoUtilizado.quantidadeUtilizada)+ "' ";
-		}
-		form += "/>";
-		form += "</div>";
-		form += "<div class='col-md-2'>";
-		form += '<p>Valor (R$):</p>';
-		form += '<input name="valorProdutoServico" class="form-control input-sm m-b-10 mask-money" readonly="readonly" disabled="disabled" ';
-		if(produtoUtilizado && produtoUtilizado.produto){
-			form+= "value='" + ((produtoUtilizado.produto.precoRevenda * produtoUtilizado.quantidadeUtilizada).toFixed(2))+ "' ";
-		}
-		form += "/>";
-		form += "</div>";
-		form += "<div class='col-md-2'>";
+		form += "<div class='float-right'>";
+		form += 		"<strong class='m-r-10' >R$<span class='mask-money' >"+((produtoUtilizado.valor).toFixed(2))+"</span></strong>";
 		if(Comanda.hasRoleAdmin){
-			form += '<a href="javascript:Lancamento.deleteProdutoServico(\''+produtoUtilizado.id+'\')" title="" class="tooltips acaoLancamento" >';
+			form += '<a href="javascript:Lancamento.deleteProduto(\''+produtoUtilizado.id+'\')" title="" class="m-l-10 float-right" >';
 			form += '<i class="sa-list-delete"></i></a>';
 		}
+		form += 	"</div>";
 		form += "</div>";
-		
 		form += "</div>";
 		return form;
 	},

@@ -29,8 +29,6 @@
                                     <th style="width: 70px">ID</th>
                                     <th>Nome</th>
                                     <th>Telefones</th>
-                                    <th>Aniversário</th>
-                                    <th>E-mail</th>
                                     <th style="width: 50px"></th>
                                 </tr>
                             </thead>
@@ -58,8 +56,6 @@
 	                                    	</c:choose>
 	                                    </td>
 	                                    <td>${ pessoa.telefone }</td>
-	                                    <td><fmt:formatDate value="${ pessoa.aniversario }" pattern="dd/MM" /></td>
-	                                    <td>${ pessoa.email }</td>
 	                                    <td>
 	                                    	<c:choose>
 	                                    		<c:when test="${ pessoa.funcionario }">

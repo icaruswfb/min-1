@@ -130,10 +130,10 @@
 										
 											<input type="hidden" name="clienteId" value="${ cliente.id }"/>
 							                 <label>Serviço</label>
-							                 <select class="form-control input-sm m-b-10" name="servicoId" onchange="Comanda.buscarValorServico()" >
+							                 <select class="tag-select-limited form-control m-b-10" multiple name="servicoId" onchange="Comanda.buscarValorServico()" >
 							                 	<option value=""></option>
 							                 </select>
-							                 <label>Funcionário</label>
+							                 <label class="m-t-10">Funcionário</label>
 							                 <select class="form-control input-sm m-b-10" name="funcionarioId" id="forma-pagamento">
 							                 	<option value=""></option>
 							                 </select>
@@ -147,61 +147,20 @@
 										</form>
 		                             </div>
 		                             <div class="modal-footer">
-		                                 <button type="button" class="btn btn-sm" onclick="Lancamento.addServico()" id="fechar-comanda-button">Lançar</button>
-		                                 <button type="button" class="btn btn-sm" data-dismiss="modal" id="fechar-modal-servico">Cancelar</button>
+		                                 <button type="button" class="btn btn-lg" onclick="Lancamento.addServico()" id="fechar-comanda-button">Lançar</button>
+		                                 <button type="button" class="btn btn-lg" data-dismiss="modal" id="fechar-modal-servico">Cancelar</button>
 		                             </div>
 		                         </div>
 		                     </div>
 		                 </div>
-	                 	<!-- Modal de serviços -->
-		                 <div class="modal fade " id="modalComandaServico" tabindex="-1" role="dialog" aria-hidden="true">
-		                     <div class="modal-dialog">
-		                         <div class="modal-content">
-		                             <div class="modal-header">
-		                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		                                 <h4 class="modal-title">Adicionar serviço</h4>
-		                             </div>
-		                             <div class="modal-body">
-										<div class="listview list-container" id="add-servico-msg">
-						                </div>
-										<p>Preencha os dados do serviço a ser adicionado</p>
-										<c:if test="${ ! hasRole['ADMIN'] }">
-											<p>Depois de lançado, o serviço só poderá ser excluído por um administrador.</p>
-										</c:if>
-										<form action="" id="form-servico" method="post">
-										
-											<input type="hidden" name="clienteId" value="${ cliente.id }"/>
-							                 <label>Serviço</label>
-							                 <select class="form-control input-sm m-b-10" name="servicoId" onchange="Comanda.buscarValorServico()" >
-							                 	<option value=""></option>
-							                 </select>
-							                 <label>Funcionário</label>
-							                 <select class="form-control input-sm m-b-10" name="funcionarioId" >
-							                 	<option value=""></option>
-							                 </select>
-							                 <label>Assistente (opcional)</label>
-							                 <select class="form-control input-sm m-b-10" name="assistenteId" >
-							                 	<option value=""></option>
-							                 </select>
-							                 <label>Valor</label>
-			                                <input type="text" class="form-control input-sm mask-money" name="valor" disabled="disabled" readonly="readonly"/>
-			                                
-										</form>
-		                             </div>
-		                             <div class="modal-footer">
-		                                 <button type="button" class="btn btn-sm" onclick="Lancamento.addServico()" >Lançar</button>
-		                                 <button type="button" class="btn btn-sm" data-dismiss="modal" id="fechar-modal-servico">Cancelar</button>
-		                             </div>
-		                         </div>
-		                     </div>
-		                 </div>
+	                 	
 		                 <!-- Modal de produtos -->
 		                 <div class="modal fade " id="modalComandaProduto" tabindex="-1" role="dialog" aria-hidden="true">
 		                     <div class="modal-dialog">
 		                         <div class="modal-content">
 		                             <div class="modal-header">
 		                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		                                 <h4 class="modal-title">Adicionar produto</h4>
+		                                 <h4 class="modal-title">Adicionar produto de revenda</h4>
 		                             </div>
 		                             <div class="modal-body">
 										<div class="listview list-container" id="add-produto-msg">
@@ -214,10 +173,10 @@
 										
 											<input type="hidden" name="clienteId" value="${ cliente.id }"/>
 							                 <label>Produto</label>
-							                 <select class="form-control input-sm m-b-10" name="produtoId" onchange="Comanda.buscarValorProduto()" >
+							                 <select class="tag-select-limited form-control m-b-10" multiple name="produtoId" onchange="Comanda.buscarValorProduto()" >
 							                 	<option value=""></option>
 							                 </select>
-							                 <label>Vendedor</label>
+							                 <label class="m-t-10">Vendedor</label>
 							                 <select class="form-control input-sm m-b-10" name="vendedorId">
 							                 	<option value=""></option>
 							                 </select>
@@ -229,19 +188,19 @@
 										</form>
 		                             </div>
 		                             <div class="modal-footer">
-		                                 <button type="button" class="btn btn-sm" onclick="Lancamento.addProduto()" >Lançar</button>
-		                                 <button type="button" class="btn btn-sm" data-dismiss="modal" id="fechar-modal-produto">Cancelar</button>
+		                                 <button type="button" class="btn btn-lg" onclick="Lancamento.addProduto()" >Lançar</button>
+		                                 <button type="button" class="btn btn-lg" data-dismiss="modal" id="fechar-modal-produto">Cancelar</button>
 		                             </div>
 		                         </div>
 		                     </div>
 		                 </div>
-		                  <!-- Modal de produtos de produtos-->
+		                  <!-- Modal de produtos de serviços-->
 		                 <div class="modal fade " id="modalComandaProdutoServico" tabindex="-1" role="dialog" aria-hidden="true">
 		                     <div class="modal-dialog">
 		                         <div class="modal-content">
 		                             <div class="modal-header">
 		                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		                                 <h4 class="modal-title">Adicionar produto</h4>
+		                                 <h4 class="modal-title">Adicionar produto de serviço</h4>
 		                             </div>
 		                             <div class="modal-body">
 										<div class="listview list-container" id="add-produto-servico-msg">
@@ -253,12 +212,11 @@
 										<form action="" id="form-produto-servico" method="post">
 										
 											<input type="hidden" name="clienteId" value="${ cliente.id }"/>
-											<input type="hidden" name="servicoId" />
 							                 <label>Produto</label>
-							                 <select class="form-control input-sm m-b-10" name="produtoId" onchange="Comanda.buscarValorProduto('servico')" >
+							                 <select class="tag-select-limited form-control m-b-10" multiple name="produtoId" onchange="Comanda.buscarValorProduto('servico')" >
 							                 	<option value=""></option>
 							                 </select>
-							                 <label class="label-quantidade">Quantidade</label>
+							                 <label class="label-quantidade m-t-10">Quantidade</label>
 			                                <input type="text" class="form-control input-sm m-b-10 mask-number" name="quantidade" onchange="Comanda.buscarValorProduto('servico')"/>			                                
 							                 <label>Valor</label>
 			                                <input type="text" class="form-control input-sm mask-money" name="valor" disabled="disabled" readonly="readonly"/>
@@ -266,8 +224,8 @@
 										</form>
 		                             </div>
 		                             <div class="modal-footer">
-		                                 <button type="button" class="btn btn-sm" onclick="Lancamento.addProdutoServico()" >Lançar</button>
-		                                 <button type="button" class="btn btn-sm" data-dismiss="modal" id="fechar-modal-produto-servico">Cancelar</button>
+		                                 <button type="button" class="btn btn-lg" onclick="Lancamento.addProdutoServico()" >Lançar</button>
+		                                 <button type="button" class="btn btn-lg" data-dismiss="modal" id="fechar-modal-produto-servico">Cancelar</button>
 		                             </div>
 		                         </div>
 		                     </div>

@@ -35,10 +35,7 @@
                                 <tr>
                                     <th style="width: 70px">ID</th>
                                     <th>Nome</th>
-                                    <th>Documento</th>
                                     <th>Telefones</th>
-                                    <th>Aniversário</th>
-                                    <th>E-mail</th>
                                     <th style="width: 50px"></th>
                                 </tr>
                             </thead>
@@ -47,10 +44,7 @@
 	                                <tr>
 	                                    <td><a href="<spring:url value='/web/clientes/editar/${cliente.id}' />">${ cliente.id }</a></td>
 	                                    <td><a href="<spring:url value='/web/clientes/editar/${cliente.id}' />">${ cliente.nome }</a></td>
-	                                    <td><a href="<spring:url value='/web/clientes/editar/${cliente.id}' />">${ cliente.documento }</a></td>
 	                                    <td>${ cliente.telefone }</td>
-	                                    <td><fmt:formatDate value="${ cliente.aniversario }" pattern="dd/MM" /></td>
-	                                    <td>${ cliente.email }</td>
 	                                    <td><a href="<spring:url value='/web/clientes/delete/${ cliente.id }' />" onclick="return confirm('Tem certeza que deseja excluir?');"><img src='<spring:url value="/img/icon/delete.png" />' /></a></td>
 	                                </tr>
                             	</c:forEach>

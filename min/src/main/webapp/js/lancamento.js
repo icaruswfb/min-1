@@ -15,12 +15,11 @@ Lancamento = {
 			$("#add-produto-msg").html("");
 		},
 		
-		limparProdutoServico: function(servicoId){
+		limparProdutoServico: function(){
 			$("#form-produto-servico select[name='produtoId']").val("");
 			$("#form-produto-servico input[name='quantidade']").val("");
 			$("#form-produto-servico input[name='valor']").val("");
 			$("#add-produto-servico-msg").html("");
-			$("#form-produto-servico input[name='servicoId']").val(servicoId);
 		},
 		
 		preencherServicos: function(servicos){
@@ -44,12 +43,13 @@ Lancamento = {
 					$("#form-produto select[name='produtoId']").append("<option value='"+produto.id+"'>" + produto.nome + "</option>");
 				}
 			});
+
 		},
 		
 		addServico:function(){
 			$("#add-servico-msg").html("");
 			var hasError = false;
-			if($("#form-servico select[name='servicoId']").val() == ''){
+			if($("#form-servico select[name='servicoId']").val() == '' || $("#form-servico select[name='servicoId']").val() == null){
 				hasError = true;
 				Utils.createMessageBlock("Campo Servi&ccedil;o &eacute; obrigat&oacute;rio", "#add-servico-msg", "danger", "add-servico-msg" + Utils.guid());
 			}
@@ -90,7 +90,7 @@ Lancamento = {
 		addProduto:function(){
 			$("#add-produto-msg").html("");
 			var hasError = false;
-			if($("#form-produto select[name='produtoId']").val() == ''){
+			if($("#form-produto select[name='produtoId']").val() == '' || $("#form-produto select[name='produtoId']").val() == null){
 				hasError = true;
 				Utils.createMessageBlock("Campo Produto &eacute; obrigat&oacute;rio", "#add-produto-msg", "danger", "add-produto-msg" + Utils.guid());
 			}
@@ -135,7 +135,7 @@ Lancamento = {
 		addProdutoServico:function(){
 			$("#add-produto-servico-msg").html("");
 			var hasError = false;
-			if($("#form-produto-servico select[name='produtoId']").val() == ''){
+			if($("#form-produto-servico select[name='produtoId']").val() == '' || $("#form-produto-servico select[name='produtoId']").val() == null){
 				hasError = true;
 				Utils.createMessageBlock("Campo Produto &eacute; obrigat&oacute;rio", "#add-produto-servico-msg", "danger", "add-produto-servico-msg" + Utils.guid());
 			}

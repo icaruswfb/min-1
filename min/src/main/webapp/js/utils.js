@@ -56,11 +56,20 @@ Utils = {
 		var money = $(".mask-money");
 		for(var i = 0; i < money.length; i++){
 			var m = money[i];
-			var valor = $(m).val();
+			var valor = null;
+			if($(m).is("input")){
+				valor = $(m).val();
+			}else{
+				valor = $(m).html();
+			}
 			valor = valor.replace(".", "");
 			valor = valor.replace(",", ".");
 			valor = valor.replace("R$", "");
-			$(m).val(valor);
+			if($(m).is("input")){
+				$(m).val(valor);
+			}else{
+				$(m).html(valor);
+			}
 		}
 	}
 };

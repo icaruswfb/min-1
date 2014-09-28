@@ -1,12 +1,10 @@
 package br.com.min.controller;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.sql.rowset.serial.SerialArray;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -307,10 +305,12 @@ public class ClienteController {
 				vo.setCriticalError(true);
 				vo.addMessage(MessageVO.ERROR, "Todos os lançamentos de produto devem ter um produto vinculado.");
 			}
-			if( ! hasVendedorError && lancamentoProduto.getVendedor() == null){
-				hasVendedorError = true;
-				vo.setCriticalError(true);
-				vo.addMessage(MessageVO.ERROR, "Todos os lançamentos de produto devem ter um vendedor vinculado.");
+			if(lancamentoProduto.getRevenda() == true){
+				if( ! hasVendedorError && lancamentoProduto.getVendedor() == null){
+					hasVendedorError = true;
+					vo.setCriticalError(true);
+					vo.addMessage(MessageVO.ERROR, "Todos os lançamentos de produto de revenda devem ter um vendedor vinculado.");
+				}
 			}
 		}
 		
@@ -442,6 +442,7 @@ public class ClienteController {
 		lancamentoProduto.setProduto(produto);
 		lancamentoProduto.setValor(produto.getPrecoRevenda() * quantidade);
 		lancamentoProduto.setVendedor(vendedor);
+		lancamentoProduto.setRevenda(true);
 		
 		Comanda comanda = comandaService.findComandaAberta(clienteId);
 		lancamentoProduto.setComanda(comanda);
@@ -453,7 +454,6 @@ public class ClienteController {
 	
 	@RequestMapping(value="/addProdutoServico", method=RequestMethod.POST)
 	public @ResponseBody Comanda addProdutoServico(@RequestParam(required=true) Long produtoId, 
-																				@RequestParam(required=true)Long servicoId, 
 																				@RequestParam(required=true)Long quantidade, 
 																				@RequestParam(required=true)Long clienteId, HttpServletRequest request){
 		LancamentoProduto lancamentoProduto = new LancamentoProduto();
@@ -463,15 +463,11 @@ public class ClienteController {
 		lancamentoProduto.setDataCriacao(new Date());
 		lancamentoProduto.setProduto(produto);
 		lancamentoProduto.setValor(produto.getPrecoRevenda() * quantidade);
+		lancamentoProduto.setRevenda(false);
 		
 		Comanda comanda = comandaService.findComandaAberta(clienteId);
-		for(LancamentoServico servico : comanda.getServicos()){
-			if(servico.getId().equals(servicoId)){
-				servico.getProdutosUtilizados().add(lancamentoProduto);
-				break;
-			}
-		}
-		comanda = comandaService.addProdutoServico(lancamentoProduto, comanda, Utils.getUsuarioLogado(request).getPessoa());
+		lancamentoProduto.setComanda(comanda);
+		comanda = comandaService.addProduto(lancamentoProduto, comanda, Utils.getUsuarioLogado(request).getPessoa());
 		
 		return limparComandaJSON(comanda);
 	}

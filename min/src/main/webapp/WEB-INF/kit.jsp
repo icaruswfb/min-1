@@ -45,9 +45,11 @@
                 </div>
                 
                 <div class="clearfix"></div>
+                <%--
                 <div class="col-lg-12">
                 	<a class="btn btn-sm m-b-10" onclick="Kit.addServico()" >+ Adicionar serviço</a>
                 </div>
+                 --%>
                 <div class="w-100 float-left" id="bloco-servicos">
                 	<c:if test="${ kit.id ne null }">
                 		<c:forEach var="servicoKit" items="${ kit.servicos }" varStatus="index">
@@ -77,6 +79,7 @@
                 	</c:if>
                 </div>
                 
+                <div class="clearfix"></div>
 				<div class='w-100 float-left'>
 					<div class="col-md-12"><a class="btn btn-sm m-b-10" onclick="Kit.addProduto()" >+ Adicionar produto</a></div>
 				</div>

@@ -82,14 +82,6 @@ public class ComandaService {
 		return comanda;
 	}
 
-	public Comanda addProdutoServico(LancamentoProduto lancamentoProduto,
-			Comanda comanda, Pessoa usuarioLogado) {
-		comanda = persist(comanda, usuarioLogado);
-		
-		crearHistoricoLancamentoProduto(comanda, lancamentoProduto, usuarioLogado);
-		return comanda;
-	}
-	
 	private void crearHistoricoLancamentoProduto(Comanda comanda, LancamentoProduto lancamentoProduto, Pessoa usuarioLogado){
 		Historico historico = new Historico();
 		historico.setCliente(comanda.getCliente());

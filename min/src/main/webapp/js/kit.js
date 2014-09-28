@@ -128,6 +128,9 @@ Kit = {
             
             /* Overflow */
             $('.overflow').niceScroll();
+
+            $('.mask-number').mask('##0');
+            $('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
             
             return id;
 		}
@@ -171,6 +174,9 @@ Kit = {
         
         /* Overflow */
         $('.overflow').niceScroll();
+
+        $('.mask-number').mask('##0');
+        $('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
         return id;
 	},
 	

@@ -1194,7 +1194,7 @@ hr {
 }
 
 .modal-content, .dark {
-    background: rgba(0, 0, 0, 0.68);
+    background: rgba(0, 0, 0, 0.8);
     border: 0;
     color: #fff;
 }
@@ -1222,9 +1222,9 @@ hr {
 }
 
 .modal .btn, .elfinder-dialog .btn, .dark .btn {
-    font-size: 11px;
+    font-size: 15px;
     border: 1px solid rgba(255, 255, 255, 0.31);
-    padding: 2px 10px 3px;
+    padding: 7px 30px;
     background: none;
 }
 
@@ -2403,6 +2403,10 @@ a.list-group-item.active > .badge,
 	margin: 5px 10px 0 0;
 }
 
+.link{
+	cursor: pointer;
+}
+
 .acaoLancamento{
 	float: left;
 	margin: 30px 10px 0 0;
@@ -2645,6 +2649,10 @@ a.list-group-item.active > .badge,
 
 .float-left{
 	float: left;
+}
+
+.float-right{
+	float: right;
 }
 
 .add-kit{

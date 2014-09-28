@@ -23,6 +23,7 @@ public class LancamentoProduto {
 	private Pessoa vendedor;
 	private Boolean lancado;
 	private Double valor;
+	private Boolean revenda;
 	
 	public Long getId() {
 		return id;
@@ -94,5 +95,11 @@ public class LancamentoProduto {
 	}
 	public void setValor(Double valor) {
 		this.valor = valor;
+	}
+	public Boolean getRevenda() {
+		return revenda;
+	}
+	public void setRevenda(Boolean revenda) {
+		this.revenda = revenda;
 	}
 }
