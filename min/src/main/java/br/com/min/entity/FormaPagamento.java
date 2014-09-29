@@ -68,7 +68,17 @@ public enum FormaPagamento {
 			return true;
 		}
 	},
-	
+	Elo {
+		public boolean isParcelavel() {
+			return true;
+		}
+		public String getNome() {
+			return "Elo";
+		}
+		public boolean isCartaoCredito() {
+			return true;
+		}
+	},
 	Diners {
 		public boolean isParcelavel() {
 			return true;
@@ -107,7 +117,7 @@ public enum FormaPagamento {
 			return false;
 		}
 		public String getNome() {
-			return "CrÃ©dito";
+			return "Crédito";
 		}
 		public boolean isCartaoCredito() {
 			return false;

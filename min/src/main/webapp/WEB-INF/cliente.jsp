@@ -112,6 +112,44 @@
             
             
 					<div id="comandas" class="">
+						
+						<div class="modal fade " id="modalComandaKit" tabindex="-1" role="dialog" aria-hidden="true">
+		                     <div class="modal-dialog">
+		                         <div class="modal-content">
+		                             <div class="modal-header">
+		                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		                                 <h4 class="modal-title">Adicionar kit</h4>
+		                             </div>
+		                             <div class="modal-body">
+										<div class="listview list-container" id="add-kit-msg">
+						                </div>
+										<p>Preencha os dados do kit a ser adicionado</p>
+										<c:if test="${ ! hasRole['ADMIN'] }">
+											<p>Depois de lançado, só pode ser excluído por um administrador.</p>
+										</c:if>
+										<form action="" id="form-kit" method="post">
+										
+											<input type="hidden" name="clienteId" value="${ cliente.id }"/>
+							                 <label>Kit</label>
+							                 <select class="tag-select-limited form-control m-b-10" multiple name="kitId" onchange="Lancamento.buscarValorKit()" >
+							                 	<option value=""></option>
+							                 </select>
+							                 <div class="w-100 float-left m-t-10" id="descricao-kit">
+							                 </div>
+							                 <label class="m-t-10" >Valor</label>
+			                                <input type="text" class="form-control input-sm mask-money" name="valor" disabled="disabled" readonly="readonly"/>
+			                                
+										</form>
+		                             </div>
+		                             <div class="modal-footer">
+		                                 <button type="button" class="btn btn-lg" onclick="Lancamento.addKit(false)" >Lançar</button>
+		                                 <button type="button" class="btn btn-lg" onclick="Lancamento.addKit(true)" >Lançar e fechar</button>
+		                                 <button type="button" class="btn btn-lg" data-dismiss="modal" id="fechar-modal-kit">Fechar</button>
+		                             </div>
+		                         </div>
+		                     </div>
+		                 </div>
+					
 						<div class="modal fade " id="modalComandaServico" tabindex="-1" role="dialog" aria-hidden="true">
 		                     <div class="modal-dialog">
 		                         <div class="modal-content">
@@ -123,8 +161,8 @@
 										<div class="listview list-container" id="add-servico-msg">
 						                </div>
 										<p>Preencha os dados do serviço a ser adicionado</p>
-										<c:if test="${ ! hasRole[''] }">
-											<p>Depois de lançado um serviço só pode ser excluído por um administrador.</p>
+										<c:if test="${ ! hasRole['ADMIN'] }">
+											<p>Depois de lançado, um serviço só pode ser excluído por um administrador.</p>
 										</c:if>
 										<form action="" id="form-servico" method="post">
 										
@@ -147,8 +185,9 @@
 										</form>
 		                             </div>
 		                             <div class="modal-footer">
-		                                 <button type="button" class="btn btn-lg" onclick="Lancamento.addServico()" id="fechar-comanda-button">Lançar</button>
-		                                 <button type="button" class="btn btn-lg" data-dismiss="modal" id="fechar-modal-servico">Cancelar</button>
+		                                 <button type="button" class="btn btn-lg" onclick="Lancamento.addServico(false)" id="fechar-comanda-button">Lançar</button>
+		                                 <button type="button" class="btn btn-lg" onclick="Lancamento.addServico(true)" id="fechar-comanda-button">Lançar e fechar</button>
+		                                 <button type="button" class="btn btn-lg" data-dismiss="modal" id="fechar-modal-servico">Fechar</button>
 		                             </div>
 		                         </div>
 		                     </div>
@@ -188,8 +227,9 @@
 										</form>
 		                             </div>
 		                             <div class="modal-footer">
-		                                 <button type="button" class="btn btn-lg" onclick="Lancamento.addProduto()" >Lançar</button>
-		                                 <button type="button" class="btn btn-lg" data-dismiss="modal" id="fechar-modal-produto">Cancelar</button>
+		                                 <button type="button" class="btn btn-lg" onclick="Lancamento.addProduto(false)" >Lançar</button>
+		                                 <button type="button" class="btn btn-lg" onclick="Lancamento.addProduto(true)" >Lançar e fechar</button>
+		                                 <button type="button" class="btn btn-lg" data-dismiss="modal" id="fechar-modal-produto">Fechar</button>
 		                             </div>
 		                         </div>
 		                     </div>
@@ -224,8 +264,9 @@
 										</form>
 		                             </div>
 		                             <div class="modal-footer">
-		                                 <button type="button" class="btn btn-lg" onclick="Lancamento.addProdutoServico()" >Lançar</button>
-		                                 <button type="button" class="btn btn-lg" data-dismiss="modal" id="fechar-modal-produto-servico">Cancelar</button>
+		                                 <button type="button" class="btn btn-lg" onclick="Lancamento.addProdutoServico(false)" >Lançar</button>
+		                                 <button type="button" class="btn btn-lg" onclick="Lancamento.addProdutoServico(true)" >Lançar e fechar</button>
+		                                 <button type="button" class="btn btn-lg" data-dismiss="modal" id="fechar-modal-produto-servico">Fechar</button>
 		                             </div>
 		                         </div>
 		                     </div>

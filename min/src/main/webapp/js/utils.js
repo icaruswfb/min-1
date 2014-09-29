@@ -71,5 +71,15 @@ Utils = {
 				$(m).html(valor);
 			}
 		}
+	},
+	
+	modalLoading:function(){
+		$(".modal-footer button").hide(100);
+		$(".modal-footer").append("<img class='modal-loading' src='/min/img/media-player/loading.gif'alt='carregando' />");
+	},
+	
+	modalLoadingFinish: function(){
+		$(".modal-loading").hide(100);
+		$(".modal-footer button").show(100);
 	}
 };

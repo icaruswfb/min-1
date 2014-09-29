@@ -2,10 +2,21 @@ Comanda = {
 	hasRoleCaixa: false,
 	hasRoleOperacional: false,
 	hasRoleAdmin: false,
+	kits:[],
 	servicos : [],
 	produtos: [],
 	funcionarios: [],
 	comandas:[],
+	findKits: function(){
+		$.ajax({
+			url: '/min/web/kits/listar',
+			type: 'GET',
+			success: function(kits){
+				Comanda.kits = kits;
+				Lancamento.preencherKits(kits);
+			}
+		});
+	},
 	findServicos: function(){
 		$.ajax({
 			url: '/min/web/servicos/listar',
@@ -41,6 +52,7 @@ Comanda = {
 		Comanda.findFuncionarios();
 		Comanda.findProdutos();
 		Comanda.findServicos();
+		Comanda.findKits();
 		Comanda.checkDados();
 	},
 	checkDados:function(){
@@ -150,7 +162,7 @@ Comanda = {
 		form += "</div>";
 		form += "<div class='float-right'>";
 		form += "<strong class='m-r-10' >R$<span class='mask-money valorServico' >"+new Number(lancamentoServico.valor).toFixed(2)+"</span></strong>";
-		if(Comanda.hasRoleAdmin){
+		if(!readOnly && Comanda.hasRoleAdmin){
 			form += '<a href="javascript:Lancamento.deleteServico(\''+lancamentoServico.id+'\')" title="" class="m-l-10 float-right" >';
 			form += '<i class="sa-list-delete"></i></a>';
 		}
@@ -268,7 +280,7 @@ Comanda = {
 		form += "<div class='float-right'>";
 		
 		form += 		"<strong class='m-r-10' >R$<span class='mask-money valorProduto' >"+((lancamentoProduto.valor).toFixed(2))+"</span></strong>";
-		if(Comanda.hasRoleAdmin){
+		if(!readOnly && Comanda.hasRoleAdmin){
 			form += '<a href="javascript:Lancamento.deleteProduto(\''+lancamentoProduto.id+'\')" title="" class="m-l-10 float-right" >';
 			form += '<i class="sa-list-delete"></i></a>';
 		}
@@ -289,7 +301,7 @@ Comanda = {
 		form += "</div>";
 		form += "<div class='float-right'>";
 		form += 		"<strong class='m-r-10' >R$<span class='mask-money valorProdutoServico' >"+((lancamentoProduto.valor).toFixed(2))+"</span></strong>";
-		if(Comanda.hasRoleAdmin){
+		if(!readOnly && Comanda.hasRoleAdmin){
 			form += '<a href="javascript:Lancamento.deleteProduto(\''+lancamentoProduto.id+'\')" title="" class="m-l-10 float-right" >';
 			form += '<i class="sa-list-delete"></i></a>';
 		}
@@ -356,14 +368,21 @@ Comanda = {
 		info += botoes;
 		//Servicos
 		info+='<div class="clearfix"></div>';
-		
+		//Kits
+		if(isComandaAberta){
+			info += "<div class='col-md-12'>";
+			info += "<a class='btn btn-lg m-b-10 m-t-10' data-toggle='modal' href='#modalComandaKit' >Adicionar kit...</a>";
+			info += "</div>";
+		}
 		info += "<div class='col-md-12' style='z-index: 100;'>";
 		info += 	"<div class='tile'>";
-		info += 	"<div class='tile-title link' data-toggle='modal' href='#modalComandaServico'><div class='comanda-title'>Sevi&ccedil;os</div>";
 		if(isComandaAberta){
+			info += 	"<div class='tile-title link' data-toggle='modal' href='#modalComandaServico'><div class='comanda-title'>Sevi&ccedil;os</div>";
 			//info += '<a href="javascript:Comanda.appendLinhaServico(Comanda.criarLinhaServico(null, null, '+comanda.id+'))" title="Add" class="tooltips" style="float: right;">';
 			info += '<a title="Add" class="tooltips" style="float: right;" data-toggle="modal" href="#modalComandaServico" id="linkModalComandaServico" style="display: none" onclick="Lancamento.limparServico()">';
 			info +=  '<i class="sa-list-add"></i></a>';
+		}else{
+			info += 	"<div class='tile-title'><div class='comanda-title'>Sevi&ccedil;os</div>";
 		}
 		info +=  "</div>";
 		info += "<div class='bloco-servicos listview narrow'>";
@@ -381,12 +400,13 @@ Comanda = {
 		info+='<div class="clearfix"></div>';
 		info += "<div class='col-md-12' style='z-index: 100;'>";
 		info += "<div class='tile'>";
-		info += "<div class='tile-title link' data-toggle='modal' href='#modalComandaProdutoServico'>";
-		info += "<div class='comanda-title'  >Produtos</div>";
 		if(isComandaAberta){
+			info += "<div class='tile-title link' data-toggle='modal' href='#modalComandaProdutoServico'><div class='comanda-title'  >Produtos</div>";
 			//info += '<a href="javascript:Comanda.appendLinhaProduto(Comanda.criarLinhaProduto(null, null, '+comanda.id+'))" title="Add" class="tooltips" style="float: right;">';
 			info += '<a title="Add" class="tooltips" style="float: right;" data-toggle="modal" href="#modalComandaProdutoServico" id="linkModalComandaProdutoSerivo" style="display: none" onclick="Lancamento.limparProdutoServico()">';
 			info +=  '<i class="sa-list-add"></i></a>';
+		}else{
+			info += "<div class='tile-title'><div class='comanda-title'  >Produtos</div>";
 		}
 		info +=  "</div>";
 		info += "<div class='bloco-produtos listview narrow'>";
@@ -405,12 +425,13 @@ Comanda = {
 		info+='<div class="clearfix"></div>';
 		info += "<div class='col-md-12' style='z-index: 100;'>";
 		info += "<div class='tile'>";
-		info += "<div class='tile-title link' data-toggle='modal' href='#modalComandaProduto'>";
-		info += "<div class='comanda-title'>Produtos de revenda</div>";
 		if(isComandaAberta){
+			info += "<div class='tile-title link' data-toggle='modal' href='#modalComandaProduto'><div class='comanda-title'>Produtos de revenda</div>";
 			//info += '<a href="javascript:Comanda.appendLinhaProduto(Comanda.criarLinhaProduto(null, null, '+comanda.id+'))" title="Add" class="tooltips" style="float: right;">';
 			info += '<a title="Add" class="tooltips" style="float: right;" data-toggle="modal" href="#modalComandaProduto" id="linkModalComandaProduto" style="display: none" onclick="Lancamento.limparProduto()">';
 			info +=  '<i class="sa-list-add"></i></a>';
+		}else{
+			info += "<div class='tile-title'><div class='comanda-title'>Produtos de revenda</div>";
 		}
 		info +=  "</div>";
 		info += "<div class='bloco-revenda listview narrow'>";
@@ -436,6 +457,12 @@ Comanda = {
 		
 		//Totais
 
+
+		info+='<div class="clearfix"></div>';
+		info += "<div class='w-100 float-left'>";
+		info += "<p class='total'>Total: <strong>R$<span class='m-b-10 mask-money valorTotal' id='valorTotal-"+comanda.id+"' >"+ new Number((comanda.valorTotal ? comanda.valorTotal : 0)).toFixed(2)+"</span></strong></p>";
+		info += "</div>";
+
 		info+='<div class="clearfix"></div>';
 		info += "<div class='w-100 float-left'>";
 		info += "<div class='float-right' >";
@@ -445,12 +472,6 @@ Comanda = {
 						"onblur='Lancamento.lancarDesconto()' style='width: 100px; ' />";
 		info += "</div>";
 		info += "</div>";
-
-		info+='<div class="clearfix"></div>';
-		info += "<div class='w-100 float-left'>";
-		info += "<p class='total'>Total: <strong>R$<span class='m-b-10 mask-money valorTotal' id='valorTotal-"+comanda.id+"' >"+ new Number((comanda.valorTotal ? comanda.valorTotal : 0)).toFixed(2)+"</span></strong></p>";
-		info += "</div>";
-
 
 		info+='<div class="clearfix"></div>';
 		info += "<div class='w-100 float-left'>";
@@ -698,7 +719,7 @@ Comanda = {
 		form += "</div>";
 		form += "<div class='float-right'>";
 		form += 		"<strong class='m-r-10' >R$<span class='mask-money' >"+((produtoUtilizado.valor).toFixed(2))+"</span></strong>";
-		if(Comanda.hasRoleAdmin){
+		if(!readonly && Comanda.hasRoleAdmin){
 			form += '<a href="javascript:Lancamento.deleteProduto(\''+produtoUtilizado.id+'\')" title="" class="m-l-10 float-right" >';
 			form += '<i class="sa-list-delete"></i></a>';
 		}

@@ -20,6 +20,7 @@ import br.com.min.dao.ProdutoDAO;
 import br.com.min.entity.Comanda;
 import br.com.min.entity.Comissao;
 import br.com.min.entity.Historico;
+import br.com.min.entity.Kit;
 import br.com.min.entity.LancamentoComissao;
 import br.com.min.entity.LancamentoEstoque;
 import br.com.min.entity.LancamentoProduto;
@@ -27,6 +28,7 @@ import br.com.min.entity.LancamentoServico;
 import br.com.min.entity.Pagamento;
 import br.com.min.entity.Pessoa;
 import br.com.min.entity.Produto;
+import br.com.min.entity.ProdutoQuantidade;
 import br.com.min.entity.TipoComissao;
 import br.com.min.entity.TipoLancamentoEstoque;
 import br.com.min.utils.Utils;
@@ -69,6 +71,23 @@ public class ComandaService {
 		historico.setCriador(usuarioLogado);
 		historico.setTextoPequeno(Utils.dateTimeFormat.format(historico.getData()) + " - por "+usuarioLogado.getNome());
 		genericDao.persist(historico);
+		return comanda;
+	}
+	
+	public Comanda addKit(Kit kit, Comanda comanda, Pessoa usuarioLogado){
+		for(ProdutoQuantidade produtoQuantidade : kit.getProdutos()){
+			LancamentoProduto lancamentoProduto = new LancamentoProduto();
+			lancamentoProduto.setComanda(comanda);
+			lancamentoProduto.setDataCriacao(new Date());
+			lancamentoProduto.setProduto(produtoQuantidade.getProduto());
+			lancamentoProduto.setQuantidadeUtilizada(produtoQuantidade.getQuantidade());
+			lancamentoProduto.setRevenda(false);
+			lancamentoProduto.setValor(produtoQuantidade.getProduto().getPrecoRevenda() * produtoQuantidade.getQuantidade());
+			comanda.getProdutos().add(lancamentoProduto);
+
+			crearHistoricoLancamentoProduto(comanda, lancamentoProduto, usuarioLogado);
+		}
+		comanda = persist(comanda, usuarioLogado);
 		return comanda;
 	}
 	

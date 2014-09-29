@@ -22,15 +22,18 @@ import br.com.min.entity.Comanda;
 import br.com.min.entity.FluxoPagamento;
 import br.com.min.entity.FormaPagamento;
 import br.com.min.entity.Historico;
+import br.com.min.entity.Kit;
 import br.com.min.entity.LancamentoProduto;
 import br.com.min.entity.LancamentoServico;
 import br.com.min.entity.Pagamento;
 import br.com.min.entity.Pessoa;
 import br.com.min.entity.Produto;
+import br.com.min.entity.ProdutoQuantidade;
 import br.com.min.entity.Role;
 import br.com.min.entity.Servico;
 import br.com.min.service.ComandaService;
 import br.com.min.service.HistoricoService;
+import br.com.min.service.KitService;
 import br.com.min.service.PessoaService;
 import br.com.min.service.ProdutoService;
 import br.com.min.service.ServicoService;
@@ -50,6 +53,8 @@ public class ClienteController {
 	private ServicoService servicoService;
 	@Autowired
 	private ProdutoService produtoService;
+	@Autowired
+	private KitService kitService;
 	
 	@RequestMapping("/")
 	public ModelAndView listar(){
@@ -398,6 +403,16 @@ public class ClienteController {
 			comanda.setDesconto(desconto);
 			comandaService.persist(comanda, Utils.getUsuarioLogado(request).getPessoa());
 		}
+		return limparComandaJSON(comanda);
+	}
+	@RequestMapping(value="/addKit", method=RequestMethod.POST)
+	public @ResponseBody Comanda addKit(@RequestParam(required=true)Long kitId, 
+																		@RequestParam(required=true) Long clienteId, HttpServletRequest request){
+		Kit kit = kitService.findById(kitId);
+		Comanda comanda = comandaService.findComandaAberta(clienteId);
+
+		comanda = comandaService.addKit(kit, comanda, Utils.getUsuarioLogado(request).getPessoa());
+		
 		return limparComandaJSON(comanda);
 	}
 	

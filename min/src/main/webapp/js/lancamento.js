@@ -1,6 +1,6 @@
 Lancamento = {
 		limparServico: function(){
-			$("#form-servico select[name='servicoId']").val("");
+			$(".search-choice-close").click();
 			$("#form-servico select[name='funcionarioId']").val("");
 			$("#form-servico select[name='assistenteId']").val("");
 			$("#form-servico input[name='valor']").val("");
@@ -8,7 +8,7 @@ Lancamento = {
 		},
 		
 		limparProduto: function(){
-			$("#form-produto select[name='produtoId']").val("");
+			$(".search-choice-close").click();
 			$("#form-produto select[name='vendedorId']").val("");
 			$("#form-produto input[name='quantidade']").val("");
 			$("#form-produto input[name='valor']").val("");
@@ -16,12 +16,21 @@ Lancamento = {
 		},
 		
 		limparProdutoServico: function(){
-			$("#form-produto-servico select[name='produtoId']").val("");
+			$(".search-choice-close").click();
 			$("#form-produto-servico input[name='quantidade']").val("");
 			$("#form-produto-servico input[name='valor']").val("");
 			$("#add-produto-servico-msg").html("");
 		},
-		
+		limparKit: function(){
+			$(".search-choice-close").click();
+			$("#form-kit input[name='valor']").val("");
+			$("#add-kit-msg").html("");
+		},
+		preencherKits:function(kits){
+			$.each(kits, function(index, kit){
+				$("#form-kit select[name='kitId']").append("<option value='"+kit.id+"'>" + kit.nome + "</option>");
+			});
+		},
 		preencherServicos: function(servicos){
 			$.each(servicos, function(index, servico){
 				$("#form-servico select[name='servicoId']").append("<option value='"+servico.id+"'>" + servico.nome + "</option>");
@@ -46,7 +55,64 @@ Lancamento = {
 
 		},
 		
-		addServico:function(){
+		buscarValorKit:function(){
+			var kitId = $("#form-kit select[name='kitId']").val();
+			$("#descricao-kit").html("");
+			if(kitId != null){
+				for(var i = 0; i < Comanda.kits.length; i++){
+					var kit = Comanda.kits[i];
+					if(kitId == kit.id){
+						var valor = 0;
+						$.each(kit.produtos, function(index, produto){
+							var preco = new Number(produto.produto.precoRevenda * produto.quantidade );
+							valor += preco;
+							var html = "<p>" + produto.produto.nome + ", " + produto.quantidade + "" + produto.produto.unidade + " no valor de R$<span class='mask-money'>"+new Number(preco).toFixed(2)+"</span></p>";
+							$("#descricao-kit").append(html);
+						});
+						$("#form-kit input[name='valor']").val(new Number(valor).toFixed(2));
+						$('#form-kit .mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
+						break;
+					}
+				}
+			}else{
+				$("#form-kit input[name='valor']").val("0,00");
+			}
+		},
+		
+		addKit:function(fechar){
+			Utils.modalLoading();
+			$("#add-kit-msg").html("");
+			var hasError = false;
+			if($("#form-kit select[name='kitId']").val() == '' || $("#form-kit select[name='kitId']").val() == null){
+				hasError = true;
+				Utils.createMessageBlock("Campo kit &eacute; obrigat&oacute;rio", "#add-kit-msg", "danger", "add-kit-msg" + Utils.guid());
+			}
+			if( hasError){
+				Utils.modalLoadingFinish();
+				return false;
+			}
+
+			if(fechar){
+				$("#fechar-modal-kit").click();
+			}
+			$.ajax({
+				url: '/min/web/clientes/addKit',
+				type: 'POST',
+				data: $("#form-kit").serialize(),
+				success: function(comanda){
+					Comanda.criarFormComanda(comanda);
+					Comanda.preencherDadosComanda(comanda);
+			        $('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
+
+					Lancamento.limparServico();
+				},
+				complete:function(){
+					Utils.modalLoadingFinish();
+				}
+			});
+		},
+		addServico:function(fechar){
+			Utils.modalLoading();
 			$("#add-servico-msg").html("");
 			var hasError = false;
 			if($("#form-servico select[name='servicoId']").val() == '' || $("#form-servico select[name='servicoId']").val() == null){
@@ -58,9 +124,13 @@ Lancamento = {
 				hasError = true;
 			}
 			if( hasError){
+				Utils.modalLoadingFinish();
 				return false;
 			}
-			$("#fechar-modal-servico").click();
+
+			if(fechar){
+				$("#fechar-modal-servico").click();
+			}
 			$.ajax({
 				url: '/min/web/clientes/addServico',
 				type: 'POST',
@@ -69,6 +139,11 @@ Lancamento = {
 					Comanda.criarFormComanda(comanda);
 					Comanda.preencherDadosComanda(comanda);
 			        $('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
+
+					Lancamento.limparServico();
+				},
+				complete:function(){
+					Utils.modalLoadingFinish();
 				}
 			});
 		},
@@ -87,7 +162,8 @@ Lancamento = {
 			}
 		},
 		
-		addProduto:function(){
+		addProduto:function(fechar){
+			Utils.modalLoading();
 			$("#add-produto-msg").html("");
 			var hasError = false;
 			if($("#form-produto select[name='produtoId']").val() == '' || $("#form-produto select[name='produtoId']").val() == null){
@@ -103,9 +179,12 @@ Lancamento = {
 				hasError = true;
 			}
 			if( hasError){
+				Utils.modalLoadingFinish();
 				return false;
 			}
-			$("#fechar-modal-produto").click();
+			if(fechar){
+				$("#fechar-modal-produto").click();
+			}
 			$.ajax({
 				url: '/min/web/clientes/addProduto',
 				type: 'POST',
@@ -114,6 +193,11 @@ Lancamento = {
 					Comanda.criarFormComanda(comanda);
 					Comanda.preencherDadosComanda(comanda);
 			        $('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
+
+					Lancamento.limparProduto();
+				},
+				complete:function(){
+					Utils.modalLoadingFinish();
 				}
 			});
 		},
@@ -132,7 +216,8 @@ Lancamento = {
 			}
 		},
 		
-		addProdutoServico:function(){
+		addProdutoServico:function(fechar){
+			Utils.modalLoading();
 			$("#add-produto-servico-msg").html("");
 			var hasError = false;
 			if($("#form-produto-servico select[name='produtoId']").val() == '' || $("#form-produto-servico select[name='produtoId']").val() == null){
@@ -144,9 +229,13 @@ Lancamento = {
 				hasError = true;
 			}
 			if( hasError){
+				Utils.modalLoadingFinish();
 				return false;
 			}
-			$("#fechar-modal-produto-servico").click();
+
+			if(fechar){
+				$("#fechar-modal-produto-servico").click();
+			}
 			$.ajax({
 				url: '/min/web/clientes/addProdutoServico',
 				type: 'POST',
@@ -155,6 +244,11 @@ Lancamento = {
 					Comanda.criarFormComanda(comanda);
 					Comanda.preencherDadosComanda(comanda);
 			        $('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
+
+					Lancamento.limparProdutoServico();
+				},
+				complete:function(){
+					Utils.modalLoadingFinish();
 				}
 			});
 		},

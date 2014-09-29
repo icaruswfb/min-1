@@ -182,12 +182,11 @@ Kit = {
 	
 	submit:function(){
 		Utils.unmaskMoney();
-		var valor = $("#valor").val();
-		if(valor == "" || valor == null){
-			Utils.showError("O campo Pre&ccedil;o Sugerido &eacute; obrigat&oacute;rio.");
+		var nome = $("#nome").val();
+		if(nome == "" || nome == null){
+			Utils.showError("O campo Nome &eacute; obrigat&oacute;rio.");
 		}else{
 			Kit.calcularValor();
-			Kit.entity.valor = valor;
 			$.ajax({
 				url: "/min/web/kits/salvar",
 				type: 'POST',

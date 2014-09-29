@@ -37,9 +37,11 @@
                  <div class="col-lg-12">
                  	<form:input path="nome" cssClass="form-control input-lg m-b-10" placeholder="Nome" id="nome"/>
                 </div>
+                <%--
                 <div class="col-lg-2">
                  	<input name="valor" class="form-control m-b-10 mask-money" id="valor" placeholder="Preço sugerido" value="<fmt:formatNumber minFractionDigits="2" value="${ kit.valor }" />"/>
                 </div>
+                 --%>
                 <div class="col-lg-2">
                  	<p class="m-t-10">Soma total: R$<span id="preco" class="mask-money">0,00</span></p>
                 </div>

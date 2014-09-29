@@ -42,6 +42,12 @@ public class KitController {
 		return list(service.listar(), null, request);
 	}
 
+	@RequestMapping(value="/listar", method=RequestMethod.GET)
+	public @ResponseBody List<Kit> listarKits(HttpServletRequest request){
+		List<Kit> result = service.listar();
+		return result;
+	}
+
 	private ModelAndView list(List<Kit> lista, String pesquisa, HttpServletRequest request){
 		ModelAndView mv = new ModelAndView("kits");
 		if( Utils.hasRole(Role.ADMIN, request)){
