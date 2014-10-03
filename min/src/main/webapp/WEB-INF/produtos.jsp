@@ -21,6 +21,20 @@
 		<section id="content" class="container">
 
 			<h4 class="page-title">PRODUTOS</h4>
+			<div class="block-area" id="pesquisa-produtos">
+				<form action="/min/web/produtos/pesquisar" id="form-pesquisa-produto" method="post">
+	                 <div class="col-lg-9">
+	                 	<input class="form-control input-lg m-b-10" placeholder="Pesquisar..." onblur="$('#form-pesquisa-produto').submit();" name="pesquisa" value="${ pesquisa }" />
+	                 </div>
+	                 <div class="col-lg-3">
+	                 	<select class="form-control input-lg m-b-10" onchange="$('#form-pesquisa-produto').submit();" name="categoriaProduto">
+	                 		<option></option>
+	                		<option value="SALAO" <c:if test="${ categoria == 'SALAO' }">selected="selected"</c:if> >Salão</option>
+	                		<option value="LOJA" <c:if test="${ categoria == 'LOJA' }">selected="selected"</c:if> >Loja</option>
+	                 	</select>
+	                 </div>
+				</form>
+             </div>
 			<div class="block-area" id="buttons">
                  <a href="<spring:url value='/web/produtos/novo/p' />">
 	                 <button class="btn m-r-5" >Novo produto</button>

@@ -220,14 +220,13 @@ Agenda = {
 					if(h < terminoHora){
 						minutosFim = 60;
 					}
-					for(var m = minutosInicio;m <= minutosFim; m++){
+					for(var m = minutosInicio;m < minutosFim; m++){
 						var minClass = Agenda.getStringClassMinutos( m, primeiro );
 						var classDivInicio = "h-" + h + "-" + minClass + "-" + indexFuncionario;
 						var divHorario = $("." + classDivInicio);
 						divHorario.attr('onclick', '');
 						if(primeiro){
 							Agenda.criarTooltip(horario, divHorario);
-							
 							primeiro = false;
 						}else{
 							divHorario.css("background-color", (Agenda.funcionarios[indexFuncionario].cor ? Agenda.funcionarios[indexFuncionario].cor : "#f0f0f0"));

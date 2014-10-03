@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import br.com.min.controller.vo.EstoqueVO;
+import br.com.min.entity.CategoriaProduto;
 import br.com.min.entity.LancamentoEstoque;
 import br.com.min.entity.Produto;
 import br.com.min.entity.Role;
@@ -30,7 +31,7 @@ public class ProdutoController {
 	
 	@RequestMapping("/")
 	public ModelAndView listar(HttpServletRequest request){
-		return list(service.listar(), null, request);
+		return list(service.listar(), null, null, request);
 	}
 
 	@RequestMapping(value="/listar", method=RequestMethod.GET)
@@ -38,11 +39,18 @@ public class ProdutoController {
 		return service.listar();
 	}
 	
-	private ModelAndView list(List<Produto> lista, String pesquisa, HttpServletRequest request){
+	@RequestMapping(value="/pesquisar", method=RequestMethod.POST)
+	public ModelAndView pesquisar(String pesquisa, CategoriaProduto categoriaProduto, HttpServletRequest request){
+		List<Produto> lista = service.search(pesquisa, categoriaProduto);
+		return list(lista, pesquisa, categoriaProduto, request);
+	}
+	
+	private ModelAndView list(List<Produto> lista, String pesquisa, CategoriaProduto categoriaProduto, HttpServletRequest request){
 		ModelAndView mv = new ModelAndView("produtos");
 		if(Utils.hasRole(Role.ADMIN, request)){
 			mv.addObject("produtos", lista);
 			mv.addObject("pesquisa", pesquisa);
+			mv.addObject("categoria", categoriaProduto);
 		}
 		return mv;
 	}

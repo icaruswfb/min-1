@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.min.dao.GenericDAO;
 import br.com.min.dao.ProdutoDAO;
+import br.com.min.entity.CategoriaProduto;
 import br.com.min.entity.LancamentoEstoque;
 import br.com.min.entity.Produto;
 import br.com.min.entity.SituacaoEstoque;
@@ -51,7 +52,7 @@ public class ProdutoService {
 	public void delete(Long id) {
 		Produto entity = new Produto();
 		entity.setId(id);
-		genericDao.delete(entity);
+		dao.delete(entity);
 	}
 	
 	public LancamentoEstoque addEstoque(Long produtoId, Long quantidade, TipoLancamentoEstoque tipo){
@@ -107,5 +108,13 @@ public class ProdutoService {
 		List<LancamentoEstoque> estoques = dao.findLancamentoEstoquePorProduto(produtoId);
 		Produto produto = this.findById(produtoId);
 		this.atualizarSituacaoEstoque(produto, estoques);
+	}
+
+	public List<Produto> search(String pesquisa,
+			CategoriaProduto categoriaProduto) {
+		Produto entity = new Produto();
+		entity.setCategoria(categoriaProduto);
+		entity.setNome(pesquisa);
+		return dao.find(entity);
 	}
 }

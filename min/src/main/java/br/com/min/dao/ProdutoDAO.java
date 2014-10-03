@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import br.com.min.entity.LancamentoEstoque;
 import br.com.min.entity.Produto;
-import br.com.min.entity.SituacaoEstoque;
+import br.com.min.entity.TipoLancamentoEstoque;
 
 @Repository
 public class ProdutoDAO {
@@ -38,6 +39,9 @@ public class ProdutoDAO {
 			if(entity.getSituacaoEstoque() != null){
 				criteria.add(Restrictions.eq("situacaoEstoque", entity.getSituacaoEstoque()));
 			}
+			if(entity.getCategoria() != null){
+				criteria.add(Restrictions.eq("categoria", entity.getCategoria()));
+			}
 			Criterion[] predicatesArray = new Criterion[predicates.size()];
 			predicatesArray = predicates.toArray(predicatesArray);
 			criteria = criteria.add(Restrictions.or(predicatesArray));
@@ -58,4 +62,13 @@ public class ProdutoDAO {
 		return lancamentos;
 	}
 	
+	public void delete(Produto produto){
+		Session session = sessionFactory.openSession();
+		Query query = session.createQuery("delete from LancamentoEstoque l where l.produto.id = " + produto.getId());
+		query.executeUpdate();
+		session.delete(produto);
+		session.flush();
+		session.close();
+	}
+
 }
