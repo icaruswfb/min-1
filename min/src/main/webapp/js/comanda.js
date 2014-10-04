@@ -469,7 +469,7 @@ Comanda = {
 		info += "<span style='font-size: 20px'>Descontos: </span>";
 		info += "<input class='form-control input-sm m-b-10 mask-money float-right m-l-10' id='descontos-"+comanda.id+"' " +
 						"name='descontos' value='"+new Number((comanda.desconto ? comanda.desconto : 0)).toFixed(2)+"' " +
-						"onchange='Lancamento.lancarDesconto()' style='width: 100px; ' />";
+						"onblur='Lancamento.lancarDesconto()' style='width: 100px; ' />";
 		info += "</div>";
 		info += "</div>";
 
