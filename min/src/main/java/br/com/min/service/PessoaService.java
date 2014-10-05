@@ -25,12 +25,12 @@ public class PessoaService {
 	private ImagemDAO imagemDao;
 
 	@Transactional
-	public void persist(Pessoa pessoa){
+	public Pessoa persist(Pessoa pessoa){
 		if(pessoa.getImagem() != null){
 			Imagem imagem = imagemDao.findById(pessoa.getImagem().getId());
 			pessoa.setImagem(imagem);
 		}
-		genericDao.persist(pessoa);
+		return (Pessoa) genericDao.persist(pessoa);
 //		if(pessoa.getImagem() != null){
 //			imagemDao.deletarNaoUtilizados();
 //		}

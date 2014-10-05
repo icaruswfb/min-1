@@ -47,7 +47,7 @@
 			                                </div>
 			                                <div class="horario-trabalho">
 								                 <label>Cliente</label>
-								                 <select data-placeholder="Selecionar cliente..." class="tag-select-limited" multiple="multiple" id="cliente-select">
+								                 <select data-placeholder="Selecionar cliente..." class="tag-select-limited" multiple="multiple" id="cliente-select" >
 								                 	<c:forEach var="cliente" items="${ pessoas }">
 								                 		<c:if test="${ cliente.funcionario eq false }">
 									                 		<option value="${ cliente.id }">${ cliente.nome } [${cliente.id }]</option>
@@ -65,12 +65,7 @@
 						                    </select>
 						            
 						                 <label class="m-t-10">Horário</label>
-						                 <div class="input-icon datetime-pick time-only">
-			                                <input data-format="hh:mm" type="text" class="form-control input-sm" id="horario-inicio-agenda"/>
-			                                <span class="add-on">
-			                                    <i class="sa-plus"></i>
-			                                </span>
-			                            </div>
+			                                <input type="text" class="form-control input-sm mask-hhmm" id="horario-inicio-agenda"/>
 			                            <div class="horario-trabalho">
 							                 <label class="m-t-10">Serviços</label>
 							                  <select data-placeholder="Selecionar serviços..." class="tag-select" multiple="multiple" id="servico-select" onchange="Agenda.calcularHorario()">
@@ -80,12 +75,7 @@
 						                    </select>
 			                            </div>
 						                 <label class="m-t-10">Horário de término</label>
-						                 <div class="input-icon datetime-pick time-only">
-			                                <input data-format="hh:mm" type="text" class="form-control input-sm" id="horario-fim-agenda"/>
-			                                <span class="add-on">
-			                                    <i class="sa-plus"></i>
-			                                </span>
-			                            </div>
+			                                <input type="text" class="form-control input-sm mask-hhmm" id="horario-fim-agenda"/>
 			                            
 					                    <label class="m-t-10">Observações</label>
 					                    <textarea class="form-control overflow" rows="3"  id="observacao"></textarea>
@@ -147,12 +137,15 @@
 	                    });
 	                    /* Overflow */
 	                    $('.overflow').niceScroll();
+
+	                    $("#cliente_select_chzn input").blur(function(){Agenda.verificarCliente()});	                    
 	                })();
 	                $(window).load(function(){
 							Agenda.selecionarData();
 		                });
 
 	                
+	        		$(".mask-hhmm").mask("##:##");
 	                <c:forEach var="servico" items="${ servicos }">
 	                	Agenda.servicos[${servico.id}] = {
 								id: ${servico.id},

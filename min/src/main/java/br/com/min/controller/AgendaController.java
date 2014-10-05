@@ -1,5 +1,6 @@
 package br.com.min.controller;
 
+import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -8,6 +9,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -162,13 +164,26 @@ public class AgendaController {
 	
 	@RequestMapping(value="/agendar", method=RequestMethod.POST)
 	@ResponseBody()
-	public String agendar(Long clienteId, Long funcionarioId, String inicio, String termino, String  servicosId, String observacao, Boolean folga){
+	public String agendar(String clienteStr, Long funcionarioId, String inicio, String termino, String  servicosId, String observacao, Boolean folga){
 		 try {
+			 String result = "ok";
 			 Horario horario = new Horario();
 			 horario.setFolga(folga);
+			 horario.setObservacao(observacao);
 			 if( ! horario.getFolga()){
-				 Pessoa cliente = pessoaService.findById(clienteId);
-				 horario.setCliente(cliente);
+				 try{
+					 Long clienteId = Long.parseLong(clienteStr); 
+					 Pessoa cliente = pessoaService.findById(clienteId);
+					 horario.setCliente(cliente);
+				 }catch(Exception e){
+					 Pessoa novoCliente = new Pessoa();
+					 novoCliente.setNome(clienteStr);
+					 novoCliente.setFuncionario(false);
+					 novoCliente = pessoaService.persist(novoCliente);
+					 horario.setCliente(novoCliente);
+					 horario.setObservacao("É preciso completar o cadastro deste cliente. " + horario.getObservacao());
+					 result = "refresh";
+				 }
 				 horario.getServicos().addAll(findServicos(servicosId));
 			 }
 			 Pessoa funcionario = pessoaService.findById(funcionarioId);
@@ -179,15 +194,36 @@ public class AgendaController {
 			if(dataInicioCalendar.get(Calendar.HOUR_OF_DAY) < 8){
 				dataInicioCalendar.set(Calendar.HOUR_OF_DAY, 8);
 				dataInicioCalendar.set(Calendar.MINUTE, 0);
-				dataInicio = dataInicioCalendar.getTime();
 			}
+			if(dataInicioCalendar.get(Calendar.HOUR_OF_DAY) > 20){
+				dataInicioCalendar.set(Calendar.HOUR_OF_DAY, 20);
+				dataInicioCalendar.set(Calendar.MINUTE, 0);
+			}
+			dataInicio = dataInicioCalendar.getTime();
+			
 			Date dataTermino = Utils.dateTimeFormat.parse(termino);
+			Calendar dataTerminoCalendar = Calendar.getInstance();
+			dataTerminoCalendar.setTime(dataTermino);
+			
+			if(dataTerminoCalendar.get(Calendar.HOUR_OF_DAY) < 8){
+				dataTerminoCalendar.set(Calendar.HOUR_OF_DAY, 8);
+				dataTerminoCalendar.set(Calendar.MINUTE, 0);
+			}
+			if(dataTerminoCalendar.get(Calendar.HOUR_OF_DAY) > 20){
+				dataTerminoCalendar.set(Calendar.HOUR_OF_DAY, 20);
+				dataTerminoCalendar.set(Calendar.MINUTE, 0);
+			}
+			dataTerminoCalendar.set(Calendar.DAY_OF_YEAR, dataInicioCalendar.get(Calendar.DAY_OF_YEAR));
+			if(dataTerminoCalendar.before(dataInicioCalendar)){
+				throw new RuntimeException("O horário termina antes do início");
+			}
+			dataTermino = dataTerminoCalendar.getTime();
+			
 			horario.setInicio(dataInicio);
 			horario.setTermino(dataTermino);
-			horario.setObservacao(observacao);
 			verificarDisponibilidade(horario);
 			horarioService.persist(horario);
-			return "ok";
+			return result;
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
 		}
@@ -195,10 +231,13 @@ public class AgendaController {
 	}
 	
 	private void verificarDisponibilidade(Horario horario){
+		Date termino = new Date(horario.getTermino().getTime());
+		horario.setTermino(new Date(termino.getTime() + 61000));
 		List<Horario> search = horarioService.findHorario(horario);
 		if(search != null && !search.isEmpty()){
 			throw new HorarioOcupadoException("Horário já ocupado");
 		}
+		horario.setTermino(termino);
 	}
 	
 	private List<Servico> findServicos(String servicosIdsStr){

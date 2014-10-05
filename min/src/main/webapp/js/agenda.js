@@ -328,6 +328,9 @@ Agenda = {
 			
 			addHorario:function (){
 				var clienteId = $("#cliente-select").val();
+				if(clienteId == null){
+					clienteId = $("#cliente_select_chzn input").val();
+				}
 				var funcionarioId = $("#funcionario-select").val();
 				var dataStr = $("#dia-agenda").val();
 				var horarioInicio = $("#horario-inicio-agenda").val();
@@ -356,7 +359,7 @@ Agenda = {
 				}
 				: 
 				{
-						clienteId : clienteId.toString(),
+						clienteStr : clienteId.toString(),
 						funcionarioId: funcionarioId.toString(),
 						inicio: dataStr + " " + horarioInicio,
 						termino: dataStr + " " + horarioFim,
@@ -370,10 +373,14 @@ Agenda = {
 					type: "POST",
 					data: request,
 					success: function(data){
-		                Agenda.findHorariosDoDia();
+						if(data == "refresh"){
+							location.reload();
+						}else{
+							Agenda.findHorariosDoDia();
+						}
 					},
 					error: function(e){
-						Utils.showError("Hor&aacute;rio j&aacute; est&aacute; ocupado.");
+						Utils.showError("Houve um erro na hora de cadastrar o agendamento. Verifique se o hor&aacute;rio j&aacute; est&aacute; ocupado e se as horas foram selecionadas corretamente.");
 					}
 				});
 			},
@@ -388,6 +395,13 @@ Agenda = {
 					$("#checkbox-folga").removeClass("checkbox-checked");
 					$(".horario-trabalho").show(300);
 				}
+			},
+			
+			verificarCliente:function(){
+				var cliente = $("#cliente_select_chzn input").val();
+				setTimeout(function(){
+					$("#cliente_select_chzn input").val(cliente);
+				}, 200);
 			}
 			
 };
