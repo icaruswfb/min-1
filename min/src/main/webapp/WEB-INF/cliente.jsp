@@ -64,7 +64,9 @@
                 <div class="col-lg-3">
                  	<form:input path="cidade" cssClass="form-control m-b-10" placeholder="Cidade" readonly="${ not canEdit }"/>
                 </div>
-                
+                <div class="col-lg-12">
+                 	<form:textarea path="observacao" cssClass="form-control m-b-10" placeholder="Observações" readonly="${ not canEdit }"/>
+                </div>
              </form:form>
               <div class="clearfix"></div>
             <br />

@@ -20,7 +20,7 @@ public class Usuario {
 	private String senha;
 	@Transient
 	private String confirmacaoSenha;
-	@OneToOne
+	@OneToOne()
 	private Pessoa pessoa;
 	@Enumerated(EnumType.STRING)
 	private Role role;

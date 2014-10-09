@@ -1,6 +1,5 @@
 package br.com.min.controller;
 
-import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -9,7 +8,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -161,6 +159,57 @@ public class AgendaController {
 		horarioService.delete(id);
 		return "ok";
 	}
+
+	@RequestMapping(value="/alterar", method=RequestMethod.POST)
+	@ResponseBody()
+	public String alterarHorario(Long id, Long funcionarioId, String inicio, String termino, String observacao) throws ParseException{
+		Horario horario = horarioService.findById(id);
+		popularHorario(horario, funcionarioId, inicio, termino);
+		horario.setObservacao(observacao);
+		verificarDisponibilidade(horario);
+		horarioService.persist(horario);
+		return "ok";
+	}
+	
+	private Horario popularHorario(Horario horario, Long funcionarioId, String inicio, String termino) throws ParseException{
+		 Pessoa funcionario = pessoaService.findById(funcionarioId);
+		 horario.setFuncionario(funcionario);
+		 
+		Date dataInicio = Utils.dateTimeFormat.parse(inicio);
+		Calendar dataInicioCalendar = Calendar.getInstance();
+		dataInicioCalendar.setTime(dataInicio);
+		if(dataInicioCalendar.get(Calendar.HOUR_OF_DAY) < 8){
+			dataInicioCalendar.set(Calendar.HOUR_OF_DAY, 8);
+			dataInicioCalendar.set(Calendar.MINUTE, 0);
+		}
+		if(dataInicioCalendar.get(Calendar.HOUR_OF_DAY) > 20){
+			dataInicioCalendar.set(Calendar.HOUR_OF_DAY, 20);
+			dataInicioCalendar.set(Calendar.MINUTE, 0);
+		}
+		dataInicio = dataInicioCalendar.getTime();
+		
+		Date dataTermino = Utils.dateTimeFormat.parse(termino);
+		Calendar dataTerminoCalendar = Calendar.getInstance();
+		dataTerminoCalendar.setTime(dataTermino);
+		
+		if(dataTerminoCalendar.get(Calendar.HOUR_OF_DAY) < 8){
+			dataTerminoCalendar.set(Calendar.HOUR_OF_DAY, 8);
+			dataTerminoCalendar.set(Calendar.MINUTE, 0);
+		}
+		if(dataTerminoCalendar.get(Calendar.HOUR_OF_DAY) > 20){
+			dataTerminoCalendar.set(Calendar.HOUR_OF_DAY, 20);
+			dataTerminoCalendar.set(Calendar.MINUTE, 0);
+		}
+		dataTerminoCalendar.set(Calendar.DAY_OF_YEAR, dataInicioCalendar.get(Calendar.DAY_OF_YEAR));
+		if(dataTerminoCalendar.before(dataInicioCalendar)){
+			throw new RuntimeException("O hor·rio termina antes do inÌcio");
+		}
+		dataTermino = dataTerminoCalendar.getTime();
+		
+		horario.setInicio(dataInicio);
+		horario.setTermino(dataTermino);
+		return horario;
+	}
 	
 	@RequestMapping(value="/agendar", method=RequestMethod.POST)
 	@ResponseBody()
@@ -181,46 +230,12 @@ public class AgendaController {
 					 novoCliente.setFuncionario(false);
 					 novoCliente = pessoaService.persist(novoCliente);
 					 horario.setCliente(novoCliente);
-					 horario.setObservacao("√â preciso completar o cadastro deste cliente. " + horario.getObservacao());
+					 horario.setObservacao("… preciso completar o cadastro deste cliente. " + horario.getObservacao());
 					 result = "refresh";
 				 }
 				 horario.getServicos().addAll(findServicos(servicosId));
 			 }
-			 Pessoa funcionario = pessoaService.findById(funcionarioId);
-			 horario.setFuncionario(funcionario);
-			Date dataInicio = Utils.dateTimeFormat.parse(inicio);
-			Calendar dataInicioCalendar = Calendar.getInstance();
-			dataInicioCalendar.setTime(dataInicio);
-			if(dataInicioCalendar.get(Calendar.HOUR_OF_DAY) < 8){
-				dataInicioCalendar.set(Calendar.HOUR_OF_DAY, 8);
-				dataInicioCalendar.set(Calendar.MINUTE, 0);
-			}
-			if(dataInicioCalendar.get(Calendar.HOUR_OF_DAY) > 20){
-				dataInicioCalendar.set(Calendar.HOUR_OF_DAY, 20);
-				dataInicioCalendar.set(Calendar.MINUTE, 0);
-			}
-			dataInicio = dataInicioCalendar.getTime();
-			
-			Date dataTermino = Utils.dateTimeFormat.parse(termino);
-			Calendar dataTerminoCalendar = Calendar.getInstance();
-			dataTerminoCalendar.setTime(dataTermino);
-			
-			if(dataTerminoCalendar.get(Calendar.HOUR_OF_DAY) < 8){
-				dataTerminoCalendar.set(Calendar.HOUR_OF_DAY, 8);
-				dataTerminoCalendar.set(Calendar.MINUTE, 0);
-			}
-			if(dataTerminoCalendar.get(Calendar.HOUR_OF_DAY) > 20){
-				dataTerminoCalendar.set(Calendar.HOUR_OF_DAY, 20);
-				dataTerminoCalendar.set(Calendar.MINUTE, 0);
-			}
-			dataTerminoCalendar.set(Calendar.DAY_OF_YEAR, dataInicioCalendar.get(Calendar.DAY_OF_YEAR));
-			if(dataTerminoCalendar.before(dataInicioCalendar)){
-				throw new RuntimeException("O hor√°rio termina antes do in√≠cio");
-			}
-			dataTermino = dataTerminoCalendar.getTime();
-			
-			horario.setInicio(dataInicio);
-			horario.setTermino(dataTermino);
+			popularHorario(horario, funcionarioId, inicio, termino);
 			verificarDisponibilidade(horario);
 			horarioService.persist(horario);
 			return result;
@@ -235,7 +250,11 @@ public class AgendaController {
 		horario.setTermino(new Date(termino.getTime() + 61000));
 		List<Horario> search = horarioService.findHorario(horario);
 		if(search != null && !search.isEmpty()){
-			throw new HorarioOcupadoException("Hor√°rio j√° ocupado");
+			for(Horario h : search){
+				if(!h.getId().equals(horario.getId())){
+					throw new HorarioOcupadoException("Hor·rio j· ocupado");
+				}
+			}
 		}
 		horario.setTermino(termino);
 	}

@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
@@ -22,7 +23,7 @@ public class Horario implements Serializable{
 	private Pessoa cliente;
 	@ManyToOne
 	private Pessoa funcionario;
-	@ManyToMany
+	@ManyToMany(fetch=FetchType.EAGER)
 	private List<Servico> servicos = new ArrayList<Servico>();
 	private Date inicio;
 	private Date termino;

@@ -34,6 +34,8 @@
                                     <h4 class="modal-title">NOVO HORÁRIO</h4>
                                 </div>
                                 <div class="modal-body">
+                                	<div class="listview list-container" id="add-horario-msg">
+						                </div>
                                     <form >
 					
 										<!-- Novo horário -->
@@ -83,13 +85,68 @@
                                 </div>
                                 <div class="modal-footer">
                                 	
-					                 <button class="btn " type="button" onclick="Agenda.addHorario()" data-dismiss="modal">Salvar</button>
+					                 <button class="btn " type="button" onclick="Agenda.addHorario()" >Salvar</button>
                                     <button type="button" class="btn btn-sm" data-dismiss="modal">Cancelar</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                      <a data-toggle="modal" href="#modalWider" style="display: none;" class="btn btn-sm">Modal - Wider</a>
+			
+			<!-- Modal de edição -->
+			
+			<div class="modal fade" id="modalEdit" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-sm">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title">EDITAR HORÁRIO</h4>
+                            </div>
+                            <div class="modal-body">
+                            <div class="listview list-container" id="edit-horario-msg">
+						                </div>
+                                <form >
+	
+						<!-- Editar horário -->
+							<input type="hidden" id="editar-horario-id" />
+			                 <label>Data</label>
+                               <div class="input-icon datetime-pick date-only">
+				                     <input data-format="dd/MM/yyyy" type="text" class="form-control input-sm" name="data" id="editar-data-agenda" value="${ dataStr }"/>
+				                     <span class="add-on">
+				                         <i class="sa-plus"></i>
+				                     </span>
+				                 </div>
+                               <br />
+			                 <label>Cliente:</label>
+			                 <span id="editar-cliente"></span>
+			                 <div id="editar-servicos"></div>
+			                 <label class="m-t-10 ">Funcionário</label>
+			                  <select data-placeholder="Selecionar funcionário..." class="select custom-select" id="editar-funcionario-select">
+			                 	<c:forEach var="funcionario" items="${ pessoas }">
+			                 		<c:if test="${ funcionario.funcionario eq true }">
+				                 		<option value="${ funcionario.id }">${ funcionario.nome }</option>
+			                 		</c:if>
+			                 	</c:forEach>
+		                    </select>
+		            
+		                 <label class="m-t-10">Horário</label>
+                               <input type="text" class="form-control input-sm mask-hhmm" id="editar-horario-inicio-agenda"/>
+		                 <label class="m-t-10">Horário de término</label>
+                               <input type="text" class="form-control input-sm mask-hhmm" id="editar-horario-fim-agenda"/>
+                           
+	                    <label class="m-t-10">Observações</label>
+	                    <textarea class="form-control overflow" rows="3"  id="editar-observacao"></textarea>
+					</form>
+                            </div>
+                            <div class="modal-footer">
+                				 <button class="btn " type="button" onclick="Agenda.editarHorario()">Salvar</button>
+                                <button type="button" class="btn btn-sm" data-dismiss="modal">Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                 <a data-toggle="modal" href="#modalEdit" style="display: none;" class="btn btn-sm">Modal - Wider</a>
+
 			
 			<h4 class="page-title">AGENDA - ${ dataStr }</h4>
 

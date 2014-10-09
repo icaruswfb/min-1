@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
@@ -54,6 +55,9 @@ public class PessoaDAO {
 			if(StringUtils.isNotBlank(entity.getCidade())){
 				orPredicates.add(Restrictions.ilike("cidade", entity.getCidade(), MatchMode.ANYWHERE));
 			}
+			if(StringUtils.isNotBlank(entity.getObservacao())){
+				orPredicates.add(Restrictions.ilike("observacao", entity.getObservacao(), MatchMode.ANYWHERE));
+			}
 			if(entity.getFuncaoPrincipal() != null){
 				andPredicates.add(Restrictions.eq("funcaoPrincipal", entity.getFuncaoPrincipal()));
 			}
@@ -89,5 +93,16 @@ public class PessoaDAO {
 		List<Pessoa> clientes = criteria.list();
 		return clientes;
 	}
-
+	
+	public void delete(Pessoa pessoa){
+		Session session = sessionFactory.openSession();
+		Query query = session.createQuery("delete from Historico h where h.cliente.id = " + pessoa.getId());
+		query.executeUpdate();
+		query = session.createQuery("delete from Horario h where h.cliente.id = " + pessoa.getId());
+		query.executeUpdate();
+		session.delete(pessoa);
+		session.flush();
+		session.close();
+	}
+	
 }

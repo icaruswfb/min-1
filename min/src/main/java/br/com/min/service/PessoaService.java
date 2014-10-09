@@ -67,7 +67,7 @@ public class PessoaService {
 	public void delete(Long id) {
 		Pessoa pessoa = new Pessoa();
 		pessoa.setId(id);
-		genericDao.delete(pessoa);
+		dao.delete(pessoa);
 	}
 	
 }

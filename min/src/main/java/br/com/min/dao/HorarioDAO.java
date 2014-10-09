@@ -50,6 +50,7 @@ public class HorarioDAO {
 			criteria = criteria.add(Restrictions.or(orPredicatesArray));
 			criteria.addOrder(Order.asc("inicio"));
 		}
+		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		List<Horario> clientes = criteria.list();
 		return clientes;
 	}

@@ -28,7 +28,6 @@ import br.com.min.entity.LancamentoServico;
 import br.com.min.entity.Pagamento;
 import br.com.min.entity.Pessoa;
 import br.com.min.entity.Produto;
-import br.com.min.entity.ProdutoQuantidade;
 import br.com.min.entity.Role;
 import br.com.min.entity.Servico;
 import br.com.min.service.ComandaService;

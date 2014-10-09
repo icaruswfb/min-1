@@ -83,6 +83,7 @@ public class HomeController {
 		pessoa.setTelefone(pesquisa);
 		pessoa.setFuncionario(funcionario);
 		pessoa.setDocumento(pesquisa);
+		pessoa.setObservacao(pesquisa);
 		List<Pessoa> pessoas = pessoaService.findPessoa(pessoa);
 		return pessoas;
 	}

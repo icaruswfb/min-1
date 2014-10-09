@@ -32,7 +32,12 @@ Agenda = {
 				window.location = "/min/web/agenda/ver/" + dia + "/" + mes + "/" + ano;
 			},
 			
+			limparHorario: function(){
+				$(".search-choice-close").click();
+			},
+			
 			popupHorario: function(hora, minuto, funcionarioIndex){
+				Agenda.limparHorario();
 				var horaStr = "";
 				if(hora < 10){
 					horaStr += "0";
@@ -269,7 +274,6 @@ Agenda = {
 						tooltip += "" + inicioHora + ":" + (inicioMin < 10 ? "0" + inicioMin : inicioMin) + " - " + terminoHora + ":" + (terminoMin < 10 ? "0" + terminoMin : terminoMin) + "" ;
 						tooltip += " com " + horarioCliente.funcionario.nome;
 						
-						tooltip += "<a href='javascript:Agenda.delelarHorario("+horarioCliente.id+")' style='float: right;margin: 0 10px;'><img src='/min/img/icon/delete.png' /></a>";
 						tooltip +=	"</p>";
 						tooltip += "<p>Fazendo: </p><ul>";
 						for(var i = 0; i < horarioCliente.servicos.length; i++){
@@ -280,6 +284,13 @@ Agenda = {
 							tooltip += "<p>" + horarioCliente.observacao + "</p>";
 							
 						}
+						tooltip += '<div class="w-100 float-left">';
+
+						tooltip += "<a href='javascript:Agenda.delelarHorario("+horarioCliente.id+")' style='float: right;margin: 5px'><img src='/min/img/icon/delete.png' /></a>";
+						tooltip += "<a href='javascript:Agenda.popupEditar("+horarioCliente.id+")' style='float: right;margin: 5px'><img src='/min/img/icon/archive.png' /></a>";
+						
+						tooltip += "</div>";
+						
 						tooltip += "</div>";
 					}
 				}else{
@@ -293,6 +304,88 @@ Agenda = {
 				tooltip + "</div>";
 				divHorario.append(tooltip);
 			},
+			
+			popupEditar:function(id){
+				var horarios = Agenda.horariosPorCliente;
+				var horario = null;
+				$.each(horarios, function(index, horarioCliente){
+					if(horario == null){
+						for(var j = 0; j < horarioCliente.length;j++){
+							if(horarioCliente[j].id == id){
+								horario = horarioCliente[j];
+								break;
+							}
+						}
+					}
+				});
+				var inicioData = new Date(horario.inicio);
+				var terminoDate = new Date(horario.termino);
+				
+				var inicioHora = inicioData.getHours();
+				var inicioMin = inicioData.getMinutes();
+				var terminoHora = terminoDate.getHours();
+				var terminoMin = terminoDate.getMinutes();
+				$("#editar-horario-id").val(id);
+				var diaStr = $("#dia-agenda").val();
+				$("#editar-data-agenda").val(diaStr);
+				$("#editar-cliente").html(horario.cliente.nome);
+				
+				var tooltip = "<p>Fazendo: </p><ul>";
+				for(var i = 0; i < horario.servicos.length; i++){
+					tooltip += "<li>" + horario.servicos[i].nome + "</li>";
+				}
+				tooltip += "</ul>";
+				$("#editar-servicos").html(tooltip);
+				
+				$("#editar-funcionario-select").val(horario.funcionario.id);
+				$("#editar-funcionario-select").change();
+				var inicioStr = (inicioHora < 10 ? ("0" + inicioHora) : inicioHora) + ":" + (inicioMin < 10 ? ("0" + inicioMin) : inicioMin);
+				$("#editar-horario-inicio-agenda").val(inicioStr);
+				var fimStr = (terminoHora < 10 ? ("0" + terminoHora) : terminoHora) + ":" + (terminoMin < 10 ? ("0" + terminoMin) : terminoMin);
+				$("#editar-horario-fim-agenda").val(fimStr);
+				$("#editar-observacao").val(horario.observacao);
+				$("a[href='#modalEdit']").click();
+			},
+			
+			editarHorario:function(){
+				Utils.modalLoading();
+				var id = $("#editar-horario-id").val();
+				var funcionarioId = $("#editar-funcionario-select").val();
+				var dataStr = $("#editar-data-agenda").val();
+				var horarioInicio = $("#editar-horario-inicio-agenda").val();
+				var horarioFim = $("#editar-horario-fim-agenda").val();
+				var obs = $("#editar-observacao").val();
+				if(horarioFim == "" || horarioInicio == "" || dataStr == ""){
+					Utils.createMessageBlock("Preencha todos os campos para agendar um novo hor&aacute;rio", "#edit-horario-msg", "danger", "edit-horario-msg" + Utils.guid());
+					Utils.modalLoadingFinish();
+					return;
+				}
+				var request = 
+				{
+						id: id,
+						funcionarioId: funcionarioId.toString(),
+						inicio: dataStr + " " + horarioInicio,
+						termino: dataStr + " " + horarioFim,
+						observacao: obs
+				};
+				
+				$.ajax({
+					url: "/min/web/agenda/alterar",
+					type: "POST",
+					data: request,
+					success: function(data){
+						location.reload();
+					},
+					error: function(e){
+						Utils.showError("Houve um erro na hora de cadastrar o agendamento. Verifique se o hor&aacute;rio j&aacute; est&aacute; ocupado e se as horas foram selecionadas corretamente.");
+					},
+					complete:function(){
+						$("#modalEdit .close").click();
+						Utils.modalLoadingFinish();
+					}
+				});
+			},
+			
 			delelarHorario: function(horarioId){
 				if(confirm("Tem certeza que deseja excluir?")){
 					$.ajax({
@@ -327,9 +420,14 @@ Agenda = {
 			},
 			
 			addHorario:function (){
+				Utils.modalLoading();
 				var clienteId = $("#cliente-select").val();
 				if(clienteId == null){
 					clienteId = $("#cliente_select_chzn input").val();
+					if(clienteId == "Selecionar cliente..." || clienteId == ""){
+						Utils.createMessageBlock("Preencha todos os campos para agendar um novo hor&aacute;rio", "#add-horario-msg", "danger", "add-horario-msg" + Utils.guid());
+						return false;
+					}
 				}
 				var funcionarioId = $("#funcionario-select").val();
 				var dataStr = $("#dia-agenda").val();
@@ -340,12 +438,12 @@ Agenda = {
 				var folga = $("#folga").val();
 				if(folga == "true"){
 					if(horarioFim == '' || horarioInicio == ''){
-						Utils.showError("Preencha todos os campos para agendar um novo hor&aacute;rio");
+						Utils.createMessageBlock("Preencha todos os campos para agendar um novo hor&aacute;rio", "#add-horario-msg", "danger", "add-horario-msg" + Utils.guid());
 						return false;
 					}
 				}else{
 					if(clienteId == null || horarioFim == '' || servicos == null || horarioInicio == ''){
-						Utils.showError("Preencha todos os campos para agendar um novo hor&aacute;rio");
+						Utils.createMessageBlock("Preencha todos os campos para agendar um novo hor&aacute;rio", "#add-horario-msg", "danger", "add-horario-msg" + Utils.guid());
 						return false;
 					}
 				}
@@ -381,6 +479,10 @@ Agenda = {
 					},
 					error: function(e){
 						Utils.showError("Houve um erro na hora de cadastrar o agendamento. Verifique se o hor&aacute;rio j&aacute; est&aacute; ocupado e se as horas foram selecionadas corretamente.");
+					},
+					complete:function(){
+						$("#modalWider .close").click();
+						Utils.modalLoadingFinish();
 					}
 				});
 			},
@@ -399,9 +501,14 @@ Agenda = {
 			
 			verificarCliente:function(){
 				var cliente = $("#cliente_select_chzn input").val();
-				setTimeout(function(){
-					$("#cliente_select_chzn input").val(cliente);
-				}, 200);
+				if(cliente != "Selecionar cliente..."){
+					setTimeout(function(){
+						var selecionado = $("#cliente-select").val();
+						if(selecionado == null || selecionado == ""){
+							$("#cliente_select_chzn input").val(cliente);
+						}
+					}, 200);
+				}
 			}
 			
 };

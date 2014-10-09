@@ -2,9 +2,7 @@ package br.com.min.entity;
 
 import java.io.Serializable;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -12,7 +10,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
@@ -42,6 +39,7 @@ public class Pessoa implements Serializable{
 	private Comissao comissao;
 	private Imagem imagem;
 	private Usuario usuario;
+	private String observacao;
 
 	@Id
 	@GeneratedValue
@@ -180,6 +178,12 @@ public class Pessoa implements Serializable{
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
+	}
+	public String getObservacao() {
+		return observacao;
+	}
+	public void setObservacao(String observacao) {
+		this.observacao = observacao;
 	}
 	
 }
