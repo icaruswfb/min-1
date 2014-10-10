@@ -341,7 +341,7 @@ public class ReportController {
 		try {
 			String data = dia + "/" + mes + "/" + ano;
 			Map<String, Object> values = criarDadosCaixaDownload(data, request);
-			String foFile = ReportUtils.processTemplate(values, "caixa-dia.fo");
+			String foFile = ReportUtils.processTemplate(values, "caixa-dia.xml");
 			file = ReportUtils.generatePDF("caixa-dia", foFile);
 			response.setContentType("application/pdf");
 			response.getOutputStream().write(FileUtils.readFileToByteArray(file));

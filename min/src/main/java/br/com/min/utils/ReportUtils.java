@@ -39,8 +39,9 @@ public class ReportUtils {
 		try {
 			cfg = new Configuration();
 
-			URL url = ReportUtils.class.getResource("/templates/");
-			cfg.setDirectoryForTemplateLoading(new File(url.getFile()));
+			//URL url = ReportUtils.class.getResource("/templates/");
+			//cfg.setDirectoryForTemplateLoading(new File(url.getFile()));
+			cfg.setDirectoryForTemplateLoading(new File("/app/templates/"));
 			cfg.setObjectWrapper(new DefaultObjectWrapper());
 			cfg.setDefaultEncoding("UTF-8");
 		} catch (IOException e) {

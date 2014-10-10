@@ -137,51 +137,102 @@
 				<fo:block>
 					<fo:leader leader-pattern="space" />
 				</fo:block>
-				<fo:block 
-					table-layout="auto" margin-right="100% - 100%" space-before="0"
-					space-after="0" margin="0pt">
-					<fo:inline font-family="Verdana">Dinheiro: ${Dinheiro}</fo:inline>
-				</fo:block>
-				<fo:block margin-right="100% - 100%" space-before="0"
-					space-after="0" margin="0pt">
-					<fo:inline font-family="Verdana">Visa: ${Visa}</fo:inline>
-				</fo:block>
-				<fo:block margin-right="100% - 100%" space-before="0"
-					space-after="0" margin="0pt">
-					<fo:inline font-family="Verdana">Visa Electron: ${VisaElectron}</fo:inline>
-				</fo:block>
-				<fo:block margin-right="100% - 100%" space-before="0"
-					space-after="0" margin="0pt">
-					<fo:inline font-family="Verdana">MasterCard: ${MasterCard}</fo:inline>
-				</fo:block>
-				<fo:block margin-right="100% - 100%" space-before="0"
-					space-after="0" margin="0pt">
-					<fo:inline font-family="Verdana">Maestro: ${Maestro}</fo:inline>
-				</fo:block>
-				<fo:block margin-right="100% - 100%" space-before="0"
-					space-after="0" margin="0pt">
-					<fo:inline font-family="Verdana">HiperCard: ${HiperCard}</fo:inline>
-				</fo:block>
-				<fo:block margin-right="100% - 100%" space-before="0"
-					space-after="0" margin="0pt">
-					<fo:inline font-family="Verdana">Elo: ${Elo}</fo:inline>
-				</fo:block>
-				<fo:block margin-right="100% - 100%" space-before="0"
-					space-after="0" margin="0pt">
-					<fo:inline font-family="Verdana">Diners: ${Diners}</fo:inline>
-				</fo:block>
-				<fo:block margin-right="100% - 100%" space-before="0"
-					space-after="0" margin="0pt">
-					<fo:inline font-family="Verdana">Amex: ${Amex}</fo:inline>
-				</fo:block>
-				<fo:block margin-right="100% - 100%" space-before="0"
-					space-after="0" margin="0pt">
-					<fo:inline font-family="Verdana">Cheque: ${Cheque}</fo:inline>
-				</fo:block>
-				<fo:block margin-right="100% - 100%" space-before="0"
-					space-after="0" margin="0pt">
-					<fo:inline font-family="Verdana">Crédito: ${Credito}</fo:inline>
-				</fo:block>
+				
+				<fo:table>
+					<fo:table-column column-width="100px" />
+					<fo:table-column column-width="100px" />
+					<fo:table-body>
+					  <fo:table-row>
+						<fo:table-cell>
+							<fo:block>Dinheiro</fo:block>
+						</fo:table-cell>
+						<fo:table-cell>
+							<fo:block>${Dinheiro}</fo:block>
+						</fo:table-cell>
+					  </fo:table-row>
+					  <fo:table-row>
+						<fo:table-cell>
+							<fo:block>Visa</fo:block>
+						</fo:table-cell>
+						<fo:table-cell>
+							<fo:block>${Visa}</fo:block>
+						</fo:table-cell>
+					  </fo:table-row>
+					  <fo:table-row>
+						<fo:table-cell>
+							<fo:block>Visa Electron</fo:block>
+						</fo:table-cell>
+						<fo:table-cell>
+							<fo:block>${VisaElectron}</fo:block>
+						</fo:table-cell>
+					  </fo:table-row>
+					  <fo:table-row>
+						<fo:table-cell>
+							<fo:block>MasterCard</fo:block>
+						</fo:table-cell>
+						<fo:table-cell>
+							<fo:block>${MasterCard}</fo:block>
+						</fo:table-cell>
+					  </fo:table-row>
+					  <fo:table-row>
+						<fo:table-cell>
+							<fo:block>Maestro</fo:block>
+						</fo:table-cell>
+						<fo:table-cell>
+							<fo:block>${Maestro}</fo:block>
+						</fo:table-cell>
+					  </fo:table-row>
+					  <fo:table-row>
+						<fo:table-cell>
+							<fo:block>HiperCard</fo:block>
+						</fo:table-cell>
+						<fo:table-cell>
+							<fo:block>${HiperCard}</fo:block>
+						</fo:table-cell>
+					  </fo:table-row>
+					  <fo:table-row>
+						<fo:table-cell>
+							<fo:block>Elo</fo:block>
+						</fo:table-cell>
+						<fo:table-cell>
+							<fo:block>${Elo}</fo:block>
+						</fo:table-cell>
+					  </fo:table-row>
+					  <fo:table-row>
+						<fo:table-cell>
+							<fo:block>Diners</fo:block>
+						</fo:table-cell>
+						<fo:table-cell>
+							<fo:block>${Diners}</fo:block>
+						</fo:table-cell>
+					  </fo:table-row>
+					  <fo:table-row>
+						<fo:table-cell>
+							<fo:block>Amex</fo:block>
+						</fo:table-cell>
+						<fo:table-cell>
+							<fo:block>${Amex}</fo:block>
+						</fo:table-cell>
+					  </fo:table-row>
+					  <fo:table-row>
+						<fo:table-cell>
+							<fo:block>Cheque</fo:block>
+						</fo:table-cell>
+						<fo:table-cell>
+							<fo:block>${Cheque}</fo:block>
+						</fo:table-cell>
+					  </fo:table-row>
+					  <fo:table-row>
+						<fo:table-cell>
+							<fo:block>Crédito</fo:block>
+						</fo:table-cell>
+						<fo:table-cell>
+							<fo:block>${Credito}</fo:block>
+						</fo:table-cell>
+					  </fo:table-row>
+					  </fo:table-body>
+				</fo:table>
+				
 				<fo:block>
 					<fo:leader leader-pattern="space" />
 				</fo:block>
