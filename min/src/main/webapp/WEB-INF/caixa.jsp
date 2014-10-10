@@ -23,17 +23,17 @@
 			
 			<div class="block-area">
 				<div class="row">
-					<div class="col-lg-3 m-b-15">
-						<form action="/min/web/report/caixa/data" id="fechamento-data-form" method="post">
-							<p>Data do caixa</p>
-							<div class="input-icon datetime-pick date-only">
-			                     <input data-format="dd/MM/yyyy" type="text" class="form-control input-sm" name="data" id="data-fechamento"/>
-			                     <span class="add-on">
-			                         <i class="sa-plus"></i>
-			                     </span>
-			                 </div>
-						</form>
-					</div>
+					<form action="/min/web/report/caixa/data" id="fechamento-data-form" method="post">
+						<div class="col-lg-3 m-b-15">
+								<p>Data do caixa</p>
+								<div class="input-icon datetime-pick date-only">
+				                     <input data-format="dd/MM/yyyy" type="text" class="form-control input-sm" name="data" id="data-fechamento" value="<fmt:formatDate value="${ data }" pattern="dd/MM/yyyy"/>"/>
+				                     <span class="add-on">
+				                         <i class="sa-plus"></i>
+				                     </span>
+				                 </div>
+						</div>
+					</form>
 				</div>
 				
 				<div class="row m-b-10">
@@ -77,6 +77,9 @@
 									<strong class="f-s-20">R$<fmt:formatNumber value="${ totalPago }" minFractionDigits="2" /></strong>
 								</div>
 							</div>
+						</div>
+						<div class="col-lg-12 m-b-15">
+				                 <a class="btn btn-lg" href="/min/web/report/caixa/download/<fmt:formatDate value="${ data }" pattern="dd/MM/yyyy"/>" target="_blank">Download PDF</a>
 						</div>
 					</div>
 					
@@ -226,7 +229,14 @@
 					}
 				});
 			});
-		
+		Caixa = {
+				download:function(){
+					var action = $("#fechamento-data-form").attr("action");
+					$("#fechamento-data-form").attr("action", "/min/web/report/caixa/download");
+					$("#fechamento-data-form").submit();
+					$("#fechamento-data-form").attr("action", action);
+				}
+		};
 	</script>
 	
 </body>

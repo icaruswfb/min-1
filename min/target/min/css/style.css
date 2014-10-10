@@ -275,7 +275,7 @@ blockquote small {
     width: 233px;
     height: 50px;
     text-align: center;
-    padding: 14px 0 12px 40px;
+    padding: 0px 0 12px 40px;
     font-size: 16px;
     margin-right: 9px !important;
     background: rgba(0, 0, 0, 0.23);
@@ -393,7 +393,7 @@ blockquote small {
     padding: 2px 3px 3px;
     border-radius: 2px !important;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.06);
-    margin: 7px 0 0 27px;
+    margin: 7px 0 0 -10px;
     font-style: normal;
     line-height: 100%;
     -webkit-animation-name: bounceIn;
@@ -1194,7 +1194,7 @@ hr {
 }
 
 .modal-content, .dark {
-    background: rgba(0, 0, 0, 0.68);
+    background: rgba(0, 0, 0, 0.8);
     border: 0;
     color: #fff;
 }
@@ -1222,9 +1222,9 @@ hr {
 }
 
 .modal .btn, .elfinder-dialog .btn, .dark .btn {
-    font-size: 11px;
+    font-size: 15px;
     border: 1px solid rgba(255, 255, 255, 0.31);
-    padding: 2px 10px 3px;
+    padding: 7px 30px;
     background: none;
 }
 
@@ -1871,8 +1871,13 @@ a.list-group-item.active > .badge,
         background-attachment: fixed;
     }
 
+    #vumbs {
+        background-image: url(../img/body/temp.jpg);
+    }
+    
     #skin-blur-violate {
-        background-image: url(../img/body/violate.jpg);
+  		background: url(../img/body/cloth.png);
+        /*background-image: url(../img/body/violate.jpg);*/
     }
 
     #skin-blur-lights {
@@ -2112,7 +2117,12 @@ a.list-group-item.active > .badge,
 }
 
 @media (max-width: 780px) {
-    /* Content */
+    #messages{
+    	width: 100% !important;
+    }
+    .acaoLancamento{
+    	margin: 0 0 30px 0 !important;
+    }
     #main {
         min-height: 100%;
         min-height: calc(100% - 100px);
@@ -2176,7 +2186,7 @@ a.list-group-item.active > .badge,
     }
     
     #sidebar .s-widget:not(#profile-menu) {
-        display: none;
+        /*display: none;*/
     }
 
     #sidebar.toggled {
@@ -2380,6 +2390,8 @@ a.list-group-item.active > .badge,
 	border-top: 1px solid;
 	border-color: rgba(0,0,0,0.05) !important;
 	border-radius: 4px 4px 0 0 !important;
+	max-height: 16px;
+	overflow: hidden;
 }
 
 .calendario-table .horario:hover{
@@ -2393,9 +2405,17 @@ a.list-group-item.active > .badge,
 	margin: 5px 10px 0 0;
 }
 
+.link{
+	cursor: pointer;
+}
+
 .acaoLancamento{
 	float: left;
 	margin: 30px 10px 0 0;
+}
+
+#comandas-fechadas .acaoLancamento{
+	display: none;
 }
 
 .lancamento{
@@ -2627,4 +2647,21 @@ a.list-group-item.active > .badge,
 
 .comissao-detalhe .pago{
 	cursor: not-allowed; 
+}
+
+.float-left{
+	float: left;
+}
+
+.float-right{
+	float: right;
+}
+
+.add-kit{
+	float: left;
+	margin: 10px;
+}
+
+.add-kit-img{
+	margin-top: 7px !important;
 }

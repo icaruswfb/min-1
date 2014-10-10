@@ -1,8 +1,19 @@
 package br.com.min.controller;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.Writer;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,9 +22,24 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.fop.apps.FOPException;
+import org.apache.fop.apps.Fop;
+import org.apache.fop.apps.FopFactory;
+import org.apache.fop.apps.MimeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -35,7 +61,12 @@ import br.com.min.service.ComandaService;
 import br.com.min.service.ComissaoService;
 import br.com.min.service.PagamentoService;
 import br.com.min.service.PessoaService;
+import br.com.min.utils.ReportUtils;
 import br.com.min.utils.Utils;
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 
 @Controller()
 @RequestMapping("/report")
@@ -302,6 +333,38 @@ public class ReportController {
 			mv.addObject("data", data);
 		}
 		return mv;
+	}
+	
+	@RequestMapping(value="/caixa/download/{dia}/{mes}/{ano}", method=RequestMethod.GET)
+	public void downloadCaixaDia(@PathVariable("ano") String ano,@PathVariable("mes") String mes, @PathVariable("dia") String dia , HttpServletRequest request, HttpServletResponse response){
+		File file = null;
+		try {
+			String data = dia + "/" + mes + "/" + ano;
+			Map<String, Object> values = criarDadosCaixaDownload(data, request);
+			String foFile = ReportUtils.processTemplate(values, "caixa-dia.fo");
+			file = ReportUtils.generatePDF("caixa-dia", foFile);
+			response.setContentType("application/pdf");
+			response.getOutputStream().write(FileUtils.readFileToByteArray(file));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}finally{
+			if(file != null){
+				FileUtils.deleteQuietly(file);
+			}
+		}
+	}
+	
+	private Map<String, Object> criarDadosCaixaDownload(String data, HttpServletRequest request) throws ParseException{
+		ModelAndView mv = criarViewCaixa(Utils.dateFormat.parse(data), request);
+		Map<String, Object> values = mv.getModel();
+		Collection<TotaisPorFormaPagamentoVO> vos = (Collection<TotaisPorFormaPagamentoVO>)values.get("totais");
+		Map<String, Object> result = new HashMap<>();
+		for(TotaisPorFormaPagamentoVO vo : vos){
+			result.put(vo.getFormaPagamento().name(), Utils.moneyFormat.format(vo.getTotal()));
+		}
+		result.put("total", Utils.moneyFormat.format((Double)values.get("totalPago")));
+		result.put("data", data);
+		return result;
 	}
 	
 }

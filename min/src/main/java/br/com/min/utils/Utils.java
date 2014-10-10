@@ -1,6 +1,8 @@
 package br.com.min.utils;
 
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,8 +16,10 @@ public class Utils {
 
 	public static final SimpleDateFormat dateFormat  = new SimpleDateFormat("dd/MM/yyyy");
 	public static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+	public static final SimpleDateFormat dateTimeSecondToFileFormat = new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss");
 	public static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 	public static final SimpleDateFormat dayMonthFormat = new SimpleDateFormat("dd/MM");
+	public static final NumberFormat moneyFormat = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
 	
 	public static String encriyt(String toEncrypt){
 		JarvisToken token = new JarvisToken();

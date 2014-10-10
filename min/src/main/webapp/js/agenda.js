@@ -426,6 +426,7 @@ Agenda = {
 					clienteId = $("#cliente_select_chzn input").val();
 					if(clienteId == "Selecionar cliente..." || clienteId == ""){
 						Utils.createMessageBlock("Preencha todos os campos para agendar um novo hor&aacute;rio", "#add-horario-msg", "danger", "add-horario-msg" + Utils.guid());
+						Utils.modalLoadingFinish();
 						return false;
 					}
 				}
@@ -439,11 +440,13 @@ Agenda = {
 				if(folga == "true"){
 					if(horarioFim == '' || horarioInicio == ''){
 						Utils.createMessageBlock("Preencha todos os campos para agendar um novo hor&aacute;rio", "#add-horario-msg", "danger", "add-horario-msg" + Utils.guid());
+						Utils.modalLoadingFinish();
 						return false;
 					}
 				}else{
 					if(clienteId == null || horarioFim == '' || servicos == null || horarioInicio == ''){
 						Utils.createMessageBlock("Preencha todos os campos para agendar um novo hor&aacute;rio", "#add-horario-msg", "danger", "add-horario-msg" + Utils.guid());
+						Utils.modalLoadingFinish();
 						return false;
 					}
 				}

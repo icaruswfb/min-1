@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fo:root xmlns:altova="http://www.altova.com" xmlns:fo="http://www.w3.org/1999/XSL/Format">
+	<fo:layout-master-set>
+		<fo:simple-page-master master-name="page-master-0-even"
+			margin-left="0.60in" margin-right="0.60in" page-height="29.7cm"
+			page-width="21.0cm" margin-top="0.30in" margin-bottom="0.30in">
+			<fo:region-body margin-top="0.49in" margin-bottom="0.49in"
+				column-count="1" column-gap="0.50in" />
+			<fo:region-before region-name="even-page-header"
+				overflow="hidden" extent="0.49in" />
+		</fo:simple-page-master>
+		<fo:simple-page-master master-name="page-master-0-odd"
+			margin-left="0.60in" margin-right="0.60in" page-height="29.7cm"
+			page-width="21.0cm" margin-top="0.30in" margin-bottom="0.30in">
+			<fo:region-body margin-top="0.49in" margin-bottom="0.49in"
+				column-count="1" column-gap="0.50in" />
+			<fo:region-before region-name="odd-page-header"
+				overflow="hidden" extent="0.49in" />
+		</fo:simple-page-master>
+		<fo:page-sequence-master master-name="page-master-0">
+			<fo:repeatable-page-master-alternatives>
+				<fo:conditional-page-master-reference
+					master-reference="page-master-0-even" odd-or-even="even" />
+				<fo:conditional-page-master-reference
+					master-reference="page-master-0-odd" odd-or-even="odd" />
+			</fo:repeatable-page-master-alternatives>
+		</fo:page-sequence-master>
+	</fo:layout-master-set>
+	<fo:declarations>
+		<x:xmpmeta xmlns:x="adobe:ns:meta/">
+			<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+				<rdf:Description xmlns:xmp="http://ns.adobe.com/xap/1.0/"
+					rdf:about="">
+					<xmp:CreatorTool>Altova StyleVision Enterprise Edition 2015 sp1
+						(x64) (http://www.altova.com)</xmp:CreatorTool>
+				</rdf:Description>
+			</rdf:RDF>
+		</x:xmpmeta>
+	</fo:declarations>
+	<fo:page-sequence master-reference="page-master-0"
+		initial-page-number="auto" format="1" force-page-count="no-force">
+		<fo:static-content flow-name="xsl-footnote-separator">
+			<fo:block>
+				<fo:leader leader-pattern="rule" leader-length="100%"
+					rule-style="solid" rule-thickness="0.5pt" />
+			</fo:block>
+		</fo:static-content>
+		<fo:static-content flow-name="odd-page-header">
+			<fo:block-container overflow="hidden"
+				display-align="before">
+				<fo:block>
+					<fo:table width="100%" table-layout="fixed"
+						border-spacing="2pt">
+						<fo:table-column column-width="6.340in" />
+						<fo:table-column column-width="10%" />
+						<fo:table-body start-indent="0pt">
+							<fo:table-row>
+								<fo:table-cell font-size="10pt" padding="0"
+									display-align="center">
+									<fo:block text-align="left">
+										<fo:inline>Relatório de caixa VUMBS</fo:inline>
+									</fo:block>
+								</fo:table-cell>
+								<fo:table-cell font-size="10pt" padding="0"
+									display-align="center">
+									<fo:block text-align="right">
+										<fo:inline>${data}</fo:inline>
+									</fo:block>
+								</fo:table-cell>
+							</fo:table-row>
+							<fo:table-row>
+								<fo:table-cell number-columns-spanned="2" padding="0"
+									display-align="center">
+									<fo:block text-align="left">
+										<fo:block text-align="center">
+											<fo:leader leader-pattern="rule" rule-thickness="1"
+												leader-length="100%" color="black" />
+										</fo:block>
+									</fo:block>
+								</fo:table-cell>
+							</fo:table-row>
+						</fo:table-body>
+					</fo:table>
+				</fo:block>
+			</fo:block-container>
+		</fo:static-content>
+		<fo:static-content flow-name="even-page-header">
+			<fo:block-container overflow="hidden"
+				display-align="before">
+				<fo:block>
+					<fo:table width="100%" table-layout="fixed"
+						border-spacing="2pt">
+						<fo:table-column column-width="6.340in" />
+						<fo:table-column column-width="10%" />
+						<fo:table-body start-indent="0pt">
+							<fo:table-row>
+								<fo:table-cell font-size="10pt" padding="0"
+									display-align="center">
+									<fo:block text-align="left">
+										<fo:inline>Relatório de caixa VUMBS</fo:inline>
+									</fo:block>
+								</fo:table-cell>
+								<fo:table-cell font-size="10pt" padding="0"
+									display-align="center">
+									<fo:block text-align="right">
+										<fo:inline>${data}</fo:inline>
+									</fo:block>
+								</fo:table-cell>
+							</fo:table-row>
+							<fo:table-row>
+								<fo:table-cell number-columns-spanned="2" padding="0"
+									display-align="center">
+									<fo:block text-align="left">
+										<fo:block text-align="center">
+											<fo:leader leader-pattern="rule" rule-thickness="1"
+												leader-length="100%" color="black" />
+										</fo:block>
+									</fo:block>
+								</fo:table-cell>
+							</fo:table-row>
+						</fo:table-body>
+					</fo:table>
+				</fo:block>
+			</fo:block-container>
+		</fo:static-content>
+		<fo:flow flow-name="xsl-region-body">
+			<fo:block>
+				<fo:block font-size="0.21in" font-style="normal"
+					font-weight="bold" margin-right="100% - 100%" space-before="0"
+					space-after="0" margin="0pt">
+					<fo:block>
+						<fo:leader leader-pattern="space" />
+					</fo:block>
+					<fo:inline font-family="Verdana">Totais por forma de pagamento:
+					</fo:inline>
+				</fo:block>
+				<fo:block>
+					<fo:leader leader-pattern="space" />
+				</fo:block>
+				<fo:block 
+					table-layout="auto" margin-right="100% - 100%" space-before="0"
+					space-after="0" margin="0pt">
+					<fo:inline font-family="Verdana">Dinheiro: ${Dinheiro}</fo:inline>
+				</fo:block>
+				<fo:block margin-right="100% - 100%" space-before="0"
+					space-after="0" margin="0pt">
+					<fo:inline font-family="Verdana">Visa: ${Visa}</fo:inline>
+				</fo:block>
+				<fo:block margin-right="100% - 100%" space-before="0"
+					space-after="0" margin="0pt">
+					<fo:inline font-family="Verdana">Visa Electron: ${VisaElectron}</fo:inline>
+				</fo:block>
+				<fo:block margin-right="100% - 100%" space-before="0"
+					space-after="0" margin="0pt">
+					<fo:inline font-family="Verdana">MasterCard: ${MasterCard}</fo:inline>
+				</fo:block>
+				<fo:block margin-right="100% - 100%" space-before="0"
+					space-after="0" margin="0pt">
+					<fo:inline font-family="Verdana">Maestro: ${Maestro}</fo:inline>
+				</fo:block>
+				<fo:block margin-right="100% - 100%" space-before="0"
+					space-after="0" margin="0pt">
+					<fo:inline font-family="Verdana">HiperCard: ${HiperCard}</fo:inline>
+				</fo:block>
+				<fo:block margin-right="100% - 100%" space-before="0"
+					space-after="0" margin="0pt">
+					<fo:inline font-family="Verdana">Elo: ${Elo}</fo:inline>
+				</fo:block>
+				<fo:block margin-right="100% - 100%" space-before="0"
+					space-after="0" margin="0pt">
+					<fo:inline font-family="Verdana">Diners: ${Diners}</fo:inline>
+				</fo:block>
+				<fo:block margin-right="100% - 100%" space-before="0"
+					space-after="0" margin="0pt">
+					<fo:inline font-family="Verdana">Amex: ${Amex}</fo:inline>
+				</fo:block>
+				<fo:block margin-right="100% - 100%" space-before="0"
+					space-after="0" margin="0pt">
+					<fo:inline font-family="Verdana">Cheque: ${Cheque}</fo:inline>
+				</fo:block>
+				<fo:block margin-right="100% - 100%" space-before="0"
+					space-after="0" margin="0pt">
+					<fo:inline font-family="Verdana">Crédito: ${Credito}</fo:inline>
+				</fo:block>
+				<fo:block>
+					<fo:leader leader-pattern="space" />
+				</fo:block>
+				<fo:block font-weight="bold" margin-right="100% - 100%"
+					space-before="0" space-after="0" margin="0pt">
+					<fo:inline font-family="Verdana">Total: ${total}</fo:inline>
+				</fo:block>
+				<fo:block>
+					<fo:leader leader-pattern="space" />
+				</fo:block>
+			</fo:block>
+			<fo:block id="SV_RefID_PageTotal" />
+		</fo:flow>
+	</fo:page-sequence>
+</fo:root>
