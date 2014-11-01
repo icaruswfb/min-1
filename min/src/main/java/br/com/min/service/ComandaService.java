@@ -417,11 +417,11 @@ public class ComandaService {
 	}
 	
 	public List<Comanda> findFechamento(){
-		return dao.findFechamento(new Date());
+		return dao.findFechamento(new Date(), new Date());
 	}
 
-	public List<Comanda> findFechamento(Date data){
-		return dao.findFechamento(data);
+	public List<Comanda> findFechamento(Date dataInicio, Date dataFim){
+		return dao.findFechamento(dataInicio, dataFim);
 	}
 	
 	public List<Comanda> listar(){

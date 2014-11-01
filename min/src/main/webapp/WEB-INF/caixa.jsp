@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <%@ page isELIgnored="false"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -19,7 +20,7 @@
 
 		<!-- Content -->
 		<section id="content" class="container">
-			<h4 class="page-title">CAIXA <fmt:formatDate value="${ data }" pattern="dd/MM/yyyy"/></h4>
+			<h4 class="page-title">CAIXA <fmt:formatDate value="${ dataInicio }" pattern="dd/MM/yyyy"/></h4>
 			
 			<div class="block-area">
 				<div class="row">
@@ -79,7 +80,7 @@
 							</div>
 						</div>
 						<div class="col-lg-12 m-b-15">
-				                 <a class="btn btn-lg" href="/min/web/report/caixa/download/<fmt:formatDate value="${ data }" pattern="dd/MM/yyyy"/>" target="_blank">Download PDF</a>
+				                 <a class="btn btn-lg" href="/min/web/report/caixa/download/<fmt:formatDate value="${ dataInicio }" pattern="dd/MM/yyyy"/>" target="_blank">Download PDF</a>
 						</div>
 					</div>
 					

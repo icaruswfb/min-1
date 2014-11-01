@@ -102,7 +102,7 @@
 								"skin-tectile"
 		     		];
 		//$("body").attr("id",skins[Math.floor(Math.random() * skins.length)]);
-		$("body").attr("id",skins[12]);
+		$("body").attr("id",skins[2]);
 	</script>
 	
 <!-- Older IE Message -->

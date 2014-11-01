@@ -154,6 +154,9 @@ public class TarefaController {
 		if( tarefa.getFuncionario() != null ){
 			tarefa.getFuncionario().setUsuario(null);
 		}
+		if( tarefa.getCliente() != null ){
+			tarefa.getCliente().setUsuario(null);
+		}
 		if( tarefa.getCriador() != null ){
 			tarefa.getCriador().setUsuario(null);
 		}

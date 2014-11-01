@@ -43,6 +43,9 @@ public class UploadController {
 	@RequestMapping(value="/{id}", method=RequestMethod.GET)
 	public ResponseEntity<byte[]> find(@PathVariable("id") Long id){
 		Imagem imagem = imagemDao.findById(id);
+		if(imagem != null && imagem.getImagem() == null){
+			imagem = imagemDao.findById(1L);
+		}
 		final HttpHeaders headers = new HttpHeaders();
 	    headers.setContentType(MediaType.IMAGE_PNG);
 	    

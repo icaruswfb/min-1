@@ -1,15 +1,6 @@
 package br.com.min.controller;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.Writer;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -23,20 +14,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.sax.SAXResult;
-import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.fop.apps.FOPException;
-import org.apache.fop.apps.Fop;
-import org.apache.fop.apps.FopFactory;
-import org.apache.fop.apps.MimeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -63,15 +42,13 @@ import br.com.min.service.PagamentoService;
 import br.com.min.service.PessoaService;
 import br.com.min.utils.ReportUtils;
 import br.com.min.utils.Utils;
-import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
 
 @Controller()
 @RequestMapping("/report")
 public class ReportController {
 
+	private static final String VIEW_FATURAMENTO = "faturamento";
+	private static final String VIEW_CAIXA = "caixa";
 	@Autowired
 	private ComandaService comandaService;
 	@Autowired
@@ -83,13 +60,35 @@ public class ReportController {
 	
 	@RequestMapping(value="/caixa", method=RequestMethod.GET)
 	public ModelAndView listarCaixa(HttpServletRequest request){
-		return criarViewCaixa(new Date(), request);
+		return criarViewCaixa(new Date(), new Date(), VIEW_CAIXA,  request);
 	}
 	
 	@RequestMapping(value="/caixa/data", method=RequestMethod.POST)
 	public ModelAndView listarCaixa(String data, HttpServletRequest request){
 		try {
-			return criarViewCaixa(Utils.dateFormat.parse(data), request);
+			return criarViewCaixa(Utils.dateFormat.parse(data), Utils.dateFormat.parse(data), VIEW_CAIXA, request);
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@RequestMapping(value="/faturamento", method=RequestMethod.GET)
+	public ModelAndView listarFaturamento(HttpServletRequest request){
+		Calendar inicio = Calendar.getInstance();
+		inicio.set(Calendar.DAY_OF_MONTH, 1);
+		Date dataInicio = inicio.getTime();
+		
+		Calendar fim = Calendar.getInstance();
+		fim.set(Calendar.DAY_OF_MONTH, inicio.getMaximum(Calendar.DAY_OF_MONTH));
+		Date dataFim = fim.getTime();
+		return criarViewCaixa(dataInicio, dataFim, VIEW_FATURAMENTO, request);
+	}
+	
+	
+	@RequestMapping(value="/faturamento/data", method=RequestMethod.POST)
+	public ModelAndView listarFaturamento(String dataInicio, String dataFim, HttpServletRequest request){
+		try {
+			return criarViewCaixa(Utils.dateFormat.parse(dataInicio), Utils.dateFormat.parse(dataFim), VIEW_FATURAMENTO, request);
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
 		}
@@ -287,10 +286,10 @@ public class ReportController {
 		return vos;
 	}
 	
-	private ModelAndView criarViewCaixa(Date data, HttpServletRequest request){
-		ModelAndView mv = new ModelAndView("caixa");
+	private ModelAndView criarViewCaixa(Date dataInicio, Date dataFim, String view, HttpServletRequest request){
+		ModelAndView mv = new ModelAndView(view);
 		if( Utils.hasRole(Role.ADMIN, request) || Utils.hasRole(Role.CAIXA, request)){
-			List<Comanda> comandas = comandaService.findFechamento(data);
+			List<Comanda> comandas = comandaService.findFechamento(dataInicio, dataFim);
 			mv.addObject("comandas", comandas);
 			Map<FormaPagamento, TotaisPorFormaPagamentoVO> totais = new LinkedHashMap<>();
 			for(FormaPagamento fp : FormaPagamento.values()){
@@ -330,7 +329,8 @@ public class ReportController {
 			mv.addObject("totalLancado", totalLancado);
 			mv.addObject("totalPago", totalPago);
 			
-			mv.addObject("data", data);
+			mv.addObject("dataInicio", dataInicio);
+			mv.addObject("dataFim", dataFim);
 		}
 		return mv;
 	}
@@ -340,7 +340,7 @@ public class ReportController {
 		File file = null;
 		try {
 			String data = dia + "/" + mes + "/" + ano;
-			Map<String, Object> values = criarDadosCaixaDownload(data, request);
+			Map<String, Object> values = criarDadosCaixaDownload(data, data, request);
 			String foFile = ReportUtils.processTemplate(values, "caixa-dia.xml");
 			file = ReportUtils.generatePDF("caixa-dia", foFile);
 			response.setContentType("application/pdf");
@@ -354,8 +354,35 @@ public class ReportController {
 		}
 	}
 	
-	private Map<String, Object> criarDadosCaixaDownload(String data, HttpServletRequest request) throws ParseException{
-		ModelAndView mv = criarViewCaixa(Utils.dateFormat.parse(data), request);
+	@RequestMapping(value="/faturamento/download/{diaInicio}/{mesInicio}/{anoInicio}/{diaFim}/{mesFim}/{anoFim}", method=RequestMethod.GET)
+	public void download	(
+				@PathVariable("anoInicio") String anoInicio,
+				@PathVariable("mesInicio") String mesInicio, 
+				@PathVariable("diaInicio") String diaInicio ,
+				@PathVariable("anoFim") String anoFim,
+				@PathVariable("mesFim") String mesFim, 
+				@PathVariable("diaFim") String diaFim , 
+				HttpServletRequest request, HttpServletResponse response){
+		File file = null;
+		try {
+			String dataInicio = diaInicio + "/" + mesInicio + "/" + anoInicio;
+			String dataFim = diaFim + "/" + mesFim + "/" + anoFim;
+			Map<String, Object> values = criarDadosCaixaDownload(dataInicio, dataFim, request);
+			String foFile = ReportUtils.processTemplate(values, "caixa-dia.xml");
+			file = ReportUtils.generatePDF("caixa-dia", foFile);
+			response.setContentType("application/pdf");
+			response.getOutputStream().write(FileUtils.readFileToByteArray(file));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}finally{
+			if(file != null){
+				FileUtils.deleteQuietly(file);
+			}
+		}
+	}
+	
+	private Map<String, Object> criarDadosCaixaDownload(String dataInicio, String dataFim, HttpServletRequest request) throws ParseException{
+		ModelAndView mv = criarViewCaixa(Utils.dateFormat.parse(dataInicio), Utils.dateFormat.parse(dataFim), VIEW_CAIXA, request);
 		Map<String, Object> values = mv.getModel();
 		Collection<TotaisPorFormaPagamentoVO> vos = (Collection<TotaisPorFormaPagamentoVO>)values.get("totais");
 		Map<String, Object> result = new HashMap<>();
@@ -363,7 +390,8 @@ public class ReportController {
 			result.put(vo.getFormaPagamento().name(), Utils.moneyFormat.format(vo.getTotal()));
 		}
 		result.put("total", Utils.moneyFormat.format((Double)values.get("totalPago")));
-		result.put("data", data);
+		result.put("dataInicio", dataInicio);
+		result.put("dataFim", dataFim);
 		return result;
 	}
 	

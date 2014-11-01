@@ -81,18 +81,18 @@ public class ComandaDAO {
 		return (LancamentoServico) criteria.uniqueResult();
 	}
 	
-	public List<Comanda> findFechamento(Date date){
+	public List<Comanda> findFechamento(Date dataInicio, Date dataFim){
 		Session session = sessionFactory.openSession();
 		Criteria criteria = session.createCriteria(Comanda.class);
 		
 		Calendar dataInicioPesquisa = Calendar.getInstance();
-		dataInicioPesquisa.setTime(date);
+		dataInicioPesquisa.setTime(dataInicio);
 		dataInicioPesquisa.set(Calendar.HOUR_OF_DAY, 0);
 		dataInicioPesquisa.set(Calendar.MINUTE, 0);
 		dataInicioPesquisa.set(Calendar.SECOND, 0);
 		dataInicioPesquisa.set(Calendar.MILLISECOND, 0);
 		Calendar dataFimPesquisa = Calendar.getInstance();
-		dataFimPesquisa.setTime(date);
+		dataFimPesquisa.setTime(dataFim);
 		dataFimPesquisa.set(Calendar.HOUR_OF_DAY, 23);
 		dataFimPesquisa.set(Calendar.MINUTE, 59);
 		dataFimPesquisa.set(Calendar.SECOND, 59);

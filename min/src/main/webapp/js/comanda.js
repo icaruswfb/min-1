@@ -155,7 +155,8 @@ Comanda = {
 		var id = "servico-"+Utils.guid();
 		var form = "<div id='" +id+ "' class='lancamento'>";
 		form += "<div class='col-md-12'>";
-		form += "<div class='float-left m-r-10'><strong>" + lancamentoServico.servico.nome + "</strong>, por <strong>"+lancamentoServico.funcionario.nome + "</strong>";
+		form += "<div class='float-left m-r-10'><strong>" + lancamentoServico.servico.nome + "</strong>, por <strong><a href='/min/web/funcionarios/editar/"+lancamentoServico.funcionario.id+"'>"+ 
+						(lancamentoServico.funcionario.deleted == null ? "": "[Exclu&iacute;do] ") + (lancamentoServico.funcionario.nome) + "</a></strong>";
 		if(lancamentoServico.assistente){
 			form += " e auxiliado por <strong>" + lancamentoServico.assistente.nome + "</strong>";
 		}
@@ -374,6 +375,7 @@ Comanda = {
 			info += "<a class='btn btn-lg m-b-10 m-t-10' data-toggle='modal' href='#modalComandaKit' >Adicionar kit...</a>";
 			info += "</div>";
 		}
+		info+='<div class="clearfix"></div>';
 		info += "<div class='col-md-12' style='z-index: 100;'>";
 		info += 	"<div class='tile'>";
 		if(isComandaAberta){
@@ -385,6 +387,9 @@ Comanda = {
 			info += 	"<div class='tile-title'><div class='comanda-title'>Sevi&ccedil;os</div>";
 		}
 		info +=  "</div>";
+		if(isComandaAberta){
+			info += "<div class='m-b-5 m-l-5' style='font-size: 20px'><a class='showServicos' href='javascript:Lancamento.showServicos()'>[-]</a></div>";
+		}
 		info += "<div class='bloco-servicos listview narrow'>";
 		info += "</div>";
 		info += "</div>";
@@ -409,6 +414,9 @@ Comanda = {
 			info += "<div class='tile-title'><div class='comanda-title'  >Produtos</div>";
 		}
 		info +=  "</div>";
+		if(isComandaAberta){
+			info += "<div class='m-b-5 m-l-5' style='font-size: 20px'><a class='showProdutos' href='javascript:Lancamento.showProdutos()'>[-]</a></div>";
+		}
 		info += "<div class='bloco-produtos listview narrow'>";
 		info += "</div>";
 		info += "</div>";
@@ -434,6 +442,9 @@ Comanda = {
 			info += "<div class='tile-title'><div class='comanda-title'>Produtos de revenda</div>";
 		}
 		info +=  "</div>";
+		if(isComandaAberta){
+			info += "<div class='m-b-5 m-l-5' style='font-size: 20px'><a class='showRevenda' href='javascript:Lancamento.showProdutosRevenda()'>[-]</a></div>";
+		}
 		info += "<div class='bloco-revenda listview narrow'>";
 		info += "</div>";
 		info += "</div>";

@@ -1876,8 +1876,7 @@ a.list-group-item.active > .badge,
     }
     
     #skin-blur-violate {
-  		background: url(../img/body/cloth.png);
-        /*background-image: url(../img/body/violate.jpg);*/
+        background-image: url(../img/body/violate.jpg);
     }
 
     #skin-blur-lights {

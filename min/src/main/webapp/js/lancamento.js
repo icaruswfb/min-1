@@ -284,6 +284,46 @@ Lancamento = {
 					$('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
 				}
 			});
-		}
+		},
 		
+		showServicos:function(){
+			if($("#comanda-form .bloco-servicos").css("display") == 'block'){
+				$(".showServicos").hide(100);
+				$(".showServicos").html("[+]");
+				$(".showServicos").show(100);
+				$("#comanda-form .bloco-servicos").hide(300);
+			}else{
+				$(".showServicos").hide(100);
+				$(".showServicos").html("[-]");
+				$(".showServicos").show(100);
+				$("#comanda-form .bloco-servicos").show(300);
+			}
+		},
+
+		showProdutos:function(){
+			if($("#comanda-form .bloco-produtos").css("display") == 'block'){
+				$(".showProdutos").hide(100);
+				$(".showProdutos").html("[+]");
+				$(".showProdutos").show(100);
+				$("#comanda-form .bloco-produtos").hide(300);
+			}else{
+				$(".showProdutos").hide(100);
+				$(".showProdutos").html("[-]");
+				$(".showProdutos").show(100);
+				$("#comanda-form .bloco-produtos").show(300);
+			}
+		},
+		showProdutosRevenda:function(){
+			if($("#comanda-form .bloco-revenda").css("display") == 'block'){
+				$(".showRevenda").hide(100);
+				$(".showRevenda").html("[+]");
+				$(".showRevenda").show(100);
+				$("#comanda-form .bloco-revenda").hide(300);
+			}else{
+				$(".showRevenda").hide(100);
+				$(".showRevenda").html("[-]");
+				$(".showRevenda").show(100);
+				$("#comanda-form .bloco-revenda").show(300);
+			}
+		}
 };

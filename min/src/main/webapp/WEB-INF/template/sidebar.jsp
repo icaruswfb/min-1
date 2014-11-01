@@ -80,7 +80,10 @@
              </a>
              <ul class="list-unstyled menu-item">
 	             <c:if test="${ hasRole['ADMIN'] or hasRole['CAIXA'] }">
-    	         	<li><a id="caixa-menu" href="<spring:url value='/web/report/caixa' />">Caixa</a></li>
+    	         	<li><a id="caixa-menu" href="<spring:url value='/web/report/caixa' />">Caixa do dia</a></li>
+    	         	<li><a id="faturamento-menu" href="<spring:url value='/web/report/faturamento' />">Faturamento</a></li>
+    	         	<!-- 
+    	         	 -->
              	</c:if>
              	<c:if test="${ hasRole['ADMIN'] }">
    	         		<li><a id="fluxo-menu" href="<spring:url value='/web/report/fluxoFinanceiro' />">Fluxo financeiro</a></li>

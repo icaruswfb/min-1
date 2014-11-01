@@ -51,7 +51,7 @@ public class FuncionarioController {
 	@RequestMapping(value="/listarParaAgenda",method=RequestMethod.GET)
 	public @ResponseBody List<Pessoa> listarFuncionariosParaAgenda(HttpServletRequest request){
 		Pessoa funcionario = criarPesquisaAgenda(request);
-		List<Pessoa> pessoas = pessoaService.findPessoa(funcionario, Funcao.Administrador);
+		List<Pessoa> pessoas = pessoaService.findPessoa(funcionario, Funcao.Administrador, Funcao.Recepcionista);
 		limparPessoasJSON(pessoas);
 		return pessoas;
 	}
@@ -153,11 +153,13 @@ public class FuncionarioController {
 	
 	private void tratarUsuario(Pessoa funcionario){
 		Usuario usuario = funcionario.getUsuario();
+		String login = usuario.getLogin();
 		Role roleNova = usuario.getRole();
 		boolean encryptPassword = true;
 		if( StringUtils.isBlank( usuario.getSenha() )){
 			if(usuario.getId() != null){
-				usuario = usuarioService.findById(usuario.getLogin());
+				usuario = usuarioService.findById(usuario.getId());
+				usuario.setLogin(login);
 				if(usuario != null){
 					funcionario.setUsuario(usuario);
 					encryptPassword = false;

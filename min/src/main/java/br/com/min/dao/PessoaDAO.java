@@ -2,11 +2,11 @@ package br.com.min.dao;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
@@ -33,6 +33,8 @@ public class PessoaDAO {
 			List<Criterion> andPredicates = new ArrayList<>();
 			if(entity.getId() != null){
 				criteria = criteria.add(Restrictions.eq("id", entity.getId()));
+			}else{
+				criteria = criteria.add(Restrictions.isNull("deleted"));
 			}
 			if(funcoesExcluidas != null && funcoesExcluidas.length > 0){
 				criteria = criteria.add( Restrictions.not(Restrictions.in("funcaoPrincipal", funcoesExcluidas)) );
@@ -96,11 +98,9 @@ public class PessoaDAO {
 	
 	public void delete(Pessoa pessoa){
 		Session session = sessionFactory.openSession();
-		Query query = session.createQuery("delete from Historico h where h.cliente.id = " + pessoa.getId());
-		query.executeUpdate();
-		query = session.createQuery("delete from Horario h where h.cliente.id = " + pessoa.getId());
-		query.executeUpdate();
-		session.delete(pessoa);
+		pessoa = findPessoa(pessoa).get(0);
+		pessoa.setDeleted(new Date());
+		session.merge(pessoa);
 		session.flush();
 		session.close();
 	}

@@ -40,6 +40,7 @@ public class Pessoa implements Serializable{
 	private Imagem imagem;
 	private Usuario usuario;
 	private String observacao;
+	private Date deleted;
 
 	@Id
 	@GeneratedValue
@@ -184,6 +185,12 @@ public class Pessoa implements Serializable{
 	}
 	public void setObservacao(String observacao) {
 		this.observacao = observacao;
+	}
+	public Date getDeleted() {
+		return deleted;
+	}
+	public void setDeleted(Date deleted) {
+		this.deleted = deleted;
 	}
 	
 }
