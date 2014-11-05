@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import br.com.min.entity.Role;
 import br.com.min.entity.Servico;
+import br.com.min.entity.TipoServico;
 import br.com.min.service.ServicoService;
 import br.com.min.utils.Utils;
 
@@ -53,25 +55,30 @@ public class ServicoController {
 	public ModelAndView editar(@PathVariable("id") Long id, HttpServletRequest request){
 		ModelAndView mv = new ModelAndView("servico");
 		if(Utils.hasRole(Role.ADMIN, request)){
-			Servico servio;
+			Servico servico;
 			if(id == null){
-				servio = new Servico();
+				servico = new Servico();
 			}else{
-				servio = service.findById(id);
+				servico = service.findById(id);
 			}
-			mv.addObject("servico", servio);
+			mv.addObject("tiposServico", service.listarTipoServico());
+			mv.addObject("servico", servico);
 		}
 		return mv;
 	}
 	
 	@RequestMapping(value="/salvar", method=RequestMethod.POST)
-	public ModelAndView salvar(@ModelAttribute("servico") Servico servico, HttpServletRequest request){
+	public ModelAndView salvar(@ModelAttribute("servico") Servico servico, Long tipoServicoId, HttpServletRequest request){
 		if(Utils.hasRole(Role.ADMIN, request)){
 			if(servico.getDuracaoMinutos() != null){
 				servico.setDuracao((servico.getDuracaoMinutos() * MINUTO_MILLIS));
 			}
 			if(servico.getTempoAcaoProdutoMinutos() != null){
 				servico.setTempoAcaoProduto((servico.getTempoAcaoProdutoMinutos() * MINUTO_MILLIS ));
+			}
+			if(tipoServicoId != null){
+				TipoServico tipoServico = service.findTipoServicoById(tipoServicoId);
+				servico.setTipoServico(tipoServico);
 			}
 			service.persist(servico);
 		}

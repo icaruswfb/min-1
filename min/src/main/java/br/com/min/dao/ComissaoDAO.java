@@ -42,6 +42,7 @@ public class ComissaoDAO {
 			criteria.add(Restrictions.eq("funcionario", funcionario));
 		}
 		criteria.add(Restrictions.between("dataCriacao", inicio.getTime(), fim.getTime()));
+		criteria.add(Restrictions.ne("valor", 0d));
 		
 		List<LancamentoComissao> resultado = criteria.list();
 		return resultado;

@@ -3,12 +3,19 @@ package br.com.min.entity;
 import java.io.Serializable;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Servico implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2817758796548313446L;
 	private Long id;
 	private String nome;
 	private Long duracao;
@@ -17,6 +24,7 @@ public class Servico implements Serializable{
 	private Integer tempoAcaoProdutoMinutos;
 	private Double preco;
 	private Boolean comicionado;
+	private TipoServico tipoServico;
 	
 	@Id
 	@GeneratedValue
@@ -72,5 +80,12 @@ public class Servico implements Serializable{
 	}
 	public void setComicionado(Boolean comicionado) {
 		this.comicionado = comicionado;
+	}
+	@ManyToOne
+	public TipoServico getTipoServico() {
+		return tipoServico;
+	}
+	public void setTipoServico(TipoServico tipoServico) {
+		this.tipoServico = tipoServico;
 	}
 }

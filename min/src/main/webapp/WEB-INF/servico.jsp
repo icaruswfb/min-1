@@ -38,19 +38,40 @@
                  	<form:input path="nome" cssClass="form-control input-lg m-b-10" placeholder="Nome"/>
                 </div>
                 <div class="col-lg-2">
+               		 <p>Duração</p>
                  	<form:input path="duracaoMinutos" cssClass="form-control m-b-10 mask-number" placeholder="Duração em minutos"/>
                 </div>
-                <div class="col-lg-3">
+                <div class="col-lg-2">
+               		 <p>Tempo de ação do produto</p>
                  	<form:input path="tempoAcaoProdutoMinutos" cssClass="form-control m-b-10 mask-number" placeholder="Tempo de ação do produto"/>
                 </div>
                 <div class="col-lg-2">
+                <p>Preço</p>
                  	<input name="preco" class="form-control m-b-10 mask-money" id="preco" placeholder="Preço sugerido" value="<fmt:formatNumber minFractionDigits="2" value="${ servico.preco }" />"/>
                 </div>
                 <div class="col-lg-3">
+                <p>Comissão do serviço</p>
                 	<form:select path="comicionado" cssClass="form-control m-b-10" >
 						<form:option value="true" label="Serviço comicionado" />                		
 						<form:option value="false" label="Serviço não comicionado" />
                 	</form:select>
+                </div>
+                <!-- 
+                 -->
+                <div class="col-lg-3">
+                <p>Tipo de Serviço</p>
+                	<select name="tipoServicoId" class="form-control m-b-10" >
+                		<c:forEach var="tipoServico" items="${ tiposServico }">
+                			<c:choose>
+                			<c:when test="${ servico.tipoServico.id eq tipoServico.id }">
+	                			<option selected="selected" value="${ tipoServico.id }">${ tipoServico.nome }</option>
+                			</c:when>
+                			<c:otherwise>
+	                			<option value="${ tipoServico.id }">${ tipoServico.nome }</option>
+                			</c:otherwise>
+                			</c:choose>
+                		</c:forEach>
+                	</select>
                 </div>
                 
              </form:form>

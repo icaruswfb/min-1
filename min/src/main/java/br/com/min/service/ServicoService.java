@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.min.dao.GenericDAO;
 import br.com.min.dao.ServicoDAO;
 import br.com.min.entity.Servico;
+import br.com.min.entity.TipoServico;
 
 @Service
 public class ServicoService {
@@ -42,6 +43,14 @@ public class ServicoService {
 		}else{
 			return result.get(0);
 		}
+	}
+	
+	public List<TipoServico> listarTipoServico(){
+		return dao.listarTiposServicos();
+	}
+	
+	public TipoServico findTipoServicoById(Long id){
+		return dao.findTipoServicoById(id);
 	}
 
 	public void delete(Long id) {

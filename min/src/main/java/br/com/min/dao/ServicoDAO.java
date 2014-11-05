@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import br.com.min.entity.Servico;
+import br.com.min.entity.TipoServico;
 
 @Repository
 public class ServicoDAO {
@@ -41,6 +42,23 @@ public class ServicoDAO {
 		
 		List<Servico> servicos = criteria.list();
 		return servicos;
+	}
+	
+	public List<TipoServico> listarTiposServicos(){
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(TipoServico.class);
+		
+		List<TipoServico> tiposServicos = criteria.list();
+		return tiposServicos;
+	}
+
+	public TipoServico findTipoServicoById(Long id) {
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(TipoServico.class);
+		criteria.add(Restrictions.eq("id", id));
+		
+		TipoServico tipoServico = (TipoServico) criteria.uniqueResult();
+		return tipoServico;
 	}
 	
 }

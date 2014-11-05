@@ -27,19 +27,25 @@ import org.springframework.web.servlet.ModelAndView;
 import br.com.min.controller.vo.ComissoesPorFuncionarioVO;
 import br.com.min.controller.vo.TotaisPorFormaPagamentoVO;
 import br.com.min.controller.vo.TotalParcelamentoVO;
+import br.com.min.controller.vo.TotalPorFuncionarioVO;
+import br.com.min.controller.vo.TotalPorTipoServicoVO;
 import br.com.min.entity.Comanda;
 import br.com.min.entity.FluxoPagamento;
 import br.com.min.entity.FormaPagamento;
 import br.com.min.entity.LancamentoComissao;
+import br.com.min.entity.LancamentoProduto;
+import br.com.min.entity.LancamentoServico;
 import br.com.min.entity.Pagamento;
 import br.com.min.entity.Pessoa;
 import br.com.min.entity.Role;
 import br.com.min.entity.TipoComissao;
+import br.com.min.entity.TipoServico;
 import br.com.min.entity.Usuario;
 import br.com.min.service.ComandaService;
 import br.com.min.service.ComissaoService;
 import br.com.min.service.PagamentoService;
 import br.com.min.service.PessoaService;
+import br.com.min.service.ServicoService;
 import br.com.min.utils.ReportUtils;
 import br.com.min.utils.Utils;
 
@@ -57,16 +63,20 @@ public class ReportController {
 	private PessoaService pessoaService;
 	@Autowired
 	private PagamentoService pagamentoService;
+	@Autowired
+	private ServicoService servicoService;
 	
 	@RequestMapping(value="/caixa", method=RequestMethod.GET)
 	public ModelAndView listarCaixa(HttpServletRequest request){
-		return criarViewCaixa(new Date(), new Date(), VIEW_CAIXA,  request);
+		ModelAndView mv = new ModelAndView(VIEW_CAIXA);
+		return criarViewCaixa(new Date(), new Date(), mv,  request);
 	}
 	
 	@RequestMapping(value="/caixa/data", method=RequestMethod.POST)
 	public ModelAndView listarCaixa(String data, HttpServletRequest request){
 		try {
-			return criarViewCaixa(Utils.dateFormat.parse(data), Utils.dateFormat.parse(data), VIEW_CAIXA, request);
+			ModelAndView mv = new ModelAndView(VIEW_CAIXA);
+			return criarViewCaixa(Utils.dateFormat.parse(data), Utils.dateFormat.parse(data), mv, request);
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
 		}
@@ -81,17 +91,91 @@ public class ReportController {
 		Calendar fim = Calendar.getInstance();
 		fim.set(Calendar.DAY_OF_MONTH, inicio.getMaximum(Calendar.DAY_OF_MONTH));
 		Date dataFim = fim.getTime();
-		return criarViewCaixa(dataInicio, dataFim, VIEW_FATURAMENTO, request);
+
+		ModelAndView mv = new ModelAndView(VIEW_FATURAMENTO);
+		mv = criarViewCaixa(dataInicio, dataFim, mv, request);
+		compilarDadosFaturamento(mv);
+		return mv;
 	}
 	
 	
 	@RequestMapping(value="/faturamento/data", method=RequestMethod.POST)
 	public ModelAndView listarFaturamento(String dataInicio, String dataFim, HttpServletRequest request){
 		try {
-			return criarViewCaixa(Utils.dateFormat.parse(dataInicio), Utils.dateFormat.parse(dataFim), VIEW_FATURAMENTO, request);
+			ModelAndView mv = new ModelAndView(VIEW_FATURAMENTO);
+			mv = criarViewCaixa(Utils.dateFormat.parse(dataInicio), Utils.dateFormat.parse(dataFim), mv, request);
+			compilarDadosFaturamento(mv);
+			return mv;
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	private void compilarDadosFaturamento(ModelAndView mv){
+		List<Comanda> comandas = (List<Comanda>)mv.getModel().get("comandas");
+		Double totalRevenda = 0d;
+		Double totalProdutos = 0d;
+		Double totalDescontos = 0d;
+		Double totalServicos = 0d;
+		List<TotalPorTipoServicoVO> totais = new ArrayList<>();
+		List<TipoServico> tiposServico = servicoService.listarTipoServico();
+		for(TipoServico tipoServico : tiposServico){
+			TotalPorTipoServicoVO vo = new TotalPorTipoServicoVO();
+			vo.setTipoServico(tipoServico);
+			totais.add(vo);
+		}
+		List<TotalPorFuncionarioVO> totaisFuncionario = new ArrayList<>();
+		List<TotalPorFuncionarioVO> totaisFuncionarioRevenda = new ArrayList<>();
+		List<Pessoa> funcionarios = pessoaService.listarFuncionarios();
+		for(Pessoa funcionario : funcionarios){
+			TotalPorFuncionarioVO vo = new TotalPorFuncionarioVO();
+			vo.setId(funcionario.getId());
+			vo.setFuncionario(funcionario.getNome());
+			totaisFuncionario.add(vo);
+			
+			vo = new TotalPorFuncionarioVO();
+			vo.setId(funcionario.getId());
+			vo.setFuncionario(funcionario.getNome());
+			totaisFuncionarioRevenda.add(vo);
+		}
+		for(Comanda comanda : comandas){
+			for(LancamentoServico servico : comanda.getServicos()){
+				TipoServico tipoServico = servico.getServico().getTipoServico();
+				for(TotalPorTipoServicoVO vo : totais){
+					if(vo.getTipoServico().equals(tipoServico)){
+						vo.setTotal(vo.getTotal() + servico.getValor());
+						break;
+					}
+				}
+				for(TotalPorFuncionarioVO vo : totaisFuncionario){
+					if(vo.getId().equals(servico.getFuncionario().getId())){
+						vo.setTotal(vo.getTotal() + servico.getValor());
+						break;
+					}
+				}
+				totalServicos += servico.getValor();
+			}
+			for(LancamentoProduto produto : comanda.getProdutos()){
+				if(produto.getRevenda()){
+					totalRevenda += produto.getValor();
+					for(TotalPorFuncionarioVO vo : totaisFuncionarioRevenda){
+						if(produto.getVendedor().getId().equals(vo.getId())){
+							vo.setTotal(vo.getTotal() + produto.getValor());
+						}
+					}
+				}else{
+					totalProdutos += produto.getValor();
+				}
+			}
+			totalDescontos += comanda.getDesconto();
+		}
+		mv.addObject("totaisFuncionario", totaisFuncionario);
+		mv.addObject("totaisFuncionarioRevenda", totaisFuncionarioRevenda);
+		mv.addObject("totalDescontos", totalDescontos);
+		mv.addObject("totalProdutos", totalProdutos);
+		mv.addObject("totalRevenda", totalRevenda);
+		mv.addObject("totalServicos", totalServicos);
+		mv.addObject("totaisTipoServico", totais);
 	}
 	
 	@RequestMapping(value="/comissao", method=RequestMethod.GET)
@@ -271,7 +355,9 @@ public class ReportController {
 				vo.setTotalServicoAuxiliado(vo.getTotalServicoAuxiliado() + comissao.getValor());
 			}else
 			if(comissao.getTipo().equals(TipoComissao.VENDA)){
-				vo.getPercentuais().add(comissao.getPercentual());
+				if( ! vo.getPercentuais().contains(comissao.getPercentual())){
+					vo.getPercentuais().add(comissao.getPercentual());
+				}
 				Double totalPorPercentual = vo.getTotalPorPercentual().get(comissao.getPercentual());
 				if(totalPorPercentual == null){
 					totalPorPercentual = 0.0;
@@ -286,8 +372,7 @@ public class ReportController {
 		return vos;
 	}
 	
-	private ModelAndView criarViewCaixa(Date dataInicio, Date dataFim, String view, HttpServletRequest request){
-		ModelAndView mv = new ModelAndView(view);
+	private ModelAndView criarViewCaixa(Date dataInicio, Date dataFim, ModelAndView mv, HttpServletRequest request){
 		if( Utils.hasRole(Role.ADMIN, request) || Utils.hasRole(Role.CAIXA, request)){
 			List<Comanda> comandas = comandaService.findFechamento(dataInicio, dataFim);
 			mv.addObject("comandas", comandas);
@@ -382,7 +467,8 @@ public class ReportController {
 	}
 	
 	private Map<String, Object> criarDadosCaixaDownload(String dataInicio, String dataFim, HttpServletRequest request) throws ParseException{
-		ModelAndView mv = criarViewCaixa(Utils.dateFormat.parse(dataInicio), Utils.dateFormat.parse(dataFim), VIEW_CAIXA, request);
+		ModelAndView mv = new ModelAndView(VIEW_CAIXA);
+		mv = criarViewCaixa(Utils.dateFormat.parse(dataInicio), Utils.dateFormat.parse(dataFim), mv, request);
 		Map<String, Object> values = mv.getModel();
 		Collection<TotaisPorFormaPagamentoVO> vos = (Collection<TotaisPorFormaPagamentoVO>)values.get("totais");
 		Map<String, Object> result = new HashMap<>();

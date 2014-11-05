@@ -96,7 +96,135 @@
 			</div>
 			
 			 <!-- Table Hover -->
-
+			 
+							<div class="row">
+								<div class="col-lg-2 float-left">
+									<p class="total">Total lançado: </p>
+								</div>	
+								<div class="col-lg-10">
+									<strong class="f-s-20">R$<fmt:formatNumber value="${ totalLancado }" minFractionDigits="2" /></strong>
+								</div>
+							</div>
+				<div class="clearfix"></div>
+							<div class="row">
+								<div class="col-lg-2 float-left">
+									<p class="total">Diferença: </p>
+								</div>	
+								<div class="col-lg-10">
+									<strong class="f-s-20">R$<fmt:formatNumber value="${ totalLancado - totalPago }" minFractionDigits="2" /></strong>
+								</div>
+							</div>
+							
+				<div class="clearfix"></div>
+					<div class="block-area">
+							<div class="row">
+								<div class="col-lg-6">
+									<p>Serviços</p>
+				                    <table class="table table-hover tile">
+				                        <tbody>
+											<c:forEach var="total" items="${ totaisTipoServico }">
+												<tr>
+													<td>
+														${ total.tipoServico.nome}
+													</td>
+													<td>
+														Total: R$<fmt:formatNumber value="${ total.total }" minFractionDigits="2" />
+													</td>
+												</tr>
+											</c:forEach>
+										</tbody>
+									</table>
+								</div>
+							</div>
+							
+					<div class="clearfix"></div>
+					<div class="row">
+								<div class="col-lg-6">
+									<p>Total por funcionário principal de cada serviço (não contabiliza auxiliares)</p>
+				                    <table class="table table-hover tile">
+				                        <tbody>
+											<c:forEach var="total" items="${ totaisFuncionario }">
+												<tr>
+													<td>
+														<a href="/min/web/funcionarios/editar/${ total.id }">${ total.funcionario }</a>
+													</td>
+													<td>
+														Total: R$<fmt:formatNumber value="${ total.total }" minFractionDigits="2" />
+													</td>
+												</tr>
+											</c:forEach>
+										</tbody>
+									</table>
+								</div>
+							</div>
+				<div class="clearfix"></div>
+				<div class="row">
+								<div class="col-lg-6">
+									<p>Total por funcionário em revenda</p>
+				                    <table class="table table-hover tile">
+				                        <tbody>
+											<c:forEach var="total" items="${ totaisFuncionarioRevenda }">
+												<tr>
+													<td>
+														<a href="/min/web/funcionarios/editar/${ total.id }">${ total.funcionario }</a>
+													</td>
+													<td>
+														Total: R$<fmt:formatNumber value="${ total.total }" minFractionDigits="2" />
+													</td>
+												</tr>
+											</c:forEach>
+										</tbody>
+									</table>
+								</div>
+							</div>
+				<div class="clearfix"></div>
+							<div class="row">
+								<div class="col-lg-6">
+										<p>Totais</p>
+					                    <table class="table table-hover tile">
+					                        <tbody>
+												<tr>
+													<td>
+														Serviço
+													</td>
+													<td>
+														Total: R$<fmt:formatNumber value="${ totalServicos }" minFractionDigits="2" />
+													</td>
+												</tr>
+												<tr>
+													<td>
+														Revenda
+													</td>
+													<td>
+														Total: R$<fmt:formatNumber value="${ totalRevenda }" minFractionDigits="2" />
+													</td>
+												</tr>
+												<tr>
+													<td>
+														Produtos do salão
+													</td>
+													<td>
+														Total: R$<fmt:formatNumber value="${ totalProdutos }" minFractionDigits="2" />
+													</td>
+												</tr>
+												<tr>
+													<td>
+														Descontos
+													</td>
+													<td>
+														Total: R$<fmt:formatNumber value="${ totalDescontos }" minFractionDigits="2" />
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+							</div>
+				
+	<div class="clearfix"></div>
+					</div>
+	
+	
+	
 		</section>
 
 

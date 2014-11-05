@@ -5,6 +5,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Produto {
@@ -22,6 +23,10 @@ public class Produto {
 	private SituacaoEstoque situacaoEstoque;
 	@Enumerated(EnumType.STRING)
 	private CategoriaProduto categoria;
+	@ManyToOne
+	private TipoServico tipoServico;
+	@ManyToOne
+	private TipoProduto tipoProduto;
 	
 	public Long getId() {
 		return id;
@@ -93,6 +98,18 @@ public class Produto {
 	}
 	public void setCategoria(CategoriaProduto categoria) {
 		this.categoria = categoria;
+	}
+	public TipoServico getTipoServico() {
+		return tipoServico;
+	}
+	public void setTipoServico(TipoServico tipoServico) {
+		this.tipoServico = tipoServico;
+	}
+	public TipoProduto getTipoProduto() {
+		return tipoProduto;
+	}
+	public void setTipoProduto(TipoProduto tipoProduto) {
+		this.tipoProduto = tipoProduto;
 	}
 	
 }
