@@ -25,6 +25,35 @@ public class PessoaDAO {
 	@Autowired
 	private SessionFactory sessionFactory;
 	
+	public List<Pessoa> search(List<String> words){
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(Pessoa.class);
+
+		criteria = criteria.add(Restrictions.isNull("deleted"));
+
+		List<Criterion> orPredicates = new ArrayList<>();
+		
+		for(String word : words){
+			orPredicates.add(Restrictions.ilike("nome", word, MatchMode.ANYWHERE));
+			orPredicates.add(Restrictions.ilike("email", word, MatchMode.ANYWHERE));
+			orPredicates.add(Restrictions.ilike("telefone", word, MatchMode.ANYWHERE));
+			orPredicates.add(Restrictions.ilike("documento", word, MatchMode.ANYWHERE));
+			orPredicates.add(Restrictions.ilike("endereco", word, MatchMode.ANYWHERE));
+			orPredicates.add(Restrictions.ilike("cidade", word, MatchMode.ANYWHERE));
+			orPredicates.add(Restrictions.ilike("observacao", word, MatchMode.ANYWHERE));
+		}
+
+		Criterion[] orPredicatesArray = new Criterion[orPredicates.size()];
+		orPredicatesArray = orPredicates.toArray(orPredicatesArray);
+
+		criteria = criteria.add(Restrictions.or(orPredicatesArray));
+		
+		criteria.addOrder(Order.asc("nome"));
+		List<Pessoa> pessoas = criteria.list();
+		
+		return pessoas;
+	}
+	
 	public List<Pessoa> findPessoa(Pessoa entity, Funcao... funcoesExcluidas){
 		Session session = sessionFactory.openSession();
 		Criteria criteria = session.createCriteria(Pessoa.class);

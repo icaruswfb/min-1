@@ -27,6 +27,7 @@ public class Produto {
 	private TipoServico tipoServico;
 	@ManyToOne
 	private TipoProduto tipoProduto;
+	private Long quantidadePorUnidade;
 	
 	public Long getId() {
 		return id;
@@ -110,6 +111,12 @@ public class Produto {
 	}
 	public void setTipoProduto(TipoProduto tipoProduto) {
 		this.tipoProduto = tipoProduto;
+	}
+	public Long getQuantidadePorUnidade() {
+		return quantidadePorUnidade;
+	}
+	public void setQuantidadePorUnidade(Long quantidadePorUnidade) {
+		this.quantidadePorUnidade = quantidadePorUnidade;
 	}
 	
 }

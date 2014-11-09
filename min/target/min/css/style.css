@@ -2664,3 +2664,7 @@ a.list-group-item.active > .badge,
 .add-kit-img{
 	margin-top: 7px !important;
 }
+
+.t-a-r{
+	text-align: right;
+}

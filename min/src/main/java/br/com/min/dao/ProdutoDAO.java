@@ -17,7 +17,6 @@ import org.springframework.stereotype.Repository;
 
 import br.com.min.entity.LancamentoEstoque;
 import br.com.min.entity.Produto;
-import br.com.min.entity.TipoLancamentoEstoque;
 
 @Repository
 public class ProdutoDAO {

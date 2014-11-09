@@ -17,6 +17,7 @@ import br.com.min.entity.Produto;
 import br.com.min.entity.Role;
 import br.com.min.entity.SituacaoEstoque;
 import br.com.min.entity.TipoLancamentoEstoque;
+import br.com.min.entity.UnidadeMedida;
 import br.com.min.service.ProdutoService;
 import br.com.min.utils.Utils;
 
@@ -85,6 +86,12 @@ public class EstoqueController {
 				}
 			}
 			vo.setEstoqueAtual(quantidade);
+			if( ! produto.getUnidade().equals(UnidadeMedida.un) ){
+				if(produto.getQuantidadePorUnidade() != null){
+					Double quantidadeUnidades = quantidade.doubleValue() / produto.getQuantidadePorUnidade().doubleValue();
+					vo.setEstoqueAtualUnidade(quantidadeUnidades);
+				}
+			}
 			vo.setConsumidoPeriodo(consumidoPerido);
 			vo.setProjecaoCompraMensal(projecaoMensal);
 			

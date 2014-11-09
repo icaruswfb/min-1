@@ -6,6 +6,7 @@ public class ProjecaoEstoqueVO {
 
 	private Produto produto;
 	private Long estoqueAtual;
+	private Double estoqueAtualUnidade;
 	private Double projecaoCompraMensal;
 	private Long consumidoPeriodo;
 	
@@ -32,5 +33,11 @@ public class ProjecaoEstoqueVO {
 	}
 	public void setConsumidoPeriodo(Long consumidoPeriodo) {
 		this.consumidoPeriodo = consumidoPeriodo;
+	}
+	public Double getEstoqueAtualUnidade() {
+		return estoqueAtualUnidade;
+	}
+	public void setEstoqueAtualUnidade(Double estoqueAtualUnidade) {
+		this.estoqueAtualUnidade = estoqueAtualUnidade;
 	}
 }

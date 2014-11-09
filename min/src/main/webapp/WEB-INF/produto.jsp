@@ -50,17 +50,21 @@
                  	<p>Preço revenda (R$)</p>
                  	<input name="precoRevenda" id="precoRevenda" class="form-control m-b-10 mask-money" placeholder="Preço sugerido" value="<fmt:formatNumber minFractionDigits="2" value="${ produto.precoRevenda }" />" />
                 </div>
-                <div class="col-lg-4">
-                 	<p>Quantidade mínima para gerar alertas de estoque</p>
+                <div class="col-lg-2">
+                 	<p>Estoque mínimo</p>
                  	<form:input path="quantidadeAlerta" cssClass="form-control m-b-10 mask-number" placeholder="Quantidade mínima para alerta" />
                 </div>
                 <div class="col-lg-2">
                  	<p>Unidade de medida</p>
-                	<form:select path="unidade" cssClass="select custom-select" placeholder="Unidade">
+                	<form:select path="unidade" cssClass="select custom-select" placeholder="Unidade" id="unidade">
                 		<form:option value="ml">Mililitro (ml)</form:option>
                 		<form:option value="un">Unidade (un)</form:option>
                 		<form:option value="g">Gramas (g)</form:option>
                 	</form:select>
+                </div>
+                <div class="col-lg-2" id="quantidadePorUnidade-block">
+                 	<p><span id="unidadeMedidaSpan"></span> por embalagem</p>
+                 	<form:input path="quantidadePorUnidade" cssClass="form-control m-b-10 mask-number" placeholder="Quantidade por unidade" />
                 </div>
                 
              </form:form>
@@ -83,6 +87,12 @@
                 				<p>Quantidade em estoque (${ produto.unidade })</p>
                  				<input class="form-control m-b-10 mask-number" placeholder="0" value="" id="quantidade-estoque" readonly="readonly" />
                 			</div>
+                			<c:if test="${ produto.quantidadePorUnidade ne null }">
+	                			<div class="col-lg-4">
+	                				<p>Quantidade em estoque por unidade</p>
+	                 				<input class="form-control m-b-10 mask-money" placeholder="0" value="" id="quantidade-estoque-unidade" readonly="readonly" />
+	                			</div>
+                			</c:if>
                 		</div>
                 		<div class="row">
                 			<div class="col-lg-6">
@@ -156,7 +166,21 @@
 		$(document).ready(function(){
              $('.mask-number').mask('########0');
              $('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
+             $("#unidade").change(function(){
+            	 	showHideQuantidadePorUnidade();
+                 });
+             showHideQuantidadePorUnidade();
 		});
+
+		function showHideQuantidadePorUnidade(){
+			var unidade = $("#unidade").val();
+			if(unidade != "un"){
+				$("#quantidadePorUnidade-block").show(300);
+				$("#unidadeMedidaSpan").html($("#unidade").val());
+			}else{
+				$("#quantidadePorUnidade-block").hide(300);
+			}
+		}
 		
 	</script>
 	

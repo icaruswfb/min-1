@@ -67,7 +67,7 @@ public class HomeController {
 	
 	@RequestMapping(value="/pesquisar", method=RequestMethod.POST)
 	public ModelAndView pesquisar(String pesquisa){
-		return list(pesquisar(pesquisa, null), pesquisa);
+		return list(pessoaService.search(pesquisa), pesquisa);
 	}
 	
 	

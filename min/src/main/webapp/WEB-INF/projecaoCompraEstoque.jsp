@@ -44,7 +44,12 @@
 	                                    <td><a href="<spring:url value='/web/produtos/editar/${estoque.produto.id}' />">${ estoque.produto.nome }</a></td>
 	                                    <td>${ estoque.produto.categoria.descricao }</td>
 	                                    <td>R$<fmt:formatNumber minFractionDigits="2" maxFractionDigits="2" value="${ estoque.produto.custoUnitario}" /></td>
-	                                    <td><fmt:formatNumber minFractionDigits="0" maxFractionDigits="0" value="${ estoque.estoqueAtual }" />${ estoque.produto.unidade }</td>
+	                                    <td>
+	                                    	<fmt:formatNumber minFractionDigits="0" maxFractionDigits="0" value="${ estoque.estoqueAtual }" />${ estoque.produto.unidade }
+	                                    	<c:if test="${ estoque.estoqueAtualUnidade ne null}">
+		                                    	(<fmt:formatNumber minFractionDigits="0" maxFractionDigits="2" value="${ estoque.estoqueAtualUnidade }" />un)
+	                                    	</c:if>
+	                                    </td>
 	                                    <td><fmt:formatNumber minFractionDigits="0" maxFractionDigits="0" value="${ estoque.consumidoPeriodo }" />${ estoque.produto.unidade }</td>
 	                                    <td><fmt:formatNumber minFractionDigits="0" maxFractionDigits="0" value="${ estoque.projecaoCompraMensal }" />${ estoque.produto.unidade }</td>
 	                                    <td>R$<fmt:formatNumber minFractionDigits="2" maxFractionDigits="2" value="${ estoque.produto.custoUnitario * estoque.projecaoCompraMensal}" /></td>
@@ -75,7 +80,12 @@
 	                                    <td><a href="<spring:url value='/web/produtos/editar/${estoque.produto.id}' />">${ estoque.produto.nome }</a></td>
 	                                    <td>${ estoque.produto.categoria.descricao }</td>
 	                                    <td>R$<fmt:formatNumber minFractionDigits="2" maxFractionDigits="2" value="${ estoque.produto.custoUnitario}" /></td>
-	                                    <td><fmt:formatNumber minFractionDigits="0" maxFractionDigits="0" value="${ estoque.estoqueAtual }" />${ estoque.produto.unidade }</td>
+	                                    <td>
+	                                    	<fmt:formatNumber minFractionDigits="0" maxFractionDigits="0" value="${ estoque.estoqueAtual }" />${ estoque.produto.unidade }
+	                                    	<c:if test="${ estoque.estoqueAtualUnidade ne null}">
+		                                    	(<fmt:formatNumber minFractionDigits="0" maxFractionDigits="2" value="${ estoque.estoqueAtualUnidade }" />un)
+	                                    	</c:if>
+	                                    </td>
 	                                    <td><fmt:formatNumber minFractionDigits="0" maxFractionDigits="0" value="${ estoque.consumidoPeriodo }" />${ estoque.produto.unidade }</td>
 	                                    <td><fmt:formatNumber minFractionDigits="0" maxFractionDigits="0" value="${ estoque.projecaoCompraMensal }" />${ estoque.produto.unidade }</td>
 	                                    <td>R$<fmt:formatNumber minFractionDigits="2" maxFractionDigits="2" value="${ estoque.produto.custoUnitario * estoque.projecaoCompraMensal}" /></td>
@@ -106,7 +116,12 @@
 	                                    <td><a href="<spring:url value='/web/produtos/editar/${estoque.produto.id}' />">${ estoque.produto.nome }</a></td>
 	                                    <td>${ estoque.produto.categoria.descricao }</td>
 	                                    <td>R$<fmt:formatNumber minFractionDigits="2" maxFractionDigits="2" value="${ estoque.produto.custoUnitario}" /></td>
-	                                    <td><fmt:formatNumber minFractionDigits="0" maxFractionDigits="0" value="${ estoque.estoqueAtual }" />${ estoque.produto.unidade }</td>
+	                                    <td>
+	                                    	<fmt:formatNumber minFractionDigits="0" maxFractionDigits="0" value="${ estoque.estoqueAtual }" />${ estoque.produto.unidade }
+	                                    	<c:if test="${ estoque.estoqueAtualUnidade ne null}">
+		                                    	(<fmt:formatNumber minFractionDigits="0" maxFractionDigits="2" value="${ estoque.estoqueAtualUnidade }" />un)
+	                                    	</c:if>
+	                                    </td>
 	                                    <td><fmt:formatNumber minFractionDigits="0" maxFractionDigits="0" value="${ estoque.consumidoPeriodo }" />${ estoque.produto.unidade }</td>
 	                                    <td><fmt:formatNumber minFractionDigits="0" maxFractionDigits="0" value="${ estoque.projecaoCompraMensal }" />${ estoque.produto.unidade }</td>
 	                                    <td>R$<fmt:formatNumber minFractionDigits="2" maxFractionDigits="2" value="${ estoque.produto.custoUnitario * estoque.projecaoCompraMensal}" /></td>

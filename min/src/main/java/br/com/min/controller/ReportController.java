@@ -226,16 +226,38 @@ public class ReportController {
 		return null;
 	}
 	
-	@RequestMapping("/comissao/pagar")
-	public @ResponseBody String pagar(String ids, String dataInicio, String dataFim, HttpServletRequest request){
+	@RequestMapping(value="/comissao/download", method=RequestMethod.POST)
+	public void download(String ids, String dataInicio, String dataFim, HttpServletRequest request, HttpServletResponse response){
 		if(Utils.hasRole(Role.ADMIN, request)){
 			String[] idsStr = ids.split(",");
 			Double valorTotal = 0.0;
+			List<LancamentoComissao> comissoes = new ArrayList<>();
 			Pessoa funcionario = null;
 			for(String idStr : idsStr){
 				Long id = Long.parseLong(idStr);
 				LancamentoComissao comissao = comissaoServico.findById(id);
+				comissoes.add(comissao);
+				valorTotal += comissao.getValor();
+				funcionario = comissao.getFuncionario();
+			}
+			createPDFComissoes(dataInicio, dataFim, response, valorTotal,
+					funcionario, comissoes);
+			
+		}
+	}
+	
+	@RequestMapping("/comissao/pagar")
+	public void pagar(String ids, String dataInicio, String dataFim, HttpServletRequest request, HttpServletResponse response){
+		if(Utils.hasRole(Role.ADMIN, request)){
+			String[] idsStr = ids.split(",");
+			Double valorTotal = 0.0;
+			Pessoa funcionario = null;
+			List<LancamentoComissao> comissoes = new ArrayList<>();
+			for(String idStr : idsStr){
+				Long id = Long.parseLong(idStr);
+				LancamentoComissao comissao = comissaoServico.findById(id);
 				if(comissao.getDataPagamento() == null){
+					comissoes.add(comissao);
 					comissao.setDataPagamento(new Date());
 					comissaoServico.persist(comissao);
 					valorTotal += comissao.getValor();
@@ -251,8 +273,29 @@ public class ReportController {
 				pagamento.setValor(valorTotal);
 				pagamentoService.persist(pagamento);
 			}
+			createPDFComissoes(dataInicio, dataFim, response, valorTotal,
+					funcionario, comissoes);
 		}
-		return "ok";
+	}
+
+	private void createPDFComissoes(String dataInicio, String dataFim,
+			HttpServletResponse response, Double valorTotal,
+			Pessoa funcionario, List<LancamentoComissao> comissoes) {
+		File file = null;
+		try{
+			Map<String, Object> values = new HashMap<>();
+			values.put("comissoes", comissoes);
+			values.put("total", valorTotal);
+			values.put("dataInicio", dataInicio);
+			values.put("dataFim", dataFim);
+			values.put("funcionario", funcionario);
+			String foFile = ReportUtils.processTemplate(values, "comissao.xml");
+			file = ReportUtils.generatePDF("comissao", foFile);
+			response.setContentType("application/pdf");
+			response.getOutputStream().write(FileUtils.readFileToByteArray(file));
+		}catch(Exception e){
+			FileUtils.deleteQuietly(file);
+		}
 	}
 	
 	private Comanda limparComandaJSON(Comanda comanda){

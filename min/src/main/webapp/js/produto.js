@@ -10,6 +10,9 @@ Produto = {
 				type: 'GET',
 				success:function(vo){
 					$("#quantidade-estoque").val(vo.quantidade);
+					if(vo.produto.quantidadePorUnidade){
+						$("#quantidade-estoque-unidade").val(vo.quantidade / vo.produto.quantidadePorUnidade);
+					}
 					$("#lancamentos-estoque").html('');
 					for(var i = 0; i < vo.lancamentos.length; i++){
 						var lancamento = vo.lancamentos[i];
@@ -28,6 +31,7 @@ Produto = {
 						content += '   </div>';
 						$("#lancamentos-estoque").append(content);
 					}
+					$('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
 				}
 			});
 		},

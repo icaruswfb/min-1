@@ -26,6 +26,7 @@
 					<div class="col-lg-12">
 						<form action="/min/web/report/comissao/data" id="comissao-data-form" method="post">
 							<p>Período de visualização</p>
+							<input type="hidden" name="ids" value="" id="ids"/>
 							<div class="col-lg-3 m-b-15">
 								<div class="input-icon datetime-pick date-only">
 				                     <input data-format="dd/MM/yyyy" type="text" 
@@ -108,7 +109,7 @@
                 	</div>
 			
 					<div class="modal fade" id="modalWider" tabindex="-1" role="dialog" aria-hidden="true">
-                        <div class="modal-dialog">
+                        <div class="modal-dialog modal-lg">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -130,6 +131,8 @@
                                 	</div>
                                 </div>
                                 <div class="modal-footer">
+					                 <a class="btn " type="button" onclick="Comissao.downloadComissoes()" target="_blank">Download</a>
+					                 <a class="btn " type="button" onclick="Comissao.downloadComissoes(true)" target="_blank">Download de todas</a>
 					                 <button class="btn " type="button" onclick="if(confirm('Tem certeza que deseja efetuar este pagamento?')){Comissao.pagarComissoes()}">Pagar</button>
 					                 <button class="btn " type="button" onclick="if(confirm('Tem certeza que deseja efetuar este pagamento?')){Comissao.pagarComissoes(true)}">Pagar todas</button>
                                     <button type="button" class="btn btn-sm" data-dismiss="modal" >Cancelar</button>

@@ -153,12 +153,14 @@ public class TarefaController {
 	private void limparTarefaJSON(Tarefa tarefa){
 		if( tarefa.getFuncionario() != null ){
 			tarefa.getFuncionario().setUsuario(null);
+			tarefa.getFuncionario().setComissao(null);
 		}
 		if( tarefa.getCliente() != null ){
 			tarefa.getCliente().setUsuario(null);
 		}
 		if( tarefa.getCriador() != null ){
 			tarefa.getCriador().setUsuario(null);
+			tarefa.getCriador().setComissao(null);
 		}
 	}
 	

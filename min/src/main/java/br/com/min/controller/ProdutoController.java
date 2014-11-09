@@ -19,6 +19,7 @@ import br.com.min.entity.LancamentoEstoque;
 import br.com.min.entity.Produto;
 import br.com.min.entity.Role;
 import br.com.min.entity.TipoLancamentoEstoque;
+import br.com.min.entity.UnidadeMedida;
 import br.com.min.service.ProdutoService;
 import br.com.min.utils.Utils;
 
@@ -80,6 +81,9 @@ public class ProdutoController {
 	@RequestMapping(value="/salvar", method=RequestMethod.POST)
 	public ModelAndView salvar(@ModelAttribute("servico") Produto produto, HttpServletRequest request){
 		if(Utils.hasRole(Role.ADMIN, request)){
+			if( produto.getUnidade().equals(UnidadeMedida.un) ){
+				produto.setQuantidadePorUnidade(null);
+			}
 			produto = service.persist(produto);
 			service.atualizarSituacaoEstoque(produto);;
 		}

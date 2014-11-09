@@ -1,5 +1,6 @@
 package br.com.min.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,12 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.min.dao.GenericDAO;
-import br.com.min.dao.HistoricoDAO;
 import br.com.min.dao.ImagemDAO;
 import br.com.min.dao.PessoaDAO;
 import br.com.min.entity.Funcao;
 import br.com.min.entity.Imagem;
 import br.com.min.entity.Pessoa;
+import br.com.min.utils.Utils;
 
 @Service
 public class PessoaService {
@@ -23,7 +24,7 @@ public class PessoaService {
 	private GenericDAO genericDao;
 	@Autowired
 	private ImagemDAO imagemDao;
-
+	
 	@Transactional
 	public Pessoa persist(Pessoa pessoa){
 		if(pessoa.getImagem() != null){
@@ -34,6 +35,11 @@ public class PessoaService {
 //		if(pessoa.getImagem() != null){
 //			imagemDao.deletarNaoUtilizados();
 //		}
+	}
+	
+	public List<Pessoa> search(String query){
+		List<String> words = Utils.createListQueryFromString(query);
+		return dao.search(words);
 	}
 	
 	@Transactional

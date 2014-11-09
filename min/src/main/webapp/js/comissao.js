@@ -56,8 +56,15 @@ Comissao = {
 		html += "</div>";
 		$("#pagamento-comissao").append(html);
 	},
+	downloadComissoes:function(todos){
+		Comissao.submitComssoes('/min/web/report/comissao/download', todos);
+	},
 	
 	pagarComissoes:function(todos){
+		Comissao.submitComssoes('/min/web/report/comissao/pagar', todos);
+	},
+	
+	submitComssoes:function(url, todos){
 		var ids = [];
 		if(todos){
 			$.each(Comissao.comissoes, function(i, value){
@@ -68,18 +75,20 @@ Comissao = {
 				ids.push(i);
 			});
 		}
-		$.ajax({
-			url: '/min/web/report/comissao/pagar',
-			type: 'POST',
-			data: {
-				ids: ids.toString(),
-				dataInicio: $("#data-inicio").val(),
-				dataFim: $("#data-fim").val(),
-			},
-			success:function(){
-				$("#comissao-data-form").submit();
-			}
-		});
+		$("#comissao-data-form #ids").val(ids.toString());
+		$("#comissao-data-form").attr("action", url);
+		$("#comissao-data-form").submit();
+//		$.ajax({
+//			url: url,
+//			type: 'POST',
+//			data: {
+//				ids: ids.toString(),
+//				dataInicio: $("#data-inicio").val(),
+//				dataFim: $("#data-fim").val(),
+//			},
+//			success:function(){
+//			}
+//		});
 	},
 	
 	selecionarComissao:function(id){

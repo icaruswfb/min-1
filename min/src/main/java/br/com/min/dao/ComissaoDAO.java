@@ -85,7 +85,10 @@ public class ComissaoDAO {
 		Session session = sessionFactory.openSession();
 		Criteria criteria = session.createCriteria(LancamentoComissao.class);
 		criteria.add(Restrictions.eq("id", id));
-		return (LancamentoComissao) criteria.uniqueResult();
+		
+		LancamentoComissao result = (LancamentoComissao) criteria.uniqueResult();
+		session.close();
+		return result;
 	}
 	
 }
