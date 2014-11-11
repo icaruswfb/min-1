@@ -154,13 +154,22 @@ public class TarefaController {
 		if( tarefa.getFuncionario() != null ){
 			tarefa.getFuncionario().setUsuario(null);
 			tarefa.getFuncionario().setComissao(null);
+			if(tarefa.getFuncionario().getImagem() != null){
+				tarefa.getFuncionario().getImagem().setImagem(null);
+			}
 		}
 		if( tarefa.getCliente() != null ){
 			tarefa.getCliente().setUsuario(null);
+			if(tarefa.getCliente().getImagem() != null){
+				tarefa.getCliente().getImagem().setImagem(null);
+			}
 		}
 		if( tarefa.getCriador() != null ){
 			tarefa.getCriador().setUsuario(null);
 			tarefa.getCriador().setComissao(null);
+			if(tarefa.getCriador().getImagem() != null){
+				tarefa.getCriador().getImagem().setImagem(null);
+			}
 		}
 	}
 	

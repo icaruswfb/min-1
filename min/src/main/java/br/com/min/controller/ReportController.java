@@ -217,6 +217,7 @@ public class ReportController {
 				for(LancamentoComissao comissao : comissoes){
 					limparComandaJSON(comissao.getComanda());
 					comissao.getFuncionario().setUsuario(null);
+					comissao.getFuncionario().setImagem(null);
 				}
 				return comissoes;
 			} catch (ParseException e) {
@@ -225,6 +226,7 @@ public class ReportController {
 		}
 		return null;
 	}
+	
 	
 	@RequestMapping(value="/comissao/download", method=RequestMethod.POST)
 	public void download(String ids, String dataInicio, String dataFim, HttpServletRequest request, HttpServletResponse response){
