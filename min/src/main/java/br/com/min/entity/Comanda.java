@@ -9,7 +9,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
@@ -40,6 +39,7 @@ public class Comanda {
 	private Double credito = 0d;
 	@Column()
 	private Long ultimaAtualizacao;
+	private String numeroNota;
 
 	@OneToMany(mappedBy="comanda", cascade=CascadeType.ALL,orphanRemoval=true)
 	private List<Pagamento> pagamentos = new ArrayList<Pagamento>();
@@ -139,6 +139,12 @@ public class Comanda {
 	}
 	public void setUltimaAtualizacao(Long ultimaAtualizacao) {
 		this.ultimaAtualizacao = ultimaAtualizacao;
+	}
+	public String getNumeroNota() {
+		return numeroNota;
+	}
+	public void setNumeroNota(String numeroNota) {
+		this.numeroNota = numeroNota;
 	}
 	
 	

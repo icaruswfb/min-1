@@ -526,10 +526,23 @@ Comanda = {
 		info += "</div>";
 
 		if(!isComandaAberta){
+			if(comanda.numeroNota){
+				info += "<div class='w-100-p'>";
+				info += '<div class="col-md-3 float-right">';
+				info += '<p>Observação: '+comanda.numeroNota+'</p>';
+				info += "</div>";
+				info += "</div>";
+			}
 			info += "</div>";
 			info += "</form>";
 		}else{
 			if(Comanda.hasRoleAdmin || Comanda.hasRoleCaixa){
+				info += "<div class='w-100-p'>";
+				info += '<div class="col-md-3 float-right">';
+				info += '<p>Observação</p>';
+				info += '<input class="form-control input-sm m-b-10 mask-numer" name="notaAtendimento" id="nota-atendimento" />';
+				info += "</div>";
+				info += "</div>";
 				info += "<div class='w-100-p'>";
 				info += '<a class="btn btn-lg m-r-15 m-b-15" style="float: right" onclick="Comanda.detalhesFechamento()" >Fechar comanda</a><a data-toggle="modal"  href="#modalFechamento" id="linkModalFechamento" style="display: none"></a>';
 				info += "</div>";

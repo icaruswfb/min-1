@@ -75,29 +75,29 @@
 	                                    	<a href="<spring:url value='/web/clientes/editar/${comissao.funcionario.id}' />">${ comissao.funcionario.nome }</a>
 	                                    </td>
 	                                    <td>
-	                                    	R$<fmt:formatNumber minFractionDigits="2" value="${ comissao.totalServico }" />
+	                                    	R$<fmt:formatNumber maxFractionDigits="2" minFractionDigits="2" value="${ comissao.totalServico }" />
 	                                    </td>
 	                                    <td>
-	                                    	R$<fmt:formatNumber minFractionDigits="2" value="${ comissao.totalServicoAuxiliado }" />
+	                                    	R$<fmt:formatNumber maxFractionDigits="2" minFractionDigits="2" value="${ comissao.totalServicoAuxiliado }" />
 	                                    </td>
 	                                    <td>
-	                                    	R$<fmt:formatNumber minFractionDigits="2" value="${ comissao.totalAuxilar }" />
+	                                    	R$<fmt:formatNumber maxFractionDigits="2" minFractionDigits="2" value="${ comissao.totalAuxilar }" />
 	                                    </td>
 	                                    <td>
-	                                    	R$<fmt:formatNumber minFractionDigits="2" value="${ comissao.totalVendas }" />
+	                                    	R$<fmt:formatNumber maxFractionDigits="2" minFractionDigits="2" value="${ comissao.totalVendas }" />
 	                                    </td>
 	                                    <td>
 											<ul>
 												<c:forEach var="percentual" items="${ comissao.percentuais }">
 													<li>
-														<fmt:formatNumber minFractionDigits="2" value="${ percentual }" />%:
-														 R$<fmt:formatNumber minFractionDigits="2" value="${ comissao.totalPorPercentual[percentual] }" /> 
+														<fmt:formatNumber minFractionDigits="2" maxFractionDigits="2" value="${ percentual }" />%:
+														 R$<fmt:formatNumber maxFractionDigits="2" minFractionDigits="2" value="${ comissao.totalPorPercentual[percentual] }" /> 
 													</li>
 												</c:forEach>
 											</ul>
 										</td>
 	                                    <td>
-	                                    	R$<fmt:formatNumber minFractionDigits="2" value="${ comissao.total }" />
+	                                    	R$<fmt:formatNumber maxFractionDigits="2" minFractionDigits="2" value="${ comissao.total }" />
 	                                    </td>
 	                                    <td>
 	                                    	<a data-toggle="modal" href="#modalWider" onclick="Comissao.exibirComissoesPorFuncionario('${comissao.funcionario.id}')" class="btn btn-sm">Detalhes</a>

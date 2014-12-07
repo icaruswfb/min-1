@@ -122,6 +122,17 @@ public enum FormaPagamento {
 		public boolean isCartaoCredito() {
 			return false;
 		}
+	},
+	Cortesia {
+		public boolean isParcelavel() {
+			return false;
+		}
+		public String getNome() {
+			return "Cortesia";
+		}
+		public boolean isCartaoCredito() {
+			return false;
+		}
 	};
 	
 	public abstract boolean isParcelavel();

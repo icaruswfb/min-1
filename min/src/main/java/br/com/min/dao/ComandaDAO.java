@@ -119,6 +119,33 @@ public class ComandaDAO {
 		return entities.get(0);
 	}
 	
+	public List<Comanda> find(Date inicio, Date fim, boolean toExport){
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(Comanda.class);
+		
+		Calendar calendarInicio = Calendar.getInstance();
+		calendarInicio.setTime(inicio);
+		calendarInicio.set(Calendar.HOUR_OF_DAY, 0);
+		calendarInicio.set(Calendar.MINUTE, 0);
+		calendarInicio.set(Calendar.SECOND, 0);
+		calendarInicio.set(Calendar.MILLISECOND, 0);
+		
+		Calendar calendarFim = Calendar.getInstance();
+		calendarFim.setTime(fim);
+		calendarFim.set(Calendar.HOUR_OF_DAY, 23);
+		calendarFim.set(Calendar.MINUTE, 59);
+		calendarFim.set(Calendar.SECOND, 59);
+		calendarFim.set(Calendar.MILLISECOND, 999);
+		
+		criteria.add(Restrictions.between("fechamento", calendarInicio.getTime(), calendarFim.getTime()));
+		if(toExport){
+			criteria.add(Restrictions.isNotNull("numeroNota"));
+		}
+		
+		List<Comanda> entities = criteria.list();
+		return entities;
+	}
+	
 	public List<Comanda> find(Comanda entity, Boolean fechadas){
 		Session session = sessionFactory.openSession();
 		Criteria criteria = session.createCriteria(Comanda.class);
@@ -139,6 +166,14 @@ public class ComandaDAO {
 			criteria.addOrder(Order.desc("abertura"));
 		}
 		List<Comanda> entities = criteria.list();
+		return entities;
+	}
+	
+	public List<Comanda> findComandasByFuncionario(Long funcionarioId){
+		Session session = sessionFactory.openSession();
+		//Criteria criteria = session.createCriteria(Comanda.class);
+		Query query = session.createQuery("select distinct c from Comanda c join c.servicos ls where ls.funcionario.id = " + funcionarioId);
+		List<Comanda> entities = query.list();
 		return entities;
 	}
 	

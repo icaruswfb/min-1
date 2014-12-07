@@ -1,6 +1,7 @@
 package br.com.min.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import br.com.min.controller.vo.ComandasRPS;
 import br.com.min.controller.vo.ComissoesPorFuncionarioVO;
 import br.com.min.controller.vo.TotaisPorFormaPagamentoVO;
 import br.com.min.controller.vo.TotalParcelamentoVO;
@@ -389,6 +391,9 @@ public class ReportController {
 		Map<Long, ComissoesPorFuncionarioVO> vosPorFuncionario = iniciarVosPorFuncionario(request);
 		for(LancamentoComissao comissao : comissoes){
 			ComissoesPorFuncionarioVO vo = vosPorFuncionario.get(comissao.getFuncionario().getId());
+			if(vo == null){
+				continue;
+			}
 			vo.setTotal(vo.getTotal() + comissao.getValor());
 			if(comissao.getTipo().equals(TipoComissao.AUXILIAR)){
 				vo.setTotalAuxilar(vo.getTotalAuxilar() + comissao.getValor());
@@ -524,6 +529,87 @@ public class ReportController {
 		result.put("dataInicio", dataInicio);
 		result.put("dataFim", dataFim);
 		return result;
+	}
+	
+	@RequestMapping(value="/comandas")
+	public ModelAndView listarComandas(){
+		Calendar calendarInicio = Calendar.getInstance();
+		calendarInicio.set(Calendar.DAY_OF_MONTH, 1);
+		Date inicio = calendarInicio.getTime();
+		
+		Calendar calendarFim = Calendar.getInstance();
+		calendarFim.set(Calendar.DAY_OF_MONTH, calendarFim.getMaximum(Calendar.DAY_OF_MONTH)); 
+		Date fim = calendarFim.getTime();
+		
+		return listarComandas(inicio, fim);
+	}
+	
+	@RequestMapping(value="/comandas/data")
+	public ModelAndView listarComandas(String dataInicio, String dataFim){
+		Date inicio;
+		Date fim ;
+		try {
+			inicio = Utils.dateFormat.parse(dataInicio);
+			fim = Utils.dateFormat.parse(dataFim);
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
+		
+		return listarComandas(inicio, fim);
+	}
+	
+	private ModelAndView listarComandas(Date inicio, Date fim){
+		ModelAndView mv = new ModelAndView("comandas");
+		List<Comanda> comandas = comandaService.listarPorPeriodo(inicio, fim, false);
+		
+		Double total = 0d;
+		for(Comanda comanda : comandas){
+			total += (comanda.getValorTotal() - comanda.getDesconto());
+		}
+		
+		mv.addObject("comandas", comandas);
+		mv.addObject("valorTotal", total);
+		mv.addObject("quantidadeComandas", comandas.size());
+		mv.addObject("dataInicio", inicio);
+		mv.addObject("dataFim", fim);
+		return mv;
+	}
+	
+	@RequestMapping(value="/comandas/download/{diaInicio}/{mesInicio}/{anoInicio}/{diaFim}/{mesFim}/{anoFim}/{lote}", method=RequestMethod.GET)
+	public void downloadLoteRPS(
+			@PathVariable("diaInicio")String diaInicio,
+			@PathVariable("mesInicio")String mesInicio,
+			@PathVariable("anoInicio")String anoInicio,
+			@PathVariable("diaFim")String diaFim,
+			@PathVariable("mesFim")String mesFim,
+			@PathVariable("anoFim")String anoFim,
+			@PathVariable("lote") String numeroLote,
+			HttpServletResponse response){
+		Date inicio;
+		Date fim;
+		try {
+			inicio = Utils.dateFormat.parse(diaInicio + "/" + mesInicio + "/" + anoInicio);
+			fim = Utils.dateFormat.parse(diaFim + "/" + mesFim + "/" + anoFim);
+		} catch (ParseException e1) {
+			throw new RuntimeException(e1);
+		}
+		List<Comanda> comandas = comandaService.listarPorPeriodo(inicio, fim, true);
+		
+		ComandasRPS comandasRps = new ComandasRPS();
+		comandasRps.setQuantidadeRps(comandas.size());
+		comandasRps.setNumeroLote(Long.parseLong(numeroLote));
+		comandasRps.setComandas(comandas);
+		Map<String, Object> values = new HashMap<>();
+		values.put("rps", comandasRps);
+		byte[] rps = ReportUtils.processTemplateToByteArray(values, "rps.xml");
+		response.addHeader("Content-Disposition", "attachment;filename=comandas.xml");
+		response.setContentType("text/xml");
+		try {
+			response.getOutputStream().write(rps);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		
 	}
 	
 }

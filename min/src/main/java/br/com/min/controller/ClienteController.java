@@ -360,6 +360,8 @@ public class ClienteController {
 	private Comanda criarComanda(HttpServletRequest request){
 		Long comandaId = Long.parseLong(request.getParameter("comandaId"));
 		Comanda comanda = comandaService.findById(comandaId);
+		String notaAtendimento = request.getParameter("notaAtendimento");
+		comanda.setNumeroNota(notaAtendimento);
 		if(comanda.getFechamento() != null){
 			throw new RuntimeException("Alteração de comanda já fechada");
 		}
@@ -398,7 +400,7 @@ public class ClienteController {
 	public @ResponseBody Comanda addDesconto(@RequestParam(required=true) Long clienteId, 
 																					@RequestParam(required=true) Double desconto, HttpServletRequest request){
 		Comanda comanda = comandaService.findComandaAberta(clienteId);
-		if(Utils.hasRole(Role.ADMIN, request)){
+		if(Utils.hasRole(Role.CAIXA, request)){
 			comanda.setDesconto(desconto);
 			comandaService.persist(comanda, Utils.getUsuarioLogado(request).getPessoa());
 		}

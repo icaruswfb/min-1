@@ -50,6 +50,11 @@ public class ReportUtils {
 	}
 	
 	public static String processTemplate(Map<String, Object> values, String templateFile){
+		String foFile = new String(processTemplateToByteArray(values, templateFile));
+		return foFile;
+	}
+	
+	public static byte[] processTemplateToByteArray(Map<String, Object> values, String templateFile){
 		if(cfg == null){
 			configureFreemarker();
 		}
@@ -58,11 +63,9 @@ public class ReportUtils {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			Writer templateOut = new BufferedWriter(new OutputStreamWriter(baos));
 			template.process(values, templateOut);
-			
-			templateOut.flush();
-			String foFile = new String(baos.toByteArray());
+			byte[] result = baos.toByteArray();
 			templateOut.close();
-			return foFile;
+			return result;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

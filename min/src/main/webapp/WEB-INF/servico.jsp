@@ -47,7 +47,7 @@
                 </div>
                 <div class="col-lg-2">
                 <p>Preço</p>
-                 	<input name="preco" class="form-control m-b-10 mask-money" id="preco" placeholder="Preço sugerido" value="<fmt:formatNumber minFractionDigits="2" value="${ servico.preco }" />"/>
+                 	<input name="preco" class="form-control m-b-10 mask-money" id="preco" placeholder="Preço sugerido" value="<fmt:formatNumber maxFractionDigits="2" minFractionDigits="2" value="${ servico.preco }" />"/>
                 </div>
                 <div class="col-lg-3">
                 <p>Comissão do serviço</p>

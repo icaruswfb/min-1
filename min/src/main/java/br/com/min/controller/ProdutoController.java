@@ -1,5 +1,6 @@
 package br.com.min.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import br.com.min.controller.vo.EstoqueVO;
+import br.com.min.controller.vo.ProdutoPrecoVO;
 import br.com.min.entity.CategoriaProduto;
 import br.com.min.entity.LancamentoEstoque;
 import br.com.min.entity.Produto;
@@ -96,6 +98,67 @@ public class ProdutoController {
 			service.delete(id);
 		}
 		return listar(request);
+	}
+	
+	@RequestMapping(value="/precos")
+	public ModelAndView listPrecos(String pesquisa, HttpServletRequest request){
+		ModelAndView mv = new ModelAndView("produtosPrecos");
+		List<Produto> produtos = service.listar();
+		List<ProdutoPrecoVO> vos = createPrecoVOs(produtos, null);
+		mv.addObject("produtos", vos);
+		return mv;
+	}
+	
+
+	@RequestMapping(value="/precos/aplicar", method=RequestMethod.POST)
+	public ModelAndView aplicarAlteracao(Double percentual, String pesquisa, CategoriaProduto categoriaProduto, HttpServletRequest request){
+		if(Utils.hasRole(Role.ADMIN, request)){
+			List<Produto> produtos = service.search(pesquisa, categoriaProduto);
+			for(Produto produto : produtos){
+				Double precoNovo = produto.getCustoUnitario() + (produto.getCustoUnitario() * (percentual / 100));
+				produto.setPrecoRevenda(precoNovo);
+				service.persist(produto);
+			}
+		}
+		return simularAlteracao(percentual, pesquisa, categoriaProduto, request);
+	}
+	
+	@RequestMapping(value="/precos/simular", method=RequestMethod.POST)
+	public ModelAndView simularAlteracao(Double percentual, String pesquisa, CategoriaProduto categoriaProduto, HttpServletRequest request){
+		ModelAndView mv = new ModelAndView("produtosPrecos");
+		if(Utils.hasRole(Role.ADMIN, request)){
+			List<Produto> produtos = service.search(pesquisa, categoriaProduto);
+			mv.addObject("pesquisa", pesquisa);
+			mv.addObject("categoria", categoriaProduto);
+			List<ProdutoPrecoVO> vos = createPrecoVOs(produtos, percentual);
+			mv.addObject("percentual", percentual);
+			mv.addObject("produtos", vos);
+		}
+		return mv;
+	}
+	
+	@RequestMapping(value="/precos/pesquisar", method=RequestMethod.POST)
+	public ModelAndView pesquisarPrecos(String pesquisa, CategoriaProduto categoriaProduto, HttpServletRequest request){
+		return simularAlteracao(null, pesquisa, categoriaProduto, request);
+	}
+	
+	private List<ProdutoPrecoVO> createPrecoVOs(List<Produto> produtos, Double percentualNovo){
+		List<ProdutoPrecoVO> vos = new ArrayList<ProdutoPrecoVO>();
+		for(Produto produto : produtos){
+			ProdutoPrecoVO vo = new ProdutoPrecoVO();
+			vo.setProduto(produto);
+			if(produto.getPrecoRevenda() != null && produto.getCustoUnitario() != null){
+				Double percentual = produto.getPrecoRevenda() / produto.getCustoUnitario() * 100 - 100;
+				vo.setPercentual(percentual);
+				if(percentualNovo != null){
+					Double precoNovo = produto.getCustoUnitario() + (produto.getCustoUnitario() * (percentualNovo / 100));
+					vo.setPrecoNovo(precoNovo);
+					vo.setDiferenca(percentualNovo - percentual);
+				}
+			}
+			vos.add(vo);
+		}
+		return vos;
 	}
 	
 	@RequestMapping(value="/listarEstoque/{id}", method=RequestMethod.GET)

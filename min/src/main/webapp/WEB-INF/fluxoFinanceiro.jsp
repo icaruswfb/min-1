@@ -119,11 +119,11 @@
 	                                 		<c:when test="${ pagamento.fluxoPagamento eq 'SAIDA' }">
                         						<c:set var="multiplicador" value="-1" />
 	                                 			<i class="debito">
-	              	                   				-<fmt:formatNumber minFractionDigits="2" value="${ pagamento.valor }" />
+	              	                   				-<fmt:formatNumber minFractionDigits="2" maxFractionDigits="2" value="${ pagamento.valor }" />
 		                                 		</i>
 	                                 		</c:when>
 	                                 		<c:otherwise>
-			                                 	+<fmt:formatNumber minFractionDigits="2" value="${ pagamento.valor }" />
+			                                 	+<fmt:formatNumber minFractionDigits="2" maxFractionDigits="2" value="${ pagamento.valor }" />
 	                                 		</c:otherwise>
 	                                 	</c:choose>
 	                                 </td>
@@ -131,11 +131,11 @@
 	                             		<c:set var="saldo" value="${ saldo + (pagamento.valor * multiplicador) }" />    	
 	                             		<c:choose>
 	                             			<c:when test="${ saldo ge 0 }">
-	                             				<fmt:formatNumber minFractionDigits="2" value="${ saldo }" />
+	                             				<fmt:formatNumber minFractionDigits="2" maxFractionDigits="2" value="${ saldo }" />
 	                             			</c:when>
 	                             			<c:otherwise>
 	                                 			<i class="debito">
-	              	                   				<fmt:formatNumber minFractionDigits="2" value="${ saldo }" />
+	              	                   				<fmt:formatNumber minFractionDigits="2" maxFractionDigits="2" value="${ saldo }" />
 		                                 		</i>
 	                             			</c:otherwise>
 	                             		</c:choose>

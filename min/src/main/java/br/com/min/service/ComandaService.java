@@ -429,6 +429,10 @@ public class ComandaService {
 		return dao.find(entity, null);
 	}
 	
+	public List<Comanda> listarPorPeriodo(Date inicio, Date fim, boolean toExport){
+		return dao.find(inicio, fim, toExport);
+	}
+	
 	public Comanda findById(Long id){
 		Comanda entity = new Comanda();
 		entity.setId(id);
@@ -527,6 +531,10 @@ public class ComandaService {
 		historico.setTexto("Lançamento do serviço " + produto.getProduto().getNome() + " no valor de R$" + produto.getValor() + " foi excluído.");
 		genericDao.persist(servico);
 		genericDao.persist(historico);
+	}
+	
+	public List<Comanda> findComandasByFuncionario(Long funcionarioId){
+		return dao.findComandasByFuncionario(funcionarioId);
 	}
 	
 }

@@ -39,7 +39,7 @@
                 </div>
                 <%--
                 <div class="col-lg-2">
-                 	<input name="valor" class="form-control m-b-10 mask-money" id="valor" placeholder="Preço sugerido" value="<fmt:formatNumber minFractionDigits="2" value="${ kit.valor }" />"/>
+                 	<input name="valor" class="form-control m-b-10 mask-money" id="valor" placeholder="Preço sugerido" value="<fmt:formatNumber maxFractionDigits="2" minFractionDigits="2" value="${ kit.valor }" />"/>
                 </div>
                  --%>
                 <div class="col-lg-2">
@@ -71,7 +71,7 @@
 									</select>
 								</div>
 								<div class='col-md-2'>
-									<input class='mask-money form-control input-sm m-b-10' readonly disabled id='preco-servico-${index.index }'  value="<fmt:formatNumber minFractionDigits="2" value="${ servicoKit.preco }" />"></input>
+									<input class='mask-money form-control input-sm m-b-10' readonly disabled id='preco-servico-${index.index }'  value="<fmt:formatNumber maxFractionDigits="2" minFractionDigits="2" value="${ servicoKit.preco }" />"></input>
 								</div>
 								<div class='col-md-1'>
 									<a href='#' onclick='Kit.deleteServico("${index.index}")'> <i class='sa-list-delete'></i></a>
@@ -106,7 +106,7 @@
 								<input onchange='Kit.calcularValor()' value="${ produtoKit.quantidade }" placeholder='Quantidade' class='mask-number form-control input-sm m-b-10' id='quantidade-produto-${produtoIndex.index }'></input>
 							</div>
 							<div class='col-md-2'>
-								<input class='mask-money form-control input-sm m-b-10' value="<fmt:formatNumber minFractionDigits="2" value="${ produtoKit.quantidade * produtoKit.produto.precoRevenda }" />"  readonly disabled id='preco-produto-${produtoIndex.index }'></input>
+								<input class='mask-money form-control input-sm m-b-10' value="<fmt:formatNumber maxFractionDigits="2" minFractionDigits="2" value="${ produtoKit.quantidade * produtoKit.produto.precoRevenda }" />"  readonly disabled id='preco-produto-${produtoIndex.index }'></input>
 							</div>
 							<div class='col-md-1'><a href='#' onclick='Kit.deleteProduto("${produtoIndex.index}")'> <i class='sa-list-delete'></i></a></div>
 						</div>									

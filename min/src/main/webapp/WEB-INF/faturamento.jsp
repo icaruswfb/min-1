@@ -57,9 +57,9 @@
 												${ total.formaPagamento.nome }
 											</td>
 											<td>
-												Total: R$<fmt:formatNumber value="${ total.total }" minFractionDigits="2" />
+												Total: R$<fmt:formatNumber value="${ total.total }" minFractionDigits="2" maxFractionDigits="2" />
 												<c:forEach var="parcela" items="${ total.parcelas }">
-													<p class="p-l-10 p-t-10  m-0">Total em ${ parcela.parcelas }x: R$<fmt:formatNumber value="${ parcela.total }" minFractionDigits="2" /></p>
+													<p class="p-l-10 p-t-10  m-0">Total em ${ parcela.parcelas }x: R$<fmt:formatNumber value="${ parcela.total }" minFractionDigits="2" maxFractionDigits="2" /></p>
 												</c:forEach>
 											</td>
 										</tr>
@@ -74,7 +74,7 @@
 									<p class="total">Total lançado: </p>
 								</div>
 								<div class="col-lg-10">
-									<strong class="f-s-20">R$<fmt:formatNumber value="${ totalLancado }" minFractionDigits="2" /></strong>
+									<strong class="f-s-20">R$<fmt:formatNumber value="${ totalLancado }" minFractionDigits="2" maxFractionDigits="2" /></strong>
 								</div>
 							</div>
 						 -->
@@ -83,7 +83,7 @@
 									<p class="total">Total pago: </p>
 								</div>	
 								<div class="col-lg-10">
-									<strong class="f-s-20">R$<fmt:formatNumber value="${ totalPago }" minFractionDigits="2" /></strong>
+									<strong class="f-s-20">R$<fmt:formatNumber value="${ totalPago }" minFractionDigits="2" maxFractionDigits="2"/></strong>
 								</div>
 							</div>
 						</div>
@@ -102,7 +102,7 @@
 									<p class="total">Total lançado: </p>
 								</div>	
 								<div class="col-lg-10">
-									<strong class="f-s-20">R$<fmt:formatNumber value="${ totalLancado }" minFractionDigits="2" /></strong>
+									<strong class="f-s-20">R$<fmt:formatNumber value="${ totalLancado }" minFractionDigits="2" maxFractionDigits="2"/></strong>
 								</div>
 							</div>
 				<div class="clearfix"></div>
@@ -111,7 +111,7 @@
 									<p class="total">Diferença: </p>
 								</div>	
 								<div class="col-lg-10">
-									<strong class="f-s-20">R$<fmt:formatNumber value="${ totalLancado - totalPago }" minFractionDigits="2" /></strong>
+									<strong class="f-s-20">R$<fmt:formatNumber value="${ totalLancado - totalPago }" minFractionDigits="2" maxFractionDigits="2" /></strong>
 								</div>
 							</div>
 							
@@ -128,7 +128,7 @@
 														${ total.tipoServico.nome}
 													</td>
 													<td>
-														Total: R$<fmt:formatNumber value="${ total.total }" minFractionDigits="2" />
+														Total: R$<fmt:formatNumber value="${ total.total }" minFractionDigits="2" maxFractionDigits="2" />
 													</td>
 												</tr>
 											</c:forEach>
@@ -149,7 +149,7 @@
 														<a href="/min/web/funcionarios/editar/${ total.id }">${ total.funcionario }</a>
 													</td>
 													<td>
-														Total: R$<fmt:formatNumber value="${ total.total }" minFractionDigits="2" />
+														Total: R$<fmt:formatNumber value="${ total.total }" minFractionDigits="2" maxFractionDigits="2" />
 													</td>
 												</tr>
 											</c:forEach>
@@ -169,7 +169,7 @@
 														<a href="/min/web/funcionarios/editar/${ total.id }">${ total.funcionario }</a>
 													</td>
 													<td>
-														Total: R$<fmt:formatNumber value="${ total.total }" minFractionDigits="2" />
+														Total: R$<fmt:formatNumber value="${ total.total }" minFractionDigits="2" maxFractionDigits="2" />
 													</td>
 												</tr>
 											</c:forEach>
@@ -188,7 +188,7 @@
 														Serviço
 													</td>
 													<td>
-														Total: R$<fmt:formatNumber value="${ totalServicos }" minFractionDigits="2" />
+														Total: R$<fmt:formatNumber value="${ totalServicos }" minFractionDigits="2" maxFractionDigits="2" />
 													</td>
 												</tr>
 												<tr>
@@ -196,7 +196,7 @@
 														Revenda
 													</td>
 													<td>
-														Total: R$<fmt:formatNumber value="${ totalRevenda }" minFractionDigits="2" />
+														Total: R$<fmt:formatNumber value="${ totalRevenda }" minFractionDigits="2" maxFractionDigits="2" />
 													</td>
 												</tr>
 												<tr>
@@ -204,7 +204,7 @@
 														Produtos do salão
 													</td>
 													<td>
-														Total: R$<fmt:formatNumber value="${ totalProdutos }" minFractionDigits="2" />
+														Total: R$<fmt:formatNumber value="${ totalProdutos }" minFractionDigits="2" maxFractionDigits="2" />
 													</td>
 												</tr>
 												<tr>
@@ -212,7 +212,7 @@
 														Descontos
 													</td>
 													<td>
-														Total: R$<fmt:formatNumber value="${ totalDescontos }" minFractionDigits="2" />
+														Total: R$<fmt:formatNumber value="${ totalDescontos }" minFractionDigits="2" maxFractionDigits="2" />
 													</td>
 												</tr>
 											</tbody>

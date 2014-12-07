@@ -44,11 +44,11 @@
                 </div>
                 <div class="col-lg-2">
                  	<p>Custo unitário (R$)</p>
-                 	<input name="custoUnitario" id="custoUnitario" class="form-control m-b-10 mask-money" placeholder="Custo unitário" value="<fmt:formatNumber minFractionDigits="2" value="${ produto.custoUnitario }" />" />
+                 	<input name="custoUnitario" id="custoUnitario" class="form-control m-b-10 mask-money" placeholder="Custo unitário" value="<fmt:formatNumber maxFractionDigits="2" minFractionDigits="2" value="${ produto.custoUnitario }" />" />
                 </div>
                 <div class="col-lg-2">
                  	<p>Preço revenda (R$)</p>
-                 	<input name="precoRevenda" id="precoRevenda" class="form-control m-b-10 mask-money" placeholder="Preço sugerido" value="<fmt:formatNumber minFractionDigits="2" value="${ produto.precoRevenda }" />" />
+                 	<input name="precoRevenda" id="precoRevenda" class="form-control m-b-10 mask-money" placeholder="Preço sugerido" value="<fmt:formatNumber maxFractionDigits="2" minFractionDigits="2" value="${ produto.precoRevenda }" />" />
                 </div>
                 <div class="col-lg-2">
                  	<p>Estoque mínimo</p>

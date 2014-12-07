@@ -52,5 +52,17 @@ Funcionario = {
 		Utils.unmaskMoney();
 		
 		$("#funcionario-form").submit();
-	}	
+	},
+	
+	loadCompiledDate:function(){
+
+     	$.ajax({
+     	    url: '/min/web/funcionarios/compiled/' + $("#funcionario-id").val(),
+     	    type: "GET",
+     	    success: function(compiled){
+     	    	$("#clientes-mes").html(compiled.clientesMes);
+     	    	$("#clientes-total").html(compiled.clientesTotal);
+     	    }
+     	});
+	}
 };

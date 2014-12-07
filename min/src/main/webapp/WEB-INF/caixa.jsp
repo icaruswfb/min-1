@@ -49,9 +49,9 @@
 												${ total.formaPagamento.nome }
 											</td>
 											<td>
-												Total: R$<fmt:formatNumber value="${ total.total }" minFractionDigits="2" />
+												Total: R$<fmt:formatNumber value="${ total.total }" minFractionDigits="2" maxFractionDigits="2" />
 												<c:forEach var="parcela" items="${ total.parcelas }">
-													<p class="p-l-10 p-t-10  m-0">Total em ${ parcela.parcelas }x: R$<fmt:formatNumber value="${ parcela.total }" minFractionDigits="2" /></p>
+													<p class="p-l-10 p-t-10  m-0">Total em ${ parcela.parcelas }x: R$<fmt:formatNumber value="${ parcela.total }" minFractionDigits="2" maxFractionDigits="2" /></p>
 												</c:forEach>
 											</td>
 										</tr>
@@ -66,7 +66,7 @@
 									<p class="total">Total lançado: </p>
 								</div>
 								<div class="col-lg-10">
-									<strong class="f-s-20">R$<fmt:formatNumber value="${ totalLancado }" minFractionDigits="2" /></strong>
+									<strong class="f-s-20">R$<fmt:formatNumber value="${ totalLancado }" minFractionDigits="2" maxFractionDigits="2" /></strong>
 								</div>
 							</div>
 						 -->
@@ -75,7 +75,7 @@
 									<p class="total">Total pago: </p>
 								</div>	
 								<div class="col-lg-10">
-									<strong class="f-s-20">R$<fmt:formatNumber value="${ totalPago }" minFractionDigits="2" /></strong>
+									<strong class="f-s-20">R$<fmt:formatNumber value="${ totalPago }" minFractionDigits="2" maxFractionDigits="2"/></strong>
 								</div>
 							</div>
 						</div>
@@ -110,7 +110,7 @@
 		                                    <td>
 		                                    	<a href="<spring:url value='/web/clientes/editar/${comanda.cliente.id}' />">${ comanda.cliente.nome }</a>
 		                                    </td>
-		                                    <td>R$ <fmt:formatNumber  minFractionDigits="2" value="${ comanda.valorCobrado }"/></td>
+		                                    <td>R$ <fmt:formatNumber  minFractionDigits="2" maxFractionDigits="2" value="${ comanda.valorCobrado }"/></td>
 		                                    <td>
 												<ul>
 													<li>
@@ -168,7 +168,7 @@
 		                                    <td>
 		                                    	<a href="<spring:url value='/web/clientes/editar/${comanda.cliente.id}' />">${ comanda.cliente.nome }</a>
 		                                    </td>
-		                                    <td>R$ <fmt:formatNumber  minFractionDigits="2" value="${ comanda.valorCobrado }"/></td>
+		                                    <td>R$ <fmt:formatNumber maxFractionDigits="2"  minFractionDigits="2" value="${ comanda.valorCobrado }"/></td>
 		                                    <td>
 												<ul>
 													<li>

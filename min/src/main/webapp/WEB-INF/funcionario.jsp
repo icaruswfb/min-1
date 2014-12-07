@@ -80,6 +80,16 @@
 		
 								</div>
 							</c:if>
+                        	<c:if test="${ funcionario.id ne null }">
+                        		<div class="tile  w-100-p m-t-20">
+									<h2 class="tile-title">Dados compilados</h2>
+									<div class="w-100-p p-10">
+										<div class="m-l-5 m-t-5" style="font-weight: bold;">Clientes atendidos</div>
+										<div class="m-l-10 m-t-5">Neste mês: <span id="clientes-mes"></span></div>
+										<div class="m-l-10 m-t-5">Total: <span id="clientes-total"></span></div>
+									</div>
+								</div>
+                        	</c:if>
 	           			</div>
 	           			<div class="col-md-9">
 	           				<c:if test="${ canEdit }">
@@ -95,7 +105,7 @@
 				           	</div>
 	     			      	<h4 class="page-title m-b-10">DADOS DE USUÁRIO</h4>
 				            <form:form method="post" action="../salvar" commandName="funcionario" id="funcionario-form">
-				               	<form:hidden path="usuario.id" />
+				               	<form:hidden path="usuario.id" id="usuario-id" />
 				                <div class="col-lg-12 p-l-0">
 					                <div class="col-lg-6">
 				                 	<form:input path="usuario.login" cssClass="form-control m-b-10" placeholder="Nome de usuário" readonly="${ not canEdit }"/>
@@ -183,7 +193,7 @@
 					                 			<input id="comissao.comissaoServico" 
 					                 						<c:if test="${ not hasRole['ADMIN'] }">readonly="readonly"</c:if>
 					                 						name="comissao.comissaoServico"
-					                 						value="<fmt:formatNumber value="${ funcionario.comissao.comissaoServico }" minFractionDigits="2"  />" 
+					                 						value="<fmt:formatNumber value="${ funcionario.comissao.comissaoServico }" minFractionDigits="2" maxFractionDigits="2" />" 
 					                 						class="form-control m-b-10 mask-percent" placeholder="Percentual"/>
 					                		</div>
 					                	</div>
@@ -193,7 +203,7 @@
 					                 			<input id="comissao.comissaoAuxiliar"
 					                 						<c:if test="${ not hasRole['ADMIN'] }">readonly="readonly"</c:if>
 					                 						name="comissao.comissaoAuxiliar"
-					                 						value="<fmt:formatNumber value="${ funcionario.comissao.comissaoAuxiliar }" minFractionDigits="2"  />" 
+					                 						value="<fmt:formatNumber value="${ funcionario.comissao.comissaoAuxiliar }" minFractionDigits="2" maxFractionDigits="2" />" 
 					                 						class="form-control m-b-10 mask-percent" placeholder="Percentual"/>
 					                		</div>
 					                	</div>
@@ -203,12 +213,12 @@
 					                 			<input id="comissao.valorRange1" 
 					                 						<c:if test="${ not hasRole['ADMIN'] }">readonly="readonly"</c:if>
 					                 						name="comissao.valorRange1"
-					                 						value="<fmt:formatNumber value="${ funcionario.comissao.valorRange1 }" minFractionDigits="2"  />" 
+					                 						value="<fmt:formatNumber value="${ funcionario.comissao.valorRange1 }" minFractionDigits="2" maxFractionDigits="2" />" 
 					                 						class="form-control m-b-10 mask-money" placeholder="Valor"/>
 					                 			<input id="comissao.comissaoRange1" 
 					                 						<c:if test="${ not hasRole['ADMIN'] }">readonly="readonly"</c:if>
 					                 						name="comissao.comissaoRange1"
-					                 						value="<fmt:formatNumber value="${ funcionario.comissao.comissaoRange1 }" minFractionDigits="2"  />" 
+					                 						value="<fmt:formatNumber value="${ funcionario.comissao.comissaoRange1 }" minFractionDigits="2" maxFractionDigits="2" />" 
 					                 						class="form-control m-b-10 mask-percent" placeholder="Percentual"/>
 					                		</div>
 					                		<div class="col-lg-3">
@@ -216,12 +226,12 @@
 					                 			<input id="comissao.valorRange2" 
 					                 						<c:if test="${ not hasRole['ADMIN'] }">readonly="readonly"</c:if>
 					                 						name="comissao.valorRange2"
-					                 						value="<fmt:formatNumber value="${ funcionario.comissao.valorRange2 }" minFractionDigits="2"  />" 
+					                 						value="<fmt:formatNumber value="${ funcionario.comissao.valorRange2 }" minFractionDigits="2" maxFractionDigits="2" />" 
 					                 						class="form-control m-b-10 mask-money" placeholder="Valor"/>
 					                 			<input id="comissao.comissaoRange2" 
 					                 						<c:if test="${ not hasRole['ADMIN'] }">readonly="readonly"</c:if>
 					                 						name="comissao.comissaoRange2"
-					                 						value="<fmt:formatNumber value="${ funcionario.comissao.comissaoRange2 }" minFractionDigits="2"  />" 
+					                 						value="<fmt:formatNumber value="${ funcionario.comissao.comissaoRange2 }" minFractionDigits="2" maxFractionDigits="2" />" 
 					                 						class="form-control m-b-10 mask-percent" placeholder="Percentual"/>
 					                		</div>
 					                		<div class="col-lg-3">
@@ -229,12 +239,12 @@
 					                 			<input id="comissao.valorRange3" 
 					                 						<c:if test="${ not hasRole['ADMIN'] }">readonly="readonly"</c:if>
 					                 						name="comissao.valorRange3"
-					                 						value="<fmt:formatNumber value="${ funcionario.comissao.valorRange3 }" minFractionDigits="2"  />" 
+					                 						value="<fmt:formatNumber value="${ funcionario.comissao.valorRange3 }" minFractionDigits="2" maxFractionDigits="2" />" 
 					                 						class="form-control m-b-10 mask-money" placeholder="Valor"/>
 					                 			<input id="comissao.comissaoRange3" 
 					                 						<c:if test="${ not hasRole['ADMIN'] }">readonly="readonly"</c:if>
 					                 						name="comissao.comissaoRange3"
-					                 						value="<fmt:formatNumber value="${ funcionario.comissao.comissaoRange3 }" minFractionDigits="2"  />" 
+					                 						value="<fmt:formatNumber value="${ funcionario.comissao.comissaoRange3 }" minFractionDigits="2" maxFractionDigits="2" />" 
 					                 						class="form-control m-b-10 mask-percent" placeholder="Percentual"/>
 					                		</div>
 					                		<div class="col-lg-3">
@@ -242,7 +252,7 @@
 					                 			<input id="comissao.comissaoRange4" 
 					                 						<c:if test="${ not hasRole['ADMIN'] }">readonly="readonly"</c:if>
 					                 						name="comissao.comissaoRange4"
-					                 						value="<fmt:formatNumber value="${ funcionario.comissao.comissaoRange4 }" minFractionDigits="2"  />" 
+					                 						value="<fmt:formatNumber value="${ funcionario.comissao.comissaoRange4 }" minFractionDigits="2" maxFractionDigits="2" />" 
 					                 						class="form-control m-b-10 mask-percent" placeholder="Percentual"/>
 					                		</div>
 					                	</div>
@@ -301,6 +311,9 @@
 		</c:forEach> 
 		Home.isHome = true;
 		Home.exibirProximasTarefas();
+    	<c:if test="${ funcionario.id ne null }">
+    		Funcionario.loadCompiledDate();
+    	</c:if>
 	</script>
 </body>
 </html>

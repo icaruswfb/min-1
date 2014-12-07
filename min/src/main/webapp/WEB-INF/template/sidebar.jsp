@@ -87,6 +87,9 @@
              	</c:if>
              	<c:if test="${ hasRole['ADMIN'] }">
    	         		<li><a id="fluxo-menu" href="<spring:url value='/web/report/fluxoFinanceiro' />">Fluxo financeiro</a></li>
+   	         		 <li><a id="comandas-menu" href="<spring:url value='/web/report/comandas' />">Comandas</a></li>
+   	         		<!-- 
+   	         		 -->
    	         	</c:if>
 				<li><a id="comissao-menu" href="<spring:url value='/web/report/comissao' />">Comissão</a></li>
              </ul>
@@ -101,6 +104,7 @@
 						<li><a id="produtos-menu" href="<spring:url value='/web/produtos/' />">Produtos</a></li>
 		             	<li><a id="kits-menu" href="<spring:url value='/web/kits/' />">Kits</a></li>
 						<li><a id="estoque-menu" href="<spring:url value='/web/estoque/' />">Projeção de estoque</a></li>
+						<li><a id="produtos-precos-menu" href="<spring:url value='/web/produtos/precos' />">Preços de produtos</a></li>
 			         </c:if>
 					<li><a id="employee-menu" href="<spring:url value='/web/funcionarios/' />">Funcionários</a></li>
 	             </ul>

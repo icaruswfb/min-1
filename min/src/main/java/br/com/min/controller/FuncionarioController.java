@@ -1,6 +1,9 @@
 package br.com.min.controller;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import br.com.min.controller.vo.DadosCompiladosFuncionarioVO;
+import br.com.min.entity.Comanda;
 import br.com.min.entity.Comissao;
 import br.com.min.entity.Funcao;
 import br.com.min.entity.Imagem;
@@ -23,6 +28,7 @@ import br.com.min.entity.Pessoa;
 import br.com.min.entity.Role;
 import br.com.min.entity.Usuario;
 import br.com.min.filter.SecurityFilter;
+import br.com.min.service.ComandaService;
 import br.com.min.service.PessoaService;
 import br.com.min.service.UsuarioService;
 import br.com.min.utils.Utils;
@@ -35,6 +41,8 @@ public class FuncionarioController {
 	private PessoaService pessoaService;
 	@Autowired
 	private UsuarioService usuarioService;
+	@Autowired
+	private ComandaService comandaService;
 	
 	@RequestMapping("/")
 	public ModelAndView listar(){
@@ -244,6 +252,30 @@ public class FuncionarioController {
 			pessoaService.delete(id);
 		}
 		return listar();
+	}
+	
+	@RequestMapping(value="/compiled/{id}", method=RequestMethod.GET)
+	public @ResponseBody DadosCompiladosFuncionarioVO getCompiledInformation(@PathVariable(value="id") Long funcionarioId){
+		DadosCompiladosFuncionarioVO vo = new DadosCompiladosFuncionarioVO();
+		
+		List<Comanda> comandas = comandaService.findComandasByFuncionario(funcionarioId);
+		Calendar mesAtual = Calendar.getInstance();
+		Integer mes = mesAtual.get(Calendar.MONTH);
+		Integer clientesMes = 0;
+		for(Comanda comanda : comandas){
+			Date abertura = comanda.getAbertura();
+			Calendar calendarComanda = Calendar.getInstance();
+			calendarComanda.setTime(abertura);
+			Integer mesComanda = calendarComanda.get(Calendar.MONTH);
+			if(mes.equals(mesComanda)){
+				clientesMes++;
+			}
+		}
+		
+		vo.setClientesTotal(comandas.size());
+		vo.setClientesMes(clientesMes);
+		
+		return vo;
 	}
 	
 }

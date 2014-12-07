@@ -310,8 +310,8 @@
                                  <h4 class="modal-title">Fechamento de comanda de ${ cliente.nome }</h4>
                              </div>
                              <div class="modal-body">
-						<div class="listview list-container" id="fechamento-comanda-observacoes">
-		                </div>
+								<div class="listview list-container" id="fechamento-comanda-observacoes">
+				                </div>
                              </div>
                              <div class="modal-footer">
                                  <button type="button" class="btn btn-sm" data-dismiss="modal" onclick="Comanda.fecharComanda()" id="fechar-comanda-button">Fechar comanda</button>
