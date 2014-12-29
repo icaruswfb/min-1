@@ -16,6 +16,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.beanutils.BeanComparator;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,8 +27,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import br.com.min.controller.vo.ClientesPorAnoCadastroVO;
+import br.com.min.controller.vo.ClientesPorMesCadastroVO;
+import br.com.min.controller.vo.ClientesPorVisitasVO;
 import br.com.min.controller.vo.ComandasRPS;
 import br.com.min.controller.vo.ComissoesPorFuncionarioVO;
+import br.com.min.controller.vo.ServicoPorCategoriaReportVO;
+import br.com.min.controller.vo.ServicoReportVO;
 import br.com.min.controller.vo.TotaisPorFormaPagamentoVO;
 import br.com.min.controller.vo.TotalParcelamentoVO;
 import br.com.min.controller.vo.TotalPorFuncionarioVO;
@@ -610,6 +617,161 @@ public class ReportController {
 			throw new RuntimeException(e);
 		}
 		
+	}
+	
+	@RequestMapping(value="/servicos")
+	public ModelAndView relatorioServicos(){
+		Calendar hoje = Calendar.getInstance();
+		hoje.set(Calendar.DAY_OF_MONTH, 1);
+		Date inicio = hoje.getTime();
+		hoje = Calendar.getInstance();
+		hoje.set(Calendar.DAY_OF_MONTH, hoje.getMaximum(Calendar.DAY_OF_MONTH));
+		Date fim = hoje.getTime();
+		return relatorioServicos(inicio, fim);
+	}
+	
+	@RequestMapping(value="/servicos/data", method=RequestMethod.POST)
+	public ModelAndView relatorioServicos(String dataInicio, String dataFim){
+		try {
+			Date inicio = Utils.dateFormat.parse(dataInicio);
+			Date fim = Utils.dateFormat.parse(dataFim);
+			return relatorioServicos(inicio, fim);
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	public ModelAndView relatorioServicos(Date inicio, Date fim){
+			List<LancamentoServico> lancamentoServicos = comandaService.findLancamentoServico(inicio, fim);
+
+			List<TipoServico> tiposServico = servicoService.listarTipoServico();
+			List<ServicoPorCategoriaReportVO> servicosPorCategoria = new ArrayList<ServicoPorCategoriaReportVO>();
+			for(TipoServico tipoServico : tiposServico){
+				ServicoPorCategoriaReportVO vo = new ServicoPorCategoriaReportVO();
+				vo.setTipoServico(tipoServico);
+				servicosPorCategoria.add(vo);
+			}
+			for(LancamentoServico lancamentoServico : lancamentoServicos){
+				ServicoReportVO vo = null;
+				for(ServicoPorCategoriaReportVO servicoPorCategoria : servicosPorCategoria){
+					if(servicoPorCategoria.getTipoServico().getId().equals(lancamentoServico.getServico().getTipoServico().getId())){
+						List<ServicoReportVO> servicosReport = servicoPorCategoria.getServicos();
+						boolean exists = false;
+						for(ServicoReportVO reportVO : servicosReport){
+							if(reportVO.getServico().getId().equals(lancamentoServico.getServico().getId())){
+								vo = reportVO;
+								exists = true;
+								break;
+							}
+						}
+						if( ! exists ){
+							vo = new ServicoReportVO();
+							vo.setServico(lancamentoServico.getServico());
+							servicoPorCategoria.getServicos().add(vo);
+						}
+						
+						vo.setQuantidade( vo.getQuantidade() + 1L );
+						servicoPorCategoria.setTotalExecucoes( servicoPorCategoria.getTotalExecucoes() + 1L );
+						vo.setValorTotal(lancamentoServico.getValor() + vo.getValorTotal());
+						if( ! vo.getClientesIds().contains(lancamentoServico.getComanda().getCliente().getId())){
+							vo.getClientesIds().add(lancamentoServico.getComanda().getCliente().getId());
+						}else{
+							vo.setQuantidadeClientesRecorrentes(vo.getQuantidadeClientesRecorrentes() + 1);
+						}
+						
+						break;
+					}
+				}
+				
+			}
+			
+			BeanComparator beanComparator = new BeanComparator("valorTotal");
+			for(ServicoPorCategoriaReportVO vo : servicosPorCategoria){
+				Collections.sort(vo.getServicos(), beanComparator);
+				Collections.reverse(vo.getServicos());
+			}
+			
+			ModelAndView mv = new ModelAndView("servicosReport");
+			mv.addObject("servicosPorCategoria", servicosPorCategoria);
+			mv.addObject("totalLancamentos", lancamentoServicos.size());
+			mv.addObject("dataInicio", inicio);
+			mv.addObject("dataFim", fim);
+			
+			return mv;
+	}
+	
+	@RequestMapping("/clientes")
+	public ModelAndView relatorioClientes(){
+		List<Pessoa> clientes = pessoaService.listarClientes();
+		
+		List<ClientesPorAnoCadastroVO> clientesPorAno = new ArrayList<ClientesPorAnoCadastroVO>();
+		List<ClientesPorVisitasVO> clientesPorVisitas = new ArrayList<ClientesPorVisitasVO>();
+		for(Pessoa cliente : clientes){
+			List<Comanda> comandas = comandaService.listComandasCliente(cliente);
+			if( ! comandas.isEmpty() ){
+				Comanda primeiraComanda = comandas.get(0);
+				Calendar dataAbertura = Calendar.getInstance();
+				dataAbertura.setTime(primeiraComanda.getAbertura());
+				
+				ClientesPorAnoCadastroVO ano = null;
+				for(ClientesPorAnoCadastroVO porAno : clientesPorAno){
+					if(porAno.getAno().equals(dataAbertura.get(Calendar.YEAR))){
+						ano = porAno;
+						break;
+					}
+				}
+				if(ano == null){
+					ano = new ClientesPorAnoCadastroVO();
+					ano.setAno(dataAbertura.get(Calendar.YEAR));
+					clientesPorAno.add(ano);
+				}
+				ano.setTotal(ano.getTotal() + 1);
+				
+				ClientesPorMesCadastroVO mes = null;
+				for(ClientesPorMesCadastroVO porMes : ano.getClientesPorMes()){
+					if(porMes.getMes().equals(dataAbertura.get(Calendar.MONTH))){
+						mes = porMes;
+						break;
+					}
+				}
+				if(mes == null){
+					mes = new ClientesPorMesCadastroVO();
+					mes.setMes(dataAbertura.get(Calendar.MONTH));
+					ano.getClientesPorMes().add(mes);
+				}
+				mes.setQuantidade(mes.getQuantidade() + 1);
+				
+				ClientesPorVisitasVO visitas = null;
+				for(ClientesPorVisitasVO porVisitas : clientesPorVisitas){
+					if(porVisitas.getVisitas().equals(comandas.size())){
+						visitas = porVisitas;
+						break;
+					}
+				}
+				if(visitas == null){
+					visitas = new ClientesPorVisitasVO();
+					visitas.setVisitas(comandas.size());
+					clientesPorVisitas.add(visitas);
+				}
+				visitas.setClientes(visitas.getClientes() + 1);
+			}
+		}
+
+		BeanComparator beanComparator = new BeanComparator("ano");
+		Collections.sort(clientesPorAno, beanComparator);
+		
+		beanComparator = new BeanComparator("mes");
+		for(ClientesPorAnoCadastroVO ano : clientesPorAno){
+			Collections.sort(ano.getClientesPorMes(), beanComparator);
+		}
+		
+		beanComparator = new BeanComparator("visitas");
+		Collections.sort(clientesPorVisitas, beanComparator);
+		
+		ModelAndView mv = new ModelAndView("clientesReport");
+		mv.addObject("clientesPorAno", clientesPorAno);
+		mv.addObject("clientesPorVisitas", clientesPorVisitas);
+		
+		return mv;
 	}
 	
 }

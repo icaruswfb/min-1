@@ -76,9 +76,11 @@
 		</a></li>
 		<li class="dropdown" id="financeiro-menu">
              <a class="sa-side-chart" href="">
-                 <span class="menu-item">Financeiro</span>
+                 <span class="menu-item">Rolatórios</span>
              </a>
              <ul class="list-unstyled menu-item">
+             	<li><a class="m-t-5"><i>Financeiro</i></a></li>
+				<li><hr style="border-color: rgba(255,255,255,0.3)" /></li>
 	             <c:if test="${ hasRole['ADMIN'] or hasRole['CAIXA'] }">
     	         	<li><a id="caixa-menu" href="<spring:url value='/web/report/caixa' />">Caixa do dia</a></li>
     	         	<li><a id="faturamento-menu" href="<spring:url value='/web/report/faturamento' />">Faturamento</a></li>
@@ -92,6 +94,11 @@
    	         		 -->
    	         	</c:if>
 				<li><a id="comissao-menu" href="<spring:url value='/web/report/comissao' />">Comissão</a></li>
+             	<li><a class="m-t-5"><i>Outros</i></a></li>
+				<li><hr style="border-color: rgba(255,255,255,0.3)" /></li>
+         		 <li><a id="report-servicos-menu" href="<spring:url value='/web/report/servicos' />">Serviços</a></li>
+         		 <li><a id="report-clientes-menu" href="<spring:url value='/web/report/clientes' />">Clientes</a></li>
+				
              </ul>
          </li>
 	         <li class="dropdown" id="admin-menu">

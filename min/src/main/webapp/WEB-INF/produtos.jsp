@@ -29,7 +29,7 @@
 	                 <div class="col-lg-3">
 	                 	<select class="form-control input-lg m-b-10" onchange="$('#form-pesquisa-produto').submit();" name="categoriaProduto">
 	                 		<option></option>
-	                		<option value="SALAO" <c:if test="${ categoria == 'SALAO' }">selected="selected"</c:if> >SalÃ£o</option>
+	                		<option value="SALAO" <c:if test="${ categoria == 'SALAO' }">selected="selected"</c:if> >Salão</option>
 	                		<option value="LOJA" <c:if test="${ categoria == 'LOJA' }">selected="selected"</c:if> >Loja</option>
 	                 	</select>
 	                 </div>
@@ -49,8 +49,8 @@
                                     <th>Nome</th>
                                     <th>Categoria</th>
                                     <th>Unidade</th>
-                                    <th>PreÃ§o de revenda</th>
-                                    <th>SituaÃ§Ã£o do estoque</th>
+                                    <th>Preço de revenda</th>
+                                    <th>Situação do estoque</th>
                                     <th style="width: 50px"></th>
                                 </tr>
                             </thead>

@@ -252,6 +252,15 @@ public class ClienteController {
 		return comanda;
 	}
 	
+	@RequestMapping(value="/alterarNota", method=RequestMethod.POST)
+	public @ResponseBody Comanda alterarNotaComanda(Long comandaId, String nota, HttpServletRequest request){
+		Comanda comanda = comandaService.findById(comandaId);
+		comanda.setNumeroNota(nota);
+		comanda = comandaService.persist(comanda, Utils.getUsuarioLogado(request).getPessoa());
+		limparComandaJSON(comanda);
+		return comanda;
+	}
+	
 	@RequestMapping(value="/salvarComanda", method=RequestMethod.POST)
 	public @ResponseBody Comanda salvarComanda(HttpServletRequest request){
 		Comanda comanda = criarComanda(request);

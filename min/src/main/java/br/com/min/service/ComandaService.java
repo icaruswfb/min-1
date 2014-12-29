@@ -537,4 +537,12 @@ public class ComandaService {
 		return dao.findComandasByFuncionario(funcionarioId);
 	}
 	
+	public List<LancamentoServico> findLancamentoServico(Date inicio, Date fim){
+		return dao.findLancamentoServico(inicio, fim);
+	}
+	
+	public List<Comanda> listComandasCliente(Pessoa cliente){
+		return dao.listComandasCliente(cliente);
+	}
+	
 }

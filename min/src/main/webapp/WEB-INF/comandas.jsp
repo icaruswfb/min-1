@@ -25,9 +25,16 @@
 				<div class="row m-b-10">
 					<div class="col-lg-12">
 						<form action="/min/web/report/comandas/data" id="comanda-data-form" method="post">
-							<p>Período de visualização</p>
-							<input type="hidden" name="ids" value="" id="ids"/>
-							<div class="col-lg-3 m-b-15">
+						<!-- 
+							<div class="col-lg-12 m-b-15">
+        			         	<input name="pesquisa" class="form-control input-lg m-b-10" placeholder="Pesquisa" value="${pesquisa }"/>
+							</div>
+						 -->
+							<div class="col-lg-12">
+								<p>Período de visualização</p>
+							</div>
+							<div class="col-lg-3 m-b-15">								
+								<input type="hidden" name="ids" value="" id="ids"/>
 								<div class="input-icon datetime-pick date-only">
 				                     <input data-format="dd/MM/yyyy" type="text" 
 				                     		class="form-control input-sm" 
@@ -151,7 +158,7 @@
 		$("#comissao-menu").addClass("active");
 
 		$(document).ready(function(){
-           		$('.mask-number').mask('#0');
+           		$('.mask-number').mask('#####0');
 				$("#data-fim").on('blur', function(){
 					var dataInicio = $("#data-inicio").val();
 					var dataFim = $("#data-fim").val();

@@ -422,9 +422,10 @@ Agenda = {
 			addHorario:function (){
 				Utils.modalLoading();
 				var clienteId = $("#cliente-select").val();
+				var folga = $("#folga").val();
 				if(clienteId == null){
 					clienteId = $("#cliente_select_chzn input").val();
-					if(clienteId == "Selecionar cliente..." || clienteId == ""){
+					if( (clienteId == "Selecionar cliente..." || clienteId == "") && folga != "true" ){
 						Utils.createMessageBlock("Preencha todos os campos para agendar um novo hor&aacute;rio", "#add-horario-msg", "danger", "add-horario-msg" + Utils.guid());
 						Utils.modalLoadingFinish();
 						return false;
@@ -436,7 +437,6 @@ Agenda = {
 				var horarioFim = $("#horario-fim-agenda").val();
 				var servicos = $("#servico-select").val();
 				var obs = $("#observacao").val();
-				var folga = $("#folga").val();
 				if(folga == "true"){
 					if(horarioFim == '' || horarioInicio == ''){
 						Utils.createMessageBlock("Preencha todos os campos para agendar um novo hor&aacute;rio", "#add-horario-msg", "danger", "add-horario-msg" + Utils.guid());

@@ -20,6 +20,7 @@ import br.com.min.entity.Comanda;
 import br.com.min.entity.LancamentoProduto;
 import br.com.min.entity.LancamentoServico;
 import br.com.min.entity.Pagamento;
+import br.com.min.entity.Pessoa;
 
 @Repository
 public class ComandaDAO {
@@ -140,6 +141,7 @@ public class ComandaDAO {
 		criteria.add(Restrictions.between("fechamento", calendarInicio.getTime(), calendarFim.getTime()));
 		if(toExport){
 			criteria.add(Restrictions.isNotNull("numeroNota"));
+			criteria.add(Restrictions.isNotEmpty("numeroNota"));
 		}
 		
 		List<Comanda> entities = criteria.list();
@@ -175,6 +177,40 @@ public class ComandaDAO {
 		Query query = session.createQuery("select distinct c from Comanda c join c.servicos ls where ls.funcionario.id = " + funcionarioId);
 		List<Comanda> entities = query.list();
 		return entities;
+	}
+	
+	public List<LancamentoServico> findLancamentoServico(Date inicio, Date fim){
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(LancamentoServico.class);
+		
+		Calendar lo = Calendar.getInstance();
+		lo.setTime(inicio);
+		lo.set(Calendar.HOUR_OF_DAY, 0);
+		lo.set(Calendar.MINUTE, 0);
+		lo.set(Calendar.SECOND, 0);
+		lo.set(Calendar.MILLISECOND, 0);
+		
+		Calendar hi = Calendar.getInstance();
+		hi.set(Calendar.HOUR_OF_DAY, 23);
+		hi.set(Calendar.MINUTE, 59);
+		hi.set(Calendar.SECOND, 59);
+		hi.set(Calendar.MILLISECOND, 999);
+				
+		criteria = criteria.add(Restrictions.between("dataCriacao", lo.getTime(), hi.getTime()));
+		
+		List<LancamentoServico> servicos = criteria.list();
+		
+		return servicos;
+	}
+
+	public List<Comanda> listComandasCliente(Pessoa cliente) {
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(Comanda.class);
+		criteria.add(Restrictions.eq("cliente.id", cliente.getId()));
+		criteria.addOrder(Order.asc("abertura"));
+		List<Comanda> comandas = criteria.list();
+		session.close();
+		return comandas;
 	}
 	
 }

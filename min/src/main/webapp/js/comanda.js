@@ -526,10 +526,20 @@ Comanda = {
 		info += "</div>";
 
 		if(!isComandaAberta){
-			if(comanda.numeroNota){
+			if(Comanda.hasRoleAdmin || Comanda.hasRoleCaixa){
 				info += "<div class='w-100-p'>";
 				info += '<div class="col-md-3 float-right">';
-				info += '<p>Observação: '+comanda.numeroNota+'</p>';
+				info += '<p>Observa&ccedil;&atilde;o</p>';
+				info += '<input class="form-control input-sm m-b-10 mask-numer" name="notaAtendimento" id="nota-atendimento-'+comanda.id+'" value="'+(comanda.numeroNota ? comanda.numeroNota : '') +'"/>';
+				info += "</div>";
+				info += "</div>";
+				info += "<div class='w-100-p'>";
+				info += '<a class="btn btn-lg m-r-15 m-b-15" style="float: right" onclick="Comanda.alterarNota('+comanda.id+')" >Salvar</a>';
+				info += "</div>";
+			}else{
+				info += "<div class='w-100-p'>";
+				info += '<div class="col-md-3 float-right">';
+				info += '<p>Observa&ccedil;&atilde;o: '+comanda.numeroNota+'</p>';
 				info += "</div>";
 				info += "</div>";
 			}
@@ -539,7 +549,7 @@ Comanda = {
 			if(Comanda.hasRoleAdmin || Comanda.hasRoleCaixa){
 				info += "<div class='w-100-p'>";
 				info += '<div class="col-md-3 float-right">';
-				info += '<p>Observação</p>';
+				info += '<p>Observa&ccedil;&atilde;o</p>';
 				info += '<input class="form-control input-sm m-b-10 mask-numer" name="notaAtendimento" id="nota-atendimento" />';
 				info += "</div>";
 				info += "</div>";
@@ -550,6 +560,24 @@ Comanda = {
 		}
 		
 		return info;
+	},
+	
+	alterarNota:function(comandaId){
+		if(confirm("Tem certeza que deseja alterar este valor?")){
+			var nota = $("#nota-atendimento-"+comandaId).val();
+			
+			$.ajax({
+				url: '/min/web/clientes/alterarNota',
+				type: 'POST',
+				data: {
+					nota: nota,
+					comandaId: comandaId
+				},
+				success: function(comanda){
+					alert("Valor alterado com sucesso");
+				}
+			});
+		}
 	},
 	
 	pagar:function(){
