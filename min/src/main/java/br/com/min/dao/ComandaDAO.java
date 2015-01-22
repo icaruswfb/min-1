@@ -141,7 +141,7 @@ public class ComandaDAO {
 		criteria.add(Restrictions.between("fechamento", calendarInicio.getTime(), calendarFim.getTime()));
 		if(toExport){
 			criteria.add(Restrictions.isNotNull("numeroNota"));
-			criteria.add(Restrictions.isNotEmpty("numeroNota"));
+			criteria.add(Restrictions.ne("numeroNota", ""));
 		}
 		
 		List<Comanda> entities = criteria.list();

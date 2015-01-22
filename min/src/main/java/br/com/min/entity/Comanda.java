@@ -34,6 +34,7 @@ public class Comanda {
 	private List<LancamentoComissao> comissoes = new ArrayList<>();
 	private Double valorTotal;
 	private Double desconto;
+	private Double descontoPromocional;
 	private Double valorCobrado;
 	private Double valorPago;
 	private Double credito = 0d;
@@ -145,6 +146,12 @@ public class Comanda {
 	}
 	public void setNumeroNota(String numeroNota) {
 		this.numeroNota = numeroNota;
+	}
+	public Double getDescontoPromocional() {
+		return descontoPromocional;
+	}
+	public void setDescontoPromocional(Double descontoPromocional) {
+		this.descontoPromocional = descontoPromocional;
 	}
 	
 	

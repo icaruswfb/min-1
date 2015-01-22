@@ -198,7 +198,10 @@ public class ComandaService {
 		if(comanda.getDesconto() == null){
 			comanda.setDesconto(0d);
 		}
-		comanda.setValorCobrado(total - comanda.getDesconto());
+		if(comanda.getDescontoPromocional() == null){
+			comanda.setDescontoPromocional(0d);
+		}
+		comanda.setValorCobrado(total - (comanda.getDesconto() + comanda.getDescontoPromocional() ) );
 		comanda.setValorTotal(total);
 		comanda.setValorPago(valorPago);
 		return criarLancamentosEstoque(comanda, produtosUtilizados);
@@ -237,6 +240,7 @@ public class ComandaService {
 		
 		Map<Long, Double> vendasProdutoPorCliente = new HashMap<>();
 		List<LancamentoComissao> lancamentosToAdd = new ArrayList<>();
+		
 		for(LancamentoComissao comissao : comissoes){
 			if(comissao.getTipo().equals(TipoComissao.SERVICO_COM_AUXILIAR)){
 				Double percentual = comissao.getFuncionario().getComissao().getComissaoServico() - comissao.getPercentualReduzido();
@@ -285,8 +289,13 @@ public class ComandaService {
 
 			comissao.setValor( (comissao.getValorVenda() / 100) * comissao.getPercentual() );
 		}
+
+		Double valorCobrado = comanda.getValorCobrado();
+		Double descontoPromocional = comanda.getDescontoPromocional();
+		Double percentualDescontoPromocional = 1 - (descontoPromocional / valorCobrado );
+		
 		for(LancamentoComissao comissao : lancamentosToAdd){
-			comissao.setValor( (comissao.getValorVenda() / 100) * comissao.getPercentual() );
+			comissao.setValor( ( (comissao.getValorVenda() / 100) * comissao.getPercentual() ) * percentualDescontoPromocional );
 		}
 		comissoes.addAll(lancamentosToAdd);
 		comanda.getComissoes().addAll(comissoes);
@@ -301,6 +310,7 @@ public class ComandaService {
 		Double percentual = 0d;
 		Double novoValor = (vendasProduto + comissao.getValorVenda()); 
 		if( novoValor  <= ranges[index] ){
+		
 			percentual = percents[index];
 		}else{
 			Double diferencaAcima = novoValor - ranges[index];

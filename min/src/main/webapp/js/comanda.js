@@ -260,11 +260,12 @@ Comanda = {
 		$("#bloco-geral-comanda-"+comandaId+" .total-revendas").html(new Number(totalProdutos).toFixed(2));
 		
 		var desconto = $("#descontos-" + comandaId).val();
+		var descontoPromocional = $("#desconto-promo" + comandaId).val();
 		$("#valorTotal-" + comandaId).val(new Number(total).toFixed(2));
-		$("#valorCobrado-" + comandaId).val(new Number(total - desconto).toFixed(2));
+		$("#valorCobrado-" + comandaId).val(new Number(total - (desconto + descontoPromocional)).toFixed(2));
 		var pago = $("#valorPago-" + comandaId).val();
 		$("#valorPago-" + comandaId).val(new Number(pago).toFixed(2));
-		$("#valorFaltante-" + comandaId).html(new Number(((total - desconto) - pago)).toFixed(2));
+		$("#valorFaltante-" + comandaId).html(new Number(((total - (desconto + descontoPromocional)) - pago)).toFixed(2));
         $('.mask-money').mask("#.##0,00", {reverse: true, maxlength: false});
 	},
 	
@@ -477,13 +478,24 @@ Comanda = {
 		info+='<div class="clearfix"></div>';
 		info += "<div class='w-100 float-left'>";
 		info += "<div class='float-right' >";
-		info += "<span style='font-size: 20px'>Descontos: </span>";
+		info += "<span style='font-size: 20px'>Descontos (ajustes): </span>";
 		info += "<input class='form-control input-sm m-b-10 mask-money float-right m-l-10' id='descontos-"+comanda.id+"' " +
 						"name='descontos' value='"+new Number((comanda.desconto ? comanda.desconto : 0)).toFixed(2)+"' " +
 						"onblur='Lancamento.lancarDesconto()' style='width: 100px; ' />";
 		info += "</div>";
 		info += "</div>";
-
+		
+		/**
+		info+='<div class="clearfix"></div>';
+		info += "<div class='w-100 float-left'>";
+		info += "<div class='float-right' >";
+		info += "<span style='font-size: 20px'>Desconto promocional (em teste): </span>";
+		info += "<input class='form-control input-sm m-b-10 mask-money float-right m-l-10' id='desconto-promo-"+comanda.id+"' " +
+						"name='descontoPromocional' value='"+new Number((comanda.descontoPromocional ? comanda.descontoPromocional : 0)).toFixed(2)+"' " +
+						"onblur='Lancamento.lancarDesconto()' style='width: 100px; ' />";
+		info += "</div>";
+		info += "</div>";
+		 **/
 		info+='<div class="clearfix"></div>';
 		info += "<div class='w-100 float-left'>";
 		info += "<p class='total'>Valor cobrado: <strong>R$<span class='m-b-10 mask-money valorCobrado' id='valorCobrado-"+comanda.id+"' >"+ new Number((comanda.valorCobrado ? comanda.valorCobrado : 0)).toFixed(2)+"</span></strong></p>";

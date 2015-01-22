@@ -76,7 +76,7 @@
 		</a></li>
 		<li class="dropdown" id="financeiro-menu">
              <a class="sa-side-chart" href="">
-                 <span class="menu-item">Rolatórios</span>
+                 <span class="menu-item">Relatórios</span>
              </a>
              <ul class="list-unstyled menu-item">
              	<li><a class="m-t-5"><i>Financeiro</i></a></li>

@@ -270,8 +270,10 @@ Lancamento = {
 		lancarDesconto:function(){
 			Utils.unmaskMoney();
 			var descontos = $("#comanda-form input[name='descontos']").val();
+			var descontoPromocional = $("#comanda-form input[name='descontoPromocional']").val();
 			var params = {
-				desconto : descontos,
+				desconto : (descontos == "" ? "0.00" : descontos),
+				descontoPromocional : (descontoPromocional == "" ? "0.00" : descontoPromocional),
 				clienteId : $("#cliente-id").val()
 			};
 			$.ajax({

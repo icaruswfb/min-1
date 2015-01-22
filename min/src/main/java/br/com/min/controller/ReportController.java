@@ -2,6 +2,7 @@ package br.com.min.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.Normalizer;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -17,8 +18,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.beanutils.BeanComparator;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -245,11 +246,13 @@ public class ReportController {
 			List<LancamentoComissao> comissoes = new ArrayList<>();
 			Pessoa funcionario = null;
 			for(String idStr : idsStr){
-				Long id = Long.parseLong(idStr);
-				LancamentoComissao comissao = comissaoServico.findById(id);
-				comissoes.add(comissao);
-				valorTotal += comissao.getValor();
-				funcionario = comissao.getFuncionario();
+				if(StringUtils.isNotBlank(idStr)){
+					Long id = Long.parseLong(idStr);
+					LancamentoComissao comissao = comissaoServico.findById(id);
+					comissoes.add(comissao);
+					valorTotal += comissao.getValor();
+					funcionario = comissao.getFuncionario();
+				}
 			}
 			createPDFComissoes(dataInicio, dataFim, response, valorTotal,
 					funcionario, comissoes);
@@ -603,6 +606,22 @@ public class ReportController {
 		List<Comanda> comandas = comandaService.listarPorPeriodo(inicio, fim, true);
 		
 		ComandasRPS comandasRps = new ComandasRPS();
+		
+		for(Comanda comanda : comandas){
+			String nome = comanda.getCliente().getNome();
+			if(nome != null){
+				nome = nome.trim();
+				nome = Normalizer.normalize(nome, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
+				comanda.getCliente().setNome(nome);
+			}
+			String documento = comanda.getCliente().getDocumento();
+			if(documento != null){
+				documento = documento.trim();
+				documento = documento.replaceAll("\\.", "").replaceAll("-", "");
+				comanda.getCliente().setDocumento(documento);
+			}
+		}
+		
 		comandasRps.setQuantidadeRps(comandas.size());
 		comandasRps.setNumeroLote(Long.parseLong(numeroLote));
 		comandasRps.setComandas(comandas);

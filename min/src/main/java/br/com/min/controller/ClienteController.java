@@ -407,10 +407,13 @@ public class ClienteController {
 	
 	@RequestMapping(value="/addDesconto", method=RequestMethod.POST)
 	public @ResponseBody Comanda addDesconto(@RequestParam(required=true) Long clienteId, 
-																					@RequestParam(required=true) Double desconto, HttpServletRequest request){
+																					@RequestParam(required=false) Double desconto, 
+																					@RequestParam(required=false) Double descontoPromocional, 
+																					HttpServletRequest request){
 		Comanda comanda = comandaService.findComandaAberta(clienteId);
 		if(Utils.hasRole(Role.CAIXA, request)){
 			comanda.setDesconto(desconto);
+			comanda.setDescontoPromocional(descontoPromocional);
 			comandaService.persist(comanda, Utils.getUsuarioLogado(request).getPessoa());
 		}
 		return limparComandaJSON(comanda);
