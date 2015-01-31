@@ -27,6 +27,8 @@ public class LancamentoComissao {
 	@Enumerated(EnumType.STRING)
 	private TipoComissao tipo;
 	private Date dataPagamento;
+	@ManyToOne
+	private TipoServico tipoSevico;
 	
 	public Long getId() {
 		return id;
@@ -91,6 +93,12 @@ public class LancamentoComissao {
 	}
 	public void setDataPagamento(Date dataPagamento) {
 		this.dataPagamento = dataPagamento;
+	}
+	public TipoServico getTipoSevico() {
+		return tipoSevico;
+	}
+	public void setTipoSevico(TipoServico tipoSevico) {
+		this.tipoSevico = tipoSevico;
 	}
 	
 }

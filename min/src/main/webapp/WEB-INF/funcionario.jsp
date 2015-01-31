@@ -185,16 +185,18 @@
 				                <c:if test="${ canEdit }">
 					                <div class="row">
 					               		<div class="col-lg-12">
-					                		<h4 class="page-title m-b-10">COMISSÂO</h4>
+					                		<h4 class="page-title m-b-10">COMISSÃO</h4>
 					                	</div>
 					                	<div class="col-lg-12">
 					                		<div class="col-lg-3">
-						                		<p>Serviço</p>
-					                 			<input id="comissao.comissaoServico" 
-					                 						<c:if test="${ not hasRole['ADMIN'] }">readonly="readonly"</c:if>
-					                 						name="comissao.comissaoServico"
-					                 						value="<fmt:formatNumber value="${ funcionario.comissao.comissaoServico }" minFractionDigits="2" maxFractionDigits="2" />" 
-					                 						class="form-control m-b-10 mask-percent" placeholder="Percentual"/>
+						                		<c:forEach var="comissaoServico" items="${ funcionario.comissao.comissoesServico }">
+						                			<p>${ comissaoServico.tipoServico.nome }</p>
+						                 			<input id="comissaoServico${ comissaoServico.tipoServico.id }" 
+						                 						<c:if test="${ not hasRole['ADMIN'] }">readonly="readonly"</c:if>
+						                 						name="comissaoServico${ comissaoServico.tipoServico.id }"
+						                 						value="<fmt:formatNumber value="${ comissaoServico.comissao }" minFractionDigits="2" maxFractionDigits="2" />" 
+						                 						class="form-control m-b-10 mask-percent" placeholder="Percentual"/>
+						                		</c:forEach>
 					                		</div>
 					                	</div>
 					                	<div class="col-lg-12">

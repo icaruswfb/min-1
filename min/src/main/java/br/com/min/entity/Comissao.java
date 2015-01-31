@@ -1,8 +1,14 @@
 package br.com.min.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 @Entity
 public class Comissao {
@@ -10,7 +16,8 @@ public class Comissao {
 	@Id
 	@GeneratedValue
 	private Long id;
-	private Double comissaoServico = 0.0;
+	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
+	private List<ComissaoServico> comissoesServico = new ArrayList<ComissaoServico>();;
 	private Double comissaoAuxiliar = 0.0;
 	private Double valorRange1 = 0.0;
 	private Double valorRange2 = 0.0;
@@ -25,12 +32,6 @@ public class Comissao {
 	}
 	public void setId(Long id) {
 		this.id = id;
-	}
-	public Double getComissaoServico() {
-		return comissaoServico;
-	}
-	public void setComissaoServico(Double comissaoServico) {
-		this.comissaoServico = comissaoServico;
 	}
 	public Double getComissaoAuxiliar() {
 		return comissaoAuxiliar;
@@ -80,5 +81,21 @@ public class Comissao {
 	public void setComissaoRange4(Double comissaoRange4) {
 		this.comissaoRange4 = comissaoRange4;
 	}
-	
+	public List<ComissaoServico> getComissoesServico() {
+		return comissoesServico;
+	}
+	public void setComissoesServico(List<ComissaoServico> comissoesServico) {
+		this.comissoesServico = comissoesServico;
+	}
+	@Transient
+	public ComissaoServico findComissaoServico(TipoServico tipoServico){
+		if(comissoesServico != null){
+			for(ComissaoServico comissaoServico : comissoesServico){
+				if(tipoServico.equals(comissaoServico.getTipoServico())){
+					return comissaoServico;
+				}
+			}
+		}
+		return null;
+	}
 }

@@ -3,7 +3,6 @@ package br.com.min.controller;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,14 +21,17 @@ import org.springframework.web.servlet.ModelAndView;
 import br.com.min.controller.vo.DadosCompiladosFuncionarioVO;
 import br.com.min.entity.Comanda;
 import br.com.min.entity.Comissao;
+import br.com.min.entity.ComissaoServico;
 import br.com.min.entity.Funcao;
 import br.com.min.entity.Imagem;
 import br.com.min.entity.Pessoa;
 import br.com.min.entity.Role;
+import br.com.min.entity.TipoServico;
 import br.com.min.entity.Usuario;
 import br.com.min.filter.SecurityFilter;
 import br.com.min.service.ComandaService;
 import br.com.min.service.PessoaService;
+import br.com.min.service.ServicoService;
 import br.com.min.service.UsuarioService;
 import br.com.min.utils.Utils;
 
@@ -43,6 +45,8 @@ public class FuncionarioController {
 	private UsuarioService usuarioService;
 	@Autowired
 	private ComandaService comandaService;
+	@Autowired
+	private ServicoService servicoService;
 	
 	@RequestMapping("/")
 	public ModelAndView listar(){
@@ -96,12 +100,27 @@ public class FuncionarioController {
 			funcionario.setComissao(new Comissao());
 			funcionario.setImagem(new Imagem());
 			funcionario.setUsuario(new Usuario());
+			
+			criarComissoesServicoPadrao(funcionario.getComissao());
 		}else{
 			funcionario = pessoaService.findById(id);
+			if(funcionario.getComissao().getComissoesServico().isEmpty()){
+				criarComissoesServicoPadrao(funcionario.getComissao());
+			}
 		}
 		mv.addObject("funcionario", funcionario);
 		
 		return mv;
+	}
+	
+	private void criarComissoesServicoPadrao(Comissao comissao){
+		List<TipoServico> tiposServico = servicoService.listarTipoServico();
+		for(TipoServico tipoServico : tiposServico){
+			ComissaoServico comissaoServico = new ComissaoServico();
+			comissaoServico.setComissao(0d);
+			comissaoServico.setTipoServico(tipoServico);
+			comissao.getComissoesServico().add(comissaoServico);
+		}
 	}
 	
 	private boolean hasPermissaoEditar(Pessoa funcionario, HttpServletRequest request){
@@ -137,12 +156,30 @@ public class FuncionarioController {
 				mv.addObject("errorMessages", errorMessages);
 				return mv;
 			}
+			
+			preencherComissoes(funcionario.getComissao(), request);
+			
 			tratarUsuario(funcionario);
 			
 			pessoaService.persist(funcionario);
 			updateSession(request, funcionario);
 		}
 		return listar();
+	}
+	
+	private void preencherComissoes(Comissao comissao, HttpServletRequest request){
+		List<TipoServico> tiposServico = servicoService.listarTipoServico();
+		for(TipoServico tipoServico : tiposServico){
+			String valor = request.getParameter("comissaoServico" + tipoServico.getId());
+			Double valorDouble = Double.parseDouble(valor);					
+			ComissaoServico comissaoServico = comissao.findComissaoServico(tipoServico);
+			if(comissaoServico == null){
+				comissaoServico = new ComissaoServico();
+				comissaoServico.setTipoServico(tipoServico);
+				comissao.getComissoesServico().add(comissaoServico);
+			}
+			comissaoServico.setComissao(valorDouble);
+		}
 	}
 	
 	@RequestMapping(value="/alterarImagem/{funcionarioId}/{imagemId}", method=RequestMethod.GET)

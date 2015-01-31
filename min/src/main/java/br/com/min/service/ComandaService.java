@@ -31,6 +31,7 @@ import br.com.min.entity.Produto;
 import br.com.min.entity.ProdutoQuantidade;
 import br.com.min.entity.TipoComissao;
 import br.com.min.entity.TipoLancamentoEstoque;
+import br.com.min.entity.TipoServico;
 import br.com.min.utils.Utils;
 
 @Service
@@ -155,13 +156,14 @@ public class ComandaService {
 		return dao.findUltimaAtualizacao(comandaId);
 	}
 	
-	private LancamentoComissao criarComissao(Double valor, Pessoa funcionario, Pessoa auxiliar, TipoComissao tipo, Comanda comanda){
+	private LancamentoComissao criarComissao(Double valor, Pessoa funcionario, Pessoa auxiliar, TipoComissao tipo, Comanda comanda, TipoServico tipoServico){
 		LancamentoComissao comissao = new LancamentoComissao();
 		comissao.setComanda(comanda);
 		comissao.setDataCriacao(new Date());
 		comissao.setFuncionario(funcionario);
 		comissao.setTipo(tipo);
 		comissao.setValorVenda(valor);
+		comissao.setTipoSevico(tipoServico);
 		if(auxiliar != null){
 			comissao.setPercentualReduzido(auxiliar.getComissao().getComissaoAuxiliar());
 		}
@@ -213,7 +215,7 @@ public class ComandaService {
 			Produto p = produto.getProduto();
 			if(p != null){
 				if(produto.getVendedor() != null){
-					comissoes.add(criarComissao((p.getPrecoRevenda() * produto.getQuantidadeUtilizada()), produto.getVendedor(), null, TipoComissao.VENDA, comanda));
+					comissoes.add(criarComissao((p.getPrecoRevenda() * produto.getQuantidadeUtilizada()), produto.getVendedor(), null, TipoComissao.VENDA, comanda, null));
 				}
 			}
 		}
@@ -225,9 +227,9 @@ public class ComandaService {
 						Pessoa assistente = servico.getAssistente();
 						if(assistente != null){
 							tipo = TipoComissao.SERVICO_COM_AUXILIAR;
-							comissoes.add(criarComissao(servico.getServico().getPreco(), assistente, null, TipoComissao.AUXILIAR, comanda));
+							comissoes.add(criarComissao(servico.getServico().getPreco(), assistente, null, TipoComissao.AUXILIAR, comanda, null));
 						}
-						comissoes.add(criarComissao(servico.getServico().getPreco(), servico.getFuncionario(), assistente, tipo, comanda));
+						comissoes.add(criarComissao(servico.getServico().getPreco(), servico.getFuncionario(), assistente, tipo, comanda, servico.getServico().getTipoServico()));
 					}
 				}
 			}
@@ -243,10 +245,10 @@ public class ComandaService {
 		
 		for(LancamentoComissao comissao : comissoes){
 			if(comissao.getTipo().equals(TipoComissao.SERVICO_COM_AUXILIAR)){
-				Double percentual = comissao.getFuncionario().getComissao().getComissaoServico() - comissao.getPercentualReduzido();
+				Double percentual = comissao.getFuncionario().getComissao().findComissaoServico(comissao.getTipoSevico()).getComissao() - comissao.getPercentualReduzido();
 				comissao.setPercentual(percentual);
 			} else if(comissao.getTipo().equals(TipoComissao.SERVICO)){
-				Double percentual = comissao.getFuncionario().getComissao().getComissaoServico();
+				Double percentual = comissao.getFuncionario().getComissao().findComissaoServico(comissao.getTipoSevico()).getComissao();
 				comissao.setPercentual(percentual);
 			} else if(comissao.getTipo().equals(TipoComissao.AUXILIAR)){
 				Double percentual = comissao.getFuncionario().getComissao().getComissaoAuxiliar();
@@ -317,7 +319,7 @@ public class ComandaService {
 			Double diferencaAbaixo = ranges[index] - vendasProduto;
 			comissao.setValorVenda(diferencaAbaixo);
 			percentual = percents[index];
-			LancamentoComissao novaComissao = criarComissao(diferencaAcima, comissao.getFuncionario(), null, TipoComissao.VENDA, comanda);
+			LancamentoComissao novaComissao = criarComissao(diferencaAcima, comissao.getFuncionario(), null, TipoComissao.VENDA, comanda, null);
 			index++;
 			novaComissao.setPercentual(percents[index]);
 			lancamentosToAdd.addAll(calcularPercentualPorRange(ranges, percents, vendasProduto + diferencaAbaixo, novaComissao, comanda, index));
