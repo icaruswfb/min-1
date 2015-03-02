@@ -10,9 +10,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,6 +35,7 @@ import br.com.min.controller.vo.ClientesPorMesCadastroVO;
 import br.com.min.controller.vo.ClientesPorVisitasVO;
 import br.com.min.controller.vo.ComandasRPS;
 import br.com.min.controller.vo.ComissoesPorFuncionarioVO;
+import br.com.min.controller.vo.CustosProdutoVO;
 import br.com.min.controller.vo.ServicoPorCategoriaReportVO;
 import br.com.min.controller.vo.ServicoReportVO;
 import br.com.min.controller.vo.TotaisPorFormaPagamentoVO;
@@ -43,18 +46,21 @@ import br.com.min.entity.Comanda;
 import br.com.min.entity.FluxoPagamento;
 import br.com.min.entity.FormaPagamento;
 import br.com.min.entity.LancamentoComissao;
+import br.com.min.entity.LancamentoEstoque;
 import br.com.min.entity.LancamentoProduto;
 import br.com.min.entity.LancamentoServico;
 import br.com.min.entity.Pagamento;
 import br.com.min.entity.Pessoa;
 import br.com.min.entity.Role;
 import br.com.min.entity.TipoComissao;
+import br.com.min.entity.TipoLancamentoEstoque;
 import br.com.min.entity.TipoServico;
 import br.com.min.entity.Usuario;
 import br.com.min.service.ComandaService;
 import br.com.min.service.ComissaoService;
 import br.com.min.service.PagamentoService;
 import br.com.min.service.PessoaService;
+import br.com.min.service.ProdutoService;
 import br.com.min.service.ServicoService;
 import br.com.min.utils.ReportUtils;
 import br.com.min.utils.Utils;
@@ -75,6 +81,8 @@ public class ReportController {
 	private PagamentoService pagamentoService;
 	@Autowired
 	private ServicoService servicoService;
+	@Autowired
+	private ProdutoService produtoService;
 	
 	@RequestMapping(value="/caixa", method=RequestMethod.GET)
 	public ModelAndView listarCaixa(HttpServletRequest request){
@@ -125,8 +133,13 @@ public class ReportController {
 		List<Comanda> comandas = (List<Comanda>)mv.getModel().get("comandas");
 		Double totalRevenda = 0d;
 		Double totalProdutos = 0d;
+		Double custoTotalRevenda = 0d;
+		Double custoTotalProdutos = 0d;
 		Double totalDescontos = 0d;
 		Double totalServicos = 0d;
+		Integer quantidadeProdutosRevenda = 0;
+		Integer quantidadeServicos = 0;
+		Set<Long> clientesAtendidos = new HashSet<Long>();
 		List<TotalPorTipoServicoVO> totais = new ArrayList<>();
 		List<TipoServico> tiposServico = servicoService.listarTipoServico();
 		for(TipoServico tipoServico : tiposServico){
@@ -149,7 +162,9 @@ public class ReportController {
 			totaisFuncionarioRevenda.add(vo);
 		}
 		for(Comanda comanda : comandas){
+			clientesAtendidos.add(comanda.getCliente().getId());
 			for(LancamentoServico servico : comanda.getServicos()){
+				quantidadeServicos ++;
 				TipoServico tipoServico = servico.getServico().getTipoServico();
 				for(TotalPorTipoServicoVO vo : totais){
 					if(vo.getTipoServico().equals(tipoServico)){
@@ -167,25 +182,45 @@ public class ReportController {
 			}
 			for(LancamentoProduto produto : comanda.getProdutos()){
 				if(produto.getRevenda()){
+					quantidadeProdutosRevenda += produto.getQuantidadeUtilizada().intValue();
 					totalRevenda += produto.getValor();
 					for(TotalPorFuncionarioVO vo : totaisFuncionarioRevenda){
 						if(produto.getVendedor().getId().equals(vo.getId())){
 							vo.setTotal(vo.getTotal() + produto.getValor());
 						}
 					}
+					if(produto.getCusto() == null){
+						custoTotalRevenda += produto.getProduto().getCustoUnitario() * produto.getQuantidadeUtilizada();
+					}else{
+						custoTotalRevenda += produto.getCusto(); 
+					}
 				}else{
 					totalProdutos += produto.getValor();
+					if(produto.getCusto() == null){
+						custoTotalProdutos += produto.getProduto().getCustoUnitario() * produto.getQuantidadeUtilizada();
+					}else{
+						custoTotalProdutos += produto.getCusto(); 
+					}
 				}
 			}
 			totalDescontos += comanda.getDesconto();
+			comanda.getValorPago();
 		}
 		mv.addObject("totaisFuncionario", totaisFuncionario);
 		mv.addObject("totaisFuncionarioRevenda", totaisFuncionarioRevenda);
 		mv.addObject("totalDescontos", totalDescontos);
 		mv.addObject("totalProdutos", totalProdutos);
 		mv.addObject("totalRevenda", totalRevenda);
+		
+		mv.addObject("custoTotalRevenda", custoTotalRevenda);
+		mv.addObject("custoTotalProdutos", custoTotalProdutos);
+		
 		mv.addObject("totalServicos", totalServicos);
 		mv.addObject("totaisTipoServico", totais);
+		
+		mv.addObject("quantidadeServicos", quantidadeServicos);
+		mv.addObject("quantidadeProdutosRevenda", quantidadeProdutosRevenda);
+		mv.addObject("quantidadeClientesAtendidos", clientesAtendidos.size());
 	}
 	
 	@RequestMapping(value="/comissao", method=RequestMethod.GET)
@@ -283,7 +318,7 @@ public class ReportController {
 				pagamento.setFluxoPagamento(FluxoPagamento.SAIDA);
 				pagamento.setFormaPagamento(FormaPagamento.Dinheiro);
 				pagamento.setParcelamento(1);
-				pagamento.setObservacao("Comissão para " + funcionario.getNome() + " de " + dataInicio + " até " + dataFim);
+				pagamento.setObservacao("Comissï¿½o para " + funcionario.getNome() + " de " + dataInicio + " atï¿½ " + dataFim);
 				pagamento.setValor(valorTotal);
 				pagamentoService.persist(pagamento);
 			}
@@ -360,7 +395,7 @@ public class ReportController {
 			mv.addObject("dataFim", fim);
 			return mv;
 		}
-		throw new RuntimeException("Sem permissão para vizualizar o fluxo financeiro");
+		throw new RuntimeException("Sem permissï¿½o para vizualizar o fluxo financeiro");
 	}
 	
 	private ModelAndView listarComissoes(Date inicio, Date fim, HttpServletRequest request){
@@ -467,6 +502,11 @@ public class ReportController {
 					}
 					totais.put(pagamento.getFormaPagamento(), total);
 				}
+			}
+			if( ! comandas.isEmpty() ){
+				Double ticketMedio = totalPago / comandas.size();
+				mv.addObject("quantidadeComandas", comandas.size());
+				mv.addObject("ticketMedio", ticketMedio);
 			}
 			
 			mv.addObject("totais", totais.values());
@@ -745,6 +785,7 @@ public class ReportController {
 				}
 				ano.setTotal(ano.getTotal() + 1);
 				
+				
 				ClientesPorMesCadastroVO mes = null;
 				for(ClientesPorMesCadastroVO porMes : ano.getClientesPorMes()){
 					if(porMes.getMes().equals(dataAbertura.get(Calendar.MONTH))){
@@ -758,6 +799,9 @@ public class ReportController {
 					ano.getClientesPorMes().add(mes);
 				}
 				mes.setQuantidade(mes.getQuantidade() + 1);
+				if(comandas.size() > 1){
+					mes.setRetornos(mes.getRetornos() + 1);
+				}
 				
 				ClientesPorVisitasVO visitas = null;
 				for(ClientesPorVisitasVO porVisitas : clientesPorVisitas){
@@ -770,6 +814,45 @@ public class ReportController {
 					visitas = new ClientesPorVisitasVO();
 					visitas.setVisitas(comandas.size());
 					clientesPorVisitas.add(visitas);
+				}
+				boolean countedManicure = false;
+				boolean countedCabelo = false;
+				boolean countedMaquiagem = false;
+				boolean countedEstetica = false;
+				boolean countedOutros = false;
+				for(Comanda comanda : comandas){
+					for(LancamentoServico servico : comanda.getServicos()){
+						if( TipoServico.CABELO_ID.equals( servico.getServico().getTipoServico().getId() ) 
+								&& ! countedCabelo){
+							visitas.setCabelo( visitas.getCabelo() + 1);
+							countedCabelo = true;
+							continue;
+						}
+						if( TipoServico.UNHA_ID.equals( servico.getServico().getTipoServico().getId() )  
+								&& ! countedManicure){
+							visitas.setManicure( visitas.getManicure() + 1);
+							countedManicure = true;
+							continue;
+						}
+						if( TipoServico.MAQUIAGEM_ID.equals( servico.getServico().getTipoServico().getId() )  
+								&& ! countedMaquiagem){
+							visitas.setMaquiagem( visitas.getMaquiagem() + 1);
+							countedMaquiagem = true;
+							continue;
+						}
+						if( TipoServico.ESTETICA_ID.equals( servico.getServico().getTipoServico().getId() ) 
+								&& ! countedEstetica){
+							visitas.setEstetica( visitas.getEstetica() + 1);
+							countedEstetica = true;
+							continue;
+						}
+						if( TipoServico.OUTROS_ID.equals( servico.getServico().getTipoServico().getId() ) 
+								&& ! countedOutros){
+							visitas.setOutros( visitas.getOutros() + 1);
+							countedOutros = true;
+							continue;
+						}
+					}
 				}
 				visitas.setClientes(visitas.getClientes() + 1);
 			}
@@ -791,6 +874,17 @@ public class ReportController {
 		mv.addObject("clientesPorVisitas", clientesPorVisitas);
 		
 		return mv;
+	}
+	
+	@RequestMapping(value="/custosProduto", method=RequestMethod.GET)
+	@ResponseBody
+	public CustosProdutoVO getCustosProduto(){
+		List<LancamentoEstoque> lancamentos = produtoService.findLancamentoByTipo(TipoLancamentoEstoque.ENTRADA);
+		CustosProdutoVO vo = new CustosProdutoVO();
+		for(LancamentoEstoque lancamento : lancamentos ){
+			vo.setCustoTotalProdutos( vo.getCustoTotalProdutos() + (lancamento.getQuantidade() * lancamento.getProduto().getCustoUnitario()) );
+		}
+		return vo;
 	}
 	
 }

@@ -4,6 +4,7 @@ public class ClientesPorMesCadastroVO {
 
 	private Integer mes;
 	private Integer quantidade = 0;
+	private Integer retornos = 0;
 	public Integer getMes() {
 		return mes;
 	}
@@ -15,6 +16,12 @@ public class ClientesPorMesCadastroVO {
 	}
 	public void setQuantidade(Integer quantidade) {
 		this.quantidade = quantidade;
+	}
+	public Integer getRetornos() {
+		return retornos;
+	}
+	public void setRetornos(Integer retornos) {
+		this.retornos = retornos;
 	}
 	
 }

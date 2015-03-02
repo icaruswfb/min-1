@@ -486,16 +486,17 @@ Comanda = {
 		info += "</div>";
 		
 		/**
+		 **/
 		info+='<div class="clearfix"></div>';
 		info += "<div class='w-100 float-left'>";
 		info += "<div class='float-right' >";
-		info += "<span style='font-size: 20px'>Desconto promocional (em teste): </span>";
+		info += "<span style='font-size: 20px'>Desconto promocional: </span>";
 		info += "<input class='form-control input-sm m-b-10 mask-money float-right m-l-10' id='desconto-promo-"+comanda.id+"' " +
-						"name='descontoPromocional' value='"+new Number((comanda.descontoPromocional ? comanda.descontoPromocional : 0)).toFixed(2)+"' " +
-						"onblur='Lancamento.lancarDesconto()' style='width: 100px; ' />";
+		"name='descontoPromocional' value='"+new Number((comanda.descontoPromocional ? comanda.descontoPromocional : 0)).toFixed(2)+"' " +
+		"onblur='Lancamento.lancarDesconto()' style='width: 100px; ' />";
 		info += "</div>";
 		info += "</div>";
-		 **/
+		
 		info+='<div class="clearfix"></div>';
 		info += "<div class='w-100 float-left'>";
 		info += "<p class='total'>Valor cobrado: <strong>R$<span class='m-b-10 mask-money valorCobrado' id='valorCobrado-"+comanda.id+"' >"+ new Number((comanda.valorCobrado ? comanda.valorCobrado : 0)).toFixed(2)+"</span></strong></p>";

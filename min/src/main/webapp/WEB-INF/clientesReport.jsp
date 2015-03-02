@@ -23,9 +23,9 @@
 			
 			<div class="block-area">
 				
-				<div class="row m-b-10">
-						<div class="col-lg-12">
-							<div class="col-lg-6">
+<!-- 				<div class="row m-b-10"> -->
+						<div class="col-lg-5">
+							<div class="col-lg-12">
 								<h3>Clientes cadastrados em:</h3>
 								<c:forEach var="porAno" items="${ clientesPorAno}">
 									<h3>${ porAno.ano } (Total: ${ porAno.total })</h3>
@@ -34,6 +34,7 @@
 				                    		<tr>
 				                    			<th>Mês</th>
 				                    			<th>Total por mês</th>
+				                    			<th>Quantos retornaram</th>
 				                    		</tr>
 				                    	</thead>
 				                        <tbody>
@@ -41,6 +42,7 @@
 												<tr>
 													<td>${porMes.mes + 1 }</td>
 													<td>${porMes.quantidade }</td>
+													<td>${porMes.retornos }</td>
 												</tr>
 											</c:forEach>
 										</tbody>
@@ -49,17 +51,22 @@
 							</div>
 						</div>
 					
-				</div>
-	<div class="clearfix"></div>
-				<div class="row m-b-10">
-						<div class="col-lg-12">
-							<div class="col-lg-6">
+<!-- 				</div> -->
+<!-- 	<div class="clearfix"></div> -->
+<!-- 				<div class="row m-b-10"> -->
+						<div class="col-lg-7">
+							<div class="col-lg-12">
 								<h3>Clientes por quantidade de visitas:</h3>
 			                    <table class="table table-hover tile">
 			                    	<thead>
 			                    		<tr>
 			                    			<th>Visitas</th>
 			                    			<th>Quantidade de clientes</th>
+			                    			<th>Cabelo</th>
+			                    			<th>Unha</th>
+			                    			<th>Estética</th>
+			                    			<th>Maquiagem</th>
+			                    			<th>Outros</th>
 			                    		</tr>
 			                    	</thead>
 			                        <tbody>
@@ -71,6 +78,21 @@
 												<td >
 													${porVisitas.clientes }
 												</td>
+												<td >
+													${porVisitas.cabelo }
+												</td>
+												<td >
+													${porVisitas.manicure }
+												</td>
+												<td >
+													${porVisitas.estetica }
+												</td>
+												<td >
+													${porVisitas.maquiagem }
+												</td>
+												<td >
+													${porVisitas.outros }
+												</td>
 											</tr>
 										</c:forEach>
 									</tbody>
@@ -78,7 +100,7 @@
 							</div>
 						</div>
 					
-				</div>
+<!-- 				</div> -->
 			</div>
 			
 	<div class="clearfix"></div>

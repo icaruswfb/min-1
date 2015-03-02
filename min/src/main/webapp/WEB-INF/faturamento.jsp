@@ -117,8 +117,69 @@
 							
 				<div class="clearfix"></div>
 					<div class="block-area">
-							<div class="row">
-								<div class="col-lg-6">
+<!-- 					<div class="clearfix"></div> -->
+<!-- 					<div class="row"> -->
+							<div class="col-lg-6">
+								<div class="col-lg-12">
+									<p>Totais</p>
+				                    <table class="table table-hover tile">
+				                        <tbody>
+											<tr>
+												<td>
+													Serviço
+												</td>
+												<td>
+													Total: R$<fmt:formatNumber value="${ totalServicos }" minFractionDigits="2" maxFractionDigits="2" />
+												</td>
+											</tr>
+											<tr>
+												<td>
+													Revenda
+												</td>
+												<td>
+													<ul>
+														<li>
+															Total bruto: R$<fmt:formatNumber value="${ totalRevenda }" minFractionDigits="2" maxFractionDigits="2" />
+														</li>
+														<li>
+															Custo em produto: R$<fmt:formatNumber value="${ custoTotalRevenda }" minFractionDigits="2" maxFractionDigits="2" />
+														</li>
+														<li>
+															Total liquido: R$<fmt:formatNumber value="${ totalRevenda - custoTotalRevenda}" minFractionDigits="2" maxFractionDigits="2" />
+														</li>
+													</ul>
+												</td>
+											</tr>
+											<tr>
+												<td>
+													Produtos do salão
+												</td>
+												<td>
+													<ul>
+														<li>
+															Total bruto: R$<fmt:formatNumber value="${ totalProdutos }" minFractionDigits="2" maxFractionDigits="2" />
+														</li>
+														<li>
+															Custo em produto: R$<fmt:formatNumber value="${ custoTotalProdutos }" minFractionDigits="2" maxFractionDigits="2" />
+														</li>
+														<li>
+															Total liquido: R$<fmt:formatNumber value="${ totalProdutos - custoTotalProdutos }" minFractionDigits="2" maxFractionDigits="2" />
+														</li>
+													</ul>
+												</td>
+											</tr>
+											<tr>
+												<td>
+													Descontos
+												</td>
+												<td>
+													Total: R$<fmt:formatNumber value="${ totalDescontos }" minFractionDigits="2" maxFractionDigits="2" />
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+								<div class="col-lg-12">
 									<p>Serviços</p>
 				                    <table class="table table-hover tile">
 				                        <tbody>
@@ -135,11 +196,61 @@
 										</tbody>
 									</table>
 								</div>
+								<div class="col-lg-12">
+										<p>Outros</p>
+					                    <table class="table table-hover tile">
+					                        <tbody>
+												<tr>
+													<td>
+														Clientes atendidos
+													</td>
+													<td>
+														<fmt:formatNumber value="${ quantidadeClientesAtendidos }" minFractionDigits="0" maxFractionDigits="0" />
+													</td>
+												</tr>
+												<tr>
+													<td>
+														Quantidade de serviços prestados
+													</td>
+													<td>
+														<fmt:formatNumber value="${ quantidadeServicos }" minFractionDigits="0" maxFractionDigits="0" />
+														(<fmt:formatNumber value="${ quantidadeServicos/quantidadeClientesAtendidos }" minFractionDigits="0" maxFractionDigits="2" /> por cliente)
+													</td>
+												</tr>
+												<tr>
+													<td>
+														Quantidade de produtos vendidos
+													</td>
+													<td>
+														<fmt:formatNumber value="${ quantidadeProdutosRevenda }" minFractionDigits="0" maxFractionDigits="0" />
+														(<fmt:formatNumber value="${ quantidadeProdutosRevenda/quantidadeClientesAtendidos }" minFractionDigits="0" maxFractionDigits="2" /> por cliente)
+													</td>
+												</tr>
+												<tr>
+													<td>
+														Comandas abertas
+													</td>
+													<td>
+														<fmt:formatNumber value="${ quantidadeComandas }" minFractionDigits="0" maxFractionDigits="0" />
+													</td>
+												</tr>
+												<tr>
+													<td>
+														Ticket médio
+													</td>
+													<td>
+														Total: R$<fmt:formatNumber value="${ ticketMedio }" minFractionDigits="2" maxFractionDigits="2" />
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+									
+									
 							</div>
 							
-					<div class="clearfix"></div>
-					<div class="row">
-								<div class="col-lg-6">
+							<div class="col-lg-6">
+								<div class="col-lg-12">
 									<p>Total por funcionário principal de cada serviço (não contabiliza auxiliares)</p>
 				                    <table class="table table-hover tile">
 				                        <tbody>
@@ -156,10 +267,7 @@
 										</tbody>
 									</table>
 								</div>
-							</div>
-				<div class="clearfix"></div>
-				<div class="row">
-								<div class="col-lg-6">
+								<div class="col-lg-12">
 									<p>Total por funcionário em revenda</p>
 				                    <table class="table table-hover tile">
 				                        <tbody>
@@ -177,48 +285,7 @@
 									</table>
 								</div>
 							</div>
-				<div class="clearfix"></div>
-							<div class="row">
-								<div class="col-lg-6">
-										<p>Totais</p>
-					                    <table class="table table-hover tile">
-					                        <tbody>
-												<tr>
-													<td>
-														Serviço
-													</td>
-													<td>
-														Total: R$<fmt:formatNumber value="${ totalServicos }" minFractionDigits="2" maxFractionDigits="2" />
-													</td>
-												</tr>
-												<tr>
-													<td>
-														Revenda
-													</td>
-													<td>
-														Total: R$<fmt:formatNumber value="${ totalRevenda }" minFractionDigits="2" maxFractionDigits="2" />
-													</td>
-												</tr>
-												<tr>
-													<td>
-														Produtos do salão
-													</td>
-													<td>
-														Total: R$<fmt:formatNumber value="${ totalProdutos }" minFractionDigits="2" maxFractionDigits="2" />
-													</td>
-												</tr>
-												<tr>
-													<td>
-														Descontos
-													</td>
-													<td>
-														Total: R$<fmt:formatNumber value="${ totalDescontos }" minFractionDigits="2" maxFractionDigits="2" />
-													</td>
-												</tr>
-											</tbody>
-										</table>
-									</div>
-							</div>
+<!-- 							</div> -->
 				
 	<div class="clearfix"></div>
 					</div>

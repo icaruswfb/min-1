@@ -42,7 +42,7 @@ public class EstoqueSchedule {
 		if(produtos.size() >= 3){
 			for(Usuario admin : admins){
 				Tarefa tarefa = criarTarefa(admin);
-				tarefa.setDescricao("Há " + produtos.size() + " produtos cujo " + situacao.getTexto().toLowerCase());
+				tarefa.setDescricao("HÃ¡ " + produtos.size() + " produtos cujo " + situacao.getTexto().toLowerCase());
 				tarefaService.persist(tarefa);
 			}
 		}else{

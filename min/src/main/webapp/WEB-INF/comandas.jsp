@@ -155,7 +155,7 @@
 	
 	<script type="text/javascript">
 		$("#financeiro-menu").addClass("active");
-		$("#comissao-menu").addClass("active");
+		$("#comandas-menu").addClass("active");
 
 		$(document).ready(function(){
            		$('.mask-number').mask('#####0');

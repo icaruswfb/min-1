@@ -7,6 +7,12 @@ import javax.persistence.Id;
 @Entity
 public class TipoServico {
 	
+	public static final Long CABELO_ID = 1L;
+	public static final Long UNHA_ID = 2L;
+	public static final Long MAQUIAGEM_ID = 3L;
+	public static final Long ESTETICA_ID = 4L;
+	public static final Long OUTROS_ID = 5L;
+	
 	@Id
 	@GeneratedValue
 	private Long id;

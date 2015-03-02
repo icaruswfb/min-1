@@ -23,20 +23,17 @@ import br.com.min.entity.Pagamento;
 import br.com.min.entity.Pessoa;
 
 @Repository
-public class ComandaDAO {
-
-	@Autowired
-	private SessionFactory sessionFactory;
+public class ComandaDAO extends BaseDAO{
 	
 	public Pagamento pagar(Pagamento pagamento){
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		pagamento = (Pagamento)session.merge(pagamento);
 		session.flush();
 		return pagamento;
 	}
 	
 	public Double findTotalCobradoPorCliente(Long clienteId){
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Query query = session.createSQLQuery("select sum(valorCobrado) from comanda where cliente_id = " + clienteId);
 		Double result = (Double) query.uniqueResult();
 		if(result == null){
@@ -45,8 +42,8 @@ public class ComandaDAO {
 		return result;
 	}
 	public Double findTotalPagoPorCliente(Long clienteId){
-		Session session = sessionFactory.openSession();
-		Query query = session.createSQLQuery("select sum(p.valor) from pagamento p join comanda c on p.comanda_id = c.id where p.formaPagamento != 'Crédito' and c.cliente_id = " + clienteId);
+		Session session = getSession();
+		Query query = session.createSQLQuery("select sum(p.valor) from pagamento p join comanda c on p.comanda_id = c.id where p.formaPagamento != 'Crï¿½dito' and c.cliente_id = " + clienteId);
 		Double result = (Double) query.uniqueResult();
 		if(result == null){
 			return 0d;
@@ -55,35 +52,35 @@ public class ComandaDAO {
 	}
 	
 	public Long findUltimaAtualizacao(Long comandaId){
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Query query = session.createSQLQuery("select c.ultimaAtualizacao from Comanda c where c.id = " + comandaId);
 		Long result = ((BigInteger) query.uniqueResult()).longValue();
 		return result;
 	}
 	
 	public LancamentoServico findLancamentoServicoById(Long id){
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(LancamentoServico.class);
 		criteria.add(Restrictions.eq("id", id));
 		return (LancamentoServico) criteria.uniqueResult();
 	}
 	
 	public LancamentoProduto findLancamentoProdutoById(Long id) {
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(LancamentoProduto.class);
 		criteria.add(Restrictions.eq("id", id));
 		return (LancamentoProduto) criteria.uniqueResult();
 	}
 	
 	public LancamentoServico findLancamentoServicoByLancamentoProdutoId(Long id){
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(LancamentoServico.class);
 		criteria.createCriteria("produtosUtilizados").add(Restrictions.eq("id", id));
 		return (LancamentoServico) criteria.uniqueResult();
 	}
 	
 	public List<Comanda> findFechamento(Date dataInicio, Date dataFim){
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(Comanda.class);
 		
 		Calendar dataInicioPesquisa = Calendar.getInstance();
@@ -109,7 +106,7 @@ public class ComandaDAO {
 	}
 	
 	public Comanda findComandaAberta(Long clienteId){
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(Comanda.class);
 		criteria.add(Restrictions.eq("cliente.id", clienteId));
 		criteria.add(Restrictions.isNull("fechamento"));
@@ -121,7 +118,7 @@ public class ComandaDAO {
 	}
 	
 	public List<Comanda> find(Date inicio, Date fim, boolean toExport){
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(Comanda.class);
 		
 		Calendar calendarInicio = Calendar.getInstance();
@@ -149,7 +146,7 @@ public class ComandaDAO {
 	}
 	
 	public List<Comanda> find(Comanda entity, Boolean fechadas){
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(Comanda.class);
 		if(entity != null){
 			List<Criterion> predicates = new ArrayList<>();
@@ -172,7 +169,7 @@ public class ComandaDAO {
 	}
 	
 	public List<Comanda> findComandasByFuncionario(Long funcionarioId){
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		//Criteria criteria = session.createCriteria(Comanda.class);
 		Query query = session.createQuery("select distinct c from Comanda c join c.servicos ls where ls.funcionario.id = " + funcionarioId);
 		List<Comanda> entities = query.list();
@@ -180,7 +177,7 @@ public class ComandaDAO {
 	}
 	
 	public List<LancamentoServico> findLancamentoServico(Date inicio, Date fim){
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(LancamentoServico.class);
 		
 		Calendar lo = Calendar.getInstance();
@@ -204,12 +201,11 @@ public class ComandaDAO {
 	}
 
 	public List<Comanda> listComandasCliente(Pessoa cliente) {
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(Comanda.class);
 		criteria.add(Restrictions.eq("cliente.id", cliente.getId()));
 		criteria.addOrder(Order.asc("abertura"));
 		List<Comanda> comandas = criteria.list();
-		session.close();
 		return comandas;
 	}
 	

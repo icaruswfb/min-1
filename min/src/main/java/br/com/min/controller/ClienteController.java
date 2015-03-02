@@ -94,7 +94,7 @@ public class ClienteController {
 			limparHistoricoJSON(historico);
 			return historico;
 		}
-		throw new RuntimeException("Sem permissão para acessar histórico de cliente");
+		throw new RuntimeException("Sem permissï¿½o para acessar histï¿½rico de cliente");
 	}
 	
 	private void limparHistoricoJSON(List<Historico> historico){
@@ -154,7 +154,7 @@ public class ClienteController {
 			limparComandaJSON(comanda);
 			return comanda;
 		}
-		throw new RuntimeException("Sem permissão para pagar a comanda");
+		throw new RuntimeException("Sem permissï¿½o para pagar a comanda");
 	}
 
 	@RequestMapping(value="/deletarPagamento/{id}/{clienteId}", method=RequestMethod.GET)
@@ -168,7 +168,7 @@ public class ClienteController {
 			limparComandaJSON(comanda);
 			return comanda;
 		}
-		throw new RuntimeException("Sem permissão para deletar o pagamento da comanda");
+		throw new RuntimeException("Sem permissï¿½o para deletar o pagamento da comanda");
 	}
 	
 	
@@ -280,10 +280,10 @@ public class ClienteController {
 	private VerificacaoVO verificarComanda(Comanda comanda){
 		VerificacaoVO vo = new VerificacaoVO();
 		if(comanda.getValorCobrado() > comanda.getValorPago()){
-			vo.addMessage(MessageVO.WARNING, "O valor cobrado é maior que o valor pago, fechar a comanda agora irá gerar um débito.");
+			vo.addMessage(MessageVO.WARNING, "O valor cobrado ï¿½ maior que o valor pago, fechar a comanda agora irï¿½ gerar um dï¿½bito.");
 		}
 		if(comanda.getValorCobrado() < comanda.getValorPago()){
-			vo.addMessage(MessageVO.WARNING, "O valor cobrado é menor que o valor pago, fechar a comanda agora irá gerar um crédito.");
+			vo.addMessage(MessageVO.WARNING, "O valor cobrado ï¿½ menor que o valor pago, fechar a comanda agora irï¿½ gerar um crï¿½dito.");
 		}
 		for(LancamentoServico lancamentoServico : comanda.getServicos()){
 			boolean hasServicoError = false;
@@ -292,19 +292,19 @@ public class ClienteController {
 			if( ! hasServicoError && lancamentoServico.getServico() == null){
 				hasServicoError = true;
 				vo.setCriticalError(true);
-				vo.addMessage(MessageVO.ERROR, "Todos os lançamentos de serviço devem ter um serviço vinculado.");
+				vo.addMessage(MessageVO.ERROR, "Todos os lanï¿½amentos de serviï¿½o devem ter um serviï¿½o vinculado.");
 			}
 			if( ! hasFuncionarioError && lancamentoServico.getFuncionario() == null){
 				hasFuncionarioError = true;
 				vo.setCriticalError(true);
-				vo.addMessage(MessageVO.ERROR, "Todos os lançamentos de serviço devem ter um funcionário vinculado.");
+				vo.addMessage(MessageVO.ERROR, "Todos os lanï¿½amentos de serviï¿½o devem ter um funcionï¿½rio vinculado.");
 			}
 			if( ! hasProdutoError ){
 				for(LancamentoProduto lancamentoProduto : lancamentoServico.getProdutosUtilizados()){
 					if(lancamentoProduto.getProduto() == null){
 						hasProdutoError = true;
 						vo.setCriticalError(true);
-						vo.addMessage(MessageVO.ERROR, "Todos os lançamentos de produto do serviço devem ter um produto vinculado.");
+						vo.addMessage(MessageVO.ERROR, "Todos os lanï¿½amentos de produto do serviï¿½o devem ter um produto vinculado.");
 						break;
 					}
 				}
@@ -316,20 +316,20 @@ public class ClienteController {
 			if( ! hasProdutoError && lancamentoProduto.getProduto() == null){
 				hasProdutoError = true;
 				vo.setCriticalError(true);
-				vo.addMessage(MessageVO.ERROR, "Todos os lançamentos de produto devem ter um produto vinculado.");
+				vo.addMessage(MessageVO.ERROR, "Todos os lanï¿½amentos de produto devem ter um produto vinculado.");
 			}
 			if(lancamentoProduto.getRevenda() == true){
 				if( ! hasVendedorError && lancamentoProduto.getVendedor() == null){
 					hasVendedorError = true;
 					vo.setCriticalError(true);
-					vo.addMessage(MessageVO.ERROR, "Todos os lançamentos de produto de revenda devem ter um vendedor vinculado.");
+					vo.addMessage(MessageVO.ERROR, "Todos os lanï¿½amentos de produto de revenda devem ter um vendedor vinculado.");
 				}
 			}
 		}
 		
 		if(vo.getMessages().isEmpty()){
 			vo.setSuccess(true);
-			vo.addMessage(MessageVO.SUCCESS, "A comanda está pronta para ser fechada.");
+			vo.addMessage(MessageVO.SUCCESS, "A comanda estï¿½ pronta para ser fechada.");
 		}
 		vo.setUltimaAtualizacao(comanda.getUltimaAtualizacao());
 		return vo;
@@ -347,9 +347,9 @@ public class ClienteController {
 				limparComandaJSON(comanda);
 				return comanda;
 			}
-			throw new RuntimeException("Há erros críticos com a comanda que está sendo fechada");
+			throw new RuntimeException("Hï¿½ erros crï¿½ticos com a comanda que estï¿½ sendo fechada");
 		}
-		throw new RuntimeException("Sem permissão para fechar a comanda");
+		throw new RuntimeException("Sem permissï¿½o para fechar a comanda");
 	}
 	
 	@RequestMapping(value="/fecharComanda/{id}", method=RequestMethod.GET)
@@ -363,7 +363,7 @@ public class ClienteController {
 			}
 			return vo;
 		}
-		throw new RuntimeException("Sem permissão para fechar a comanda");
+		throw new RuntimeException("Sem permissï¿½o para fechar a comanda");
 	}
 	
 	private Comanda criarComanda(HttpServletRequest request){
@@ -372,14 +372,14 @@ public class ClienteController {
 		String notaAtendimento = request.getParameter("notaAtendimento");
 		comanda.setNumeroNota(notaAtendimento);
 		if(comanda.getFechamento() != null){
-			throw new RuntimeException("Alteração de comanda já fechada");
+			throw new RuntimeException("Alteraï¿½ï¿½o de comanda jï¿½ fechada");
 		}
 		return comanda;
 		/*
 		Long ultimaAtualizacao = Long.parseLong(request.getParameter("ultimaAtualizacao"));
 		Long diferencaTempo = ultimaAtualizacao - comanda.getUltimaAtualizacao();
 		if(diferencaTempo > 1000 || diferencaTempo < -1000){
-			throw new RuntimeException("Comanda desatualizada. Atualize antes de fazer as alterações.");
+			throw new RuntimeException("Comanda desatualizada. Atualize antes de fazer as alteraï¿½ï¿½es.");
 		}
 
 		Collection<LancamentoServico> servicos = criarServicos(request, comanda);
@@ -558,15 +558,18 @@ public class ClienteController {
 				produto.setComanda(null);
 				if(produto.getVendedor() != null){
 					produto.getVendedor().setUsuario(null);
+					produto.getVendedor().setComissao(null);
 				}
 			}
 			for(LancamentoServico servico : comanda.getServicos()){
 				servico.setComanda(null);
 				if(servico.getFuncionario() != null){
 					servico.getFuncionario().setUsuario(null);
+					servico.getFuncionario().setComissao(null);
 				}
 				if(servico.getAssistente() != null){
 					servico.getAssistente().setUsuario(null);
+					servico.getAssistente().setComissao(null);
 				}
 			}
 			comanda.setEstoque(null);

@@ -68,7 +68,7 @@ public class ComandaService {
 		historico.setCliente(comanda.getCliente());
 		historico.setData(new Date());
 		historico.setFuncionario(historico.getFuncionario());
-		historico.setTexto("Serviço adicionada à comanda " + comanda.getId() + ": " + servico.getServico().getNome() + " no valor de R$" + servico.getValor());
+		historico.setTexto("ServiÃ§o adicionada Ã  comanda " + comanda.getId() + ": " + servico.getServico().getNome() + " no valor de R$" + servico.getValor());
 		historico.setCriador(usuarioLogado);
 		historico.setTextoPequeno(Utils.dateTimeFormat.format(historico.getData()) + " - por "+usuarioLogado.getNome());
 		genericDao.persist(historico);
@@ -94,6 +94,8 @@ public class ComandaService {
 	
 	public Comanda addProduto(LancamentoProduto lancamentoProduto,
 			Comanda comanda, Pessoa usuarioLogado) {
+		Double custo = lancamentoProduto.getQuantidadeUtilizada() * lancamentoProduto.getProduto().getCustoUnitario();
+		lancamentoProduto.setCusto(custo);
 		comanda.getProdutos().add(lancamentoProduto);
 		comanda = persist(comanda, usuarioLogado);
 		
@@ -107,7 +109,7 @@ public class ComandaService {
 		historico.setCliente(comanda.getCliente());
 		historico.setData(new Date());
 		historico.setFuncionario(historico.getFuncionario());
-		historico.setTexto("Produto adicionada à comanda " + comanda.getId() + ": " + lancamentoProduto.getProduto().getNome() + " no valor de R$" + lancamentoProduto.getValor());
+		historico.setTexto("Produto adicionada Ã  comanda " + comanda.getId() + ": " + lancamentoProduto.getProduto().getNome() + " no valor de R$" + lancamentoProduto.getValor());
 		historico.setCriador(usuarioLogado);
 		historico.setTextoPequeno(Utils.dateTimeFormat.format(historico.getData()) + " - por "+usuarioLogado.getNome());
 		genericDao.persist(historico);
@@ -243,6 +245,11 @@ public class ComandaService {
 		Map<Long, Double> vendasProdutoPorCliente = new HashMap<>();
 		List<LancamentoComissao> lancamentosToAdd = new ArrayList<>();
 		
+		
+		Double valorTotal = comanda.getValorTotal() - comanda.getDesconto();
+		Double descontoPromocional = comanda.getDescontoPromocional();
+		Double percentualDescontoPromocional = 1 - (descontoPromocional / valorTotal );
+		
 		for(LancamentoComissao comissao : comissoes){
 			if(comissao.getTipo().equals(TipoComissao.SERVICO_COM_AUXILIAR)){
 				Double percentual = comissao.getFuncionario().getComissao().findComissaoServico(comissao.getTipoSevico()).getComissao() - comissao.getPercentualReduzido();
@@ -289,12 +296,8 @@ public class ComandaService {
 				vendasProdutoPorCliente.put(comissao.getFuncionario().getId(), vendasProduto);
 			}
 
-			comissao.setValor( (comissao.getValorVenda() / 100) * comissao.getPercentual() );
+			comissao.setValor( ( ((comissao.getValorVenda()* percentualDescontoPromocional) / 100)  ) * comissao.getPercentual() );
 		}
-
-		Double valorCobrado = comanda.getValorCobrado();
-		Double descontoPromocional = comanda.getDescontoPromocional();
-		Double percentualDescontoPromocional = 1 - (descontoPromocional / valorCobrado );
 		
 		for(LancamentoComissao comissao : lancamentosToAdd){
 			comissao.setValor( ( (comissao.getValorVenda() / 100) * comissao.getPercentual() ) * percentualDescontoPromocional );
@@ -361,16 +364,18 @@ public class ComandaService {
 				toAdd.add(lancamento);
 			}
 		}
-		for(LancamentoEstoque existente : comanda.getEstoque()){
-			boolean isToRemove = true;
-			for(Entry<Produto, Long> entry : entries){
-				if(entry.getKey().equals(existente.getProduto())){
-					isToRemove = false;
-					break;
+		if(comanda.getEstoque() != null){
+			for(LancamentoEstoque existente : comanda.getEstoque()){
+				boolean isToRemove = true;
+				for(Entry<Produto, Long> entry : entries){
+					if(entry.getKey().equals(existente.getProduto())){
+						isToRemove = false;
+						break;
+					}
 				}
-			}
-			if(isToRemove){
-				produtosParaAtualizar.add(existente.getProduto());
+				if(isToRemove){
+					produtosParaAtualizar.add(existente.getProduto());
+				}
 			}
 		}
 		comanda.setEstoque(toAdd);
@@ -464,9 +469,9 @@ public class ComandaService {
 		historico.setFuncionario(historico.getFuncionario());
 		historico.setTexto("Comanda " + entity.getId() + " no valor de R$" + entity.getValorCobrado() 
 				+ ", aberta em " + Utils.dateTimeFormat.format(entity.getAbertura()) + " onde o valor pago foi R$" + entity.getValorPago() 
-				+ " foi excluída por " + usuarioLogado.getNome());
+				+ " foi excluÃ­da por " + usuarioLogado.getNome());
 		historico.setCriador(usuarioLogado);
-		historico.setTextoPequeno(Utils.dateTimeFormat.format(historico.getData()) + " - Comanda "+entity.getId()+" excluída");
+		historico.setTextoPequeno(Utils.dateTimeFormat.format(historico.getData()) + " - Comanda "+entity.getId()+" excluÃ­da");
 		entity.getPagamentos().clear();
 		entity.getComissoes().clear();
 		entity.getEstoque().clear();
@@ -507,7 +512,7 @@ public class ComandaService {
 			return;
 		}
 		Historico historico = criarHistoricoExclusao(comanda, usuarioLogado);
-		historico.setTexto("Lançamento do serviço " + entity.getServico().getNome() + " no valor de R$" + entity.getValor() + " foi excluído.");
+		historico.setTexto("LanÃ§amento do serviÃ§o " + entity.getServico().getNome() + " no valor de R$" + entity.getValor() + " foi excluÃ­do.");
 		comanda.getServicos().remove(entity);
 		persist(comanda, usuarioLogado);
 		genericDao.persist(historico);
@@ -520,7 +525,7 @@ public class ComandaService {
 			return;
 		}
 		Historico historico = criarHistoricoExclusao(comanda, usuarioLogado);
-		historico.setTexto("Lançamento do produto " + entity.getProduto().getNome() + " no valor de R$" + entity.getValor() + " foi excluído.");
+		historico.setTexto("LanÃ§amento do produto " + entity.getProduto().getNome() + " no valor de R$" + entity.getValor() + " foi excluÃ­do.");
 		comanda.getProdutos().remove(entity);
 		persist(comanda, usuarioLogado);
 		genericDao.persist(historico);
@@ -540,7 +545,7 @@ public class ComandaService {
 		}
 		servico.getProdutosUtilizados().remove(produto);
 		Historico historico = criarHistoricoExclusao(servico.getComanda(), usuarioLogado);
-		historico.setTexto("Lançamento do serviço " + produto.getProduto().getNome() + " no valor de R$" + produto.getValor() + " foi excluído.");
+		historico.setTexto("LanÃ§amento do serviÃ§o " + produto.getProduto().getNome() + " no valor de R$" + produto.getValor() + " foi excluÃ­do.");
 		genericDao.persist(servico);
 		genericDao.persist(historico);
 	}

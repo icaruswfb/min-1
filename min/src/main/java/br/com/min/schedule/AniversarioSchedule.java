@@ -42,9 +42,9 @@ public class AniversarioSchedule {
 			tarefa.setCriador(criador);
 			tarefa.setDataAgendada(data.getTime());
 			if(periodo == 0){
-				tarefa.setDescricao("Anivers·rio hoje!");
+				tarefa.setDescricao("Anivers√°rio hoje!");
 			}else{
-				tarefa.setDescricao("Anivers·rio em " + periodo + " dias!");
+				tarefa.setDescricao("Anivers√°rio em " + periodo + " dias!");
 			}
 			tarefa.setParaTodos(true);
 			tarefaService.persist(tarefa);

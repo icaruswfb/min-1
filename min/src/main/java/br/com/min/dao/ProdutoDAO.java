@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import br.com.min.entity.LancamentoEstoque;
 import br.com.min.entity.Produto;
+import br.com.min.entity.TipoLancamentoEstoque;
 
 @Repository
 public class ProdutoDAO {
@@ -68,6 +69,16 @@ public class ProdutoDAO {
 		session.delete(produto);
 		session.flush();
 		session.close();
+	}
+
+	public List<LancamentoEstoque> findLancamentoByTipo(
+			TipoLancamentoEstoque entrada) {
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(LancamentoEstoque.class);
+		criteria.add(Restrictions.eq("tipo", entrada));
+		List<LancamentoEstoque> result = criteria.list();
+		
+		return result;
 	}
 
 }
