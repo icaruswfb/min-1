@@ -68,7 +68,6 @@ public class ComandaService {
 		historico.setCliente(comanda.getCliente());
 		historico.setData(new Date());
 		historico.setFuncionario(historico.getFuncionario());
-		historico.setTexto("Serviço adicionada à comanda " + comanda.getId() + ": " + servico.getServico().getNome() + " no valor de R$" + servico.getValor());
 		historico.setCriador(usuarioLogado);
 		historico.setTextoPequeno(Utils.dateTimeFormat.format(historico.getData()) + " - por "+usuarioLogado.getNome());
 		genericDao.persist(historico);
@@ -109,7 +108,6 @@ public class ComandaService {
 		historico.setCliente(comanda.getCliente());
 		historico.setData(new Date());
 		historico.setFuncionario(historico.getFuncionario());
-		historico.setTexto("Produto adicionada à comanda " + comanda.getId() + ": " + lancamentoProduto.getProduto().getNome() + " no valor de R$" + lancamentoProduto.getValor());
 		historico.setCriador(usuarioLogado);
 		historico.setTextoPequeno(Utils.dateTimeFormat.format(historico.getData()) + " - por "+usuarioLogado.getNome());
 		genericDao.persist(historico);
@@ -468,10 +466,9 @@ public class ComandaService {
 		historico.setData(new Date());
 		historico.setFuncionario(historico.getFuncionario());
 		historico.setTexto("Comanda " + entity.getId() + " no valor de R$" + entity.getValorCobrado() 
-				+ ", aberta em " + Utils.dateTimeFormat.format(entity.getAbertura()) + " onde o valor pago foi R$" + entity.getValorPago() 
+				+ ", aberta em " + Utils.dateTimeFormat.format(entity.getAbertura()) + " onde o valor pago foi R$" + entity.getValorPago()
 				+ " foi excluída por " + usuarioLogado.getNome());
 		historico.setCriador(usuarioLogado);
-		historico.setTextoPequeno(Utils.dateTimeFormat.format(historico.getData()) + " - Comanda "+entity.getId()+" excluída");
 		entity.getPagamentos().clear();
 		entity.getComissoes().clear();
 		entity.getEstoque().clear();
@@ -512,7 +509,6 @@ public class ComandaService {
 			return;
 		}
 		Historico historico = criarHistoricoExclusao(comanda, usuarioLogado);
-		historico.setTexto("Lançamento do serviço " + entity.getServico().getNome() + " no valor de R$" + entity.getValor() + " foi excluído.");
 		comanda.getServicos().remove(entity);
 		persist(comanda, usuarioLogado);
 		genericDao.persist(historico);
@@ -525,7 +521,6 @@ public class ComandaService {
 			return;
 		}
 		Historico historico = criarHistoricoExclusao(comanda, usuarioLogado);
-		historico.setTexto("Lançamento do produto " + entity.getProduto().getNome() + " no valor de R$" + entity.getValor() + " foi excluído.");
 		comanda.getProdutos().remove(entity);
 		persist(comanda, usuarioLogado);
 		genericDao.persist(historico);
@@ -545,7 +540,6 @@ public class ComandaService {
 		}
 		servico.getProdutosUtilizados().remove(produto);
 		Historico historico = criarHistoricoExclusao(servico.getComanda(), usuarioLogado);
-		historico.setTexto("Lançamento do serviço " + produto.getProduto().getNome() + " no valor de R$" + produto.getValor() + " foi excluído.");
 		genericDao.persist(servico);
 		genericDao.persist(historico);
 	}
