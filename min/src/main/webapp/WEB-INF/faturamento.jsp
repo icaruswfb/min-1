@@ -196,7 +196,17 @@
 														Revenda
 													</td>
 													<td>
-														Total: R$<fmt:formatNumber value="${ totalRevenda }" minFractionDigits="2" maxFractionDigits="2" />
+														<ul>
+															<li>
+																Total bruto: R$<fmt:formatNumber value="${ totalRevenda }" minFractionDigits="2" maxFractionDigits="2" />
+															</li>
+															<li>
+																Custo em produto: R$<fmt:formatNumber value="${ custoTotalRevenda }" minFractionDigits="2" maxFractionDigits="2" />
+															</li>
+															<li>
+																Total liquido: R$<fmt:formatNumber value="${ totalRevenda - custoTotalRevenda}" minFractionDigits="2" maxFractionDigits="2" />
+															</li>
+														</ul>
 													</td>
 												</tr>
 												<tr>
@@ -204,7 +214,17 @@
 														Produtos do salão
 													</td>
 													<td>
-														Total: R$<fmt:formatNumber value="${ totalProdutos }" minFractionDigits="2" maxFractionDigits="2" />
+														<ul>
+															<li>
+																Total bruto: R$<fmt:formatNumber value="${ totalProdutos }" minFractionDigits="2" maxFractionDigits="2" />
+															</li>
+															<li>
+																Custo em produto: R$<fmt:formatNumber value="${ custoTotalProdutos }" minFractionDigits="2" maxFractionDigits="2" />
+															</li>
+															<li>
+																Total liquido: R$<fmt:formatNumber value="${ totalProdutos - custoTotalProdutos }" minFractionDigits="2" maxFractionDigits="2" />
+															</li>
+														</ul>
 													</td>
 												</tr>
 												<tr>

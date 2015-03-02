@@ -68,7 +68,7 @@ public class ComandaService {
 		historico.setCliente(comanda.getCliente());
 		historico.setData(new Date());
 		historico.setFuncionario(historico.getFuncionario());
-		historico.setTexto("Serviço adicionada à comanda " + comanda.getId() + ": " + servico.getServico().getNome() + " no valor de R$" + servico.getValor());
+		historico.setTexto("Serviï¿½o adicionada ï¿½ comanda " + comanda.getId() + ": " + servico.getServico().getNome() + " no valor de R$" + servico.getValor());
 		historico.setCriador(usuarioLogado);
 		historico.setTextoPequeno(Utils.dateTimeFormat.format(historico.getData()) + " - por "+usuarioLogado.getNome());
 		genericDao.persist(historico);
@@ -94,6 +94,8 @@ public class ComandaService {
 	
 	public Comanda addProduto(LancamentoProduto lancamentoProduto,
 			Comanda comanda, Pessoa usuarioLogado) {
+		Double custo = lancamentoProduto.getQuantidadeUtilizada() * lancamentoProduto.getProduto().getCustoUnitario();
+		lancamentoProduto.setCusto(custo);
 		comanda.getProdutos().add(lancamentoProduto);
 		comanda = persist(comanda, usuarioLogado);
 		
@@ -107,7 +109,7 @@ public class ComandaService {
 		historico.setCliente(comanda.getCliente());
 		historico.setData(new Date());
 		historico.setFuncionario(historico.getFuncionario());
-		historico.setTexto("Produto adicionada à comanda " + comanda.getId() + ": " + lancamentoProduto.getProduto().getNome() + " no valor de R$" + lancamentoProduto.getValor());
+		historico.setTexto("Produto adicionada ï¿½ comanda " + comanda.getId() + ": " + lancamentoProduto.getProduto().getNome() + " no valor de R$" + lancamentoProduto.getValor());
 		historico.setCriador(usuarioLogado);
 		historico.setTextoPequeno(Utils.dateTimeFormat.format(historico.getData()) + " - por "+usuarioLogado.getNome());
 		genericDao.persist(historico);
@@ -464,9 +466,9 @@ public class ComandaService {
 		historico.setFuncionario(historico.getFuncionario());
 		historico.setTexto("Comanda " + entity.getId() + " no valor de R$" + entity.getValorCobrado() 
 				+ ", aberta em " + Utils.dateTimeFormat.format(entity.getAbertura()) + " onde o valor pago foi R$" + entity.getValorPago() 
-				+ " foi excluída por " + usuarioLogado.getNome());
+				+ " foi excluï¿½da por " + usuarioLogado.getNome());
 		historico.setCriador(usuarioLogado);
-		historico.setTextoPequeno(Utils.dateTimeFormat.format(historico.getData()) + " - Comanda "+entity.getId()+" excluída");
+		historico.setTextoPequeno(Utils.dateTimeFormat.format(historico.getData()) + " - Comanda "+entity.getId()+" excluï¿½da");
 		entity.getPagamentos().clear();
 		entity.getComissoes().clear();
 		entity.getEstoque().clear();
@@ -507,7 +509,7 @@ public class ComandaService {
 			return;
 		}
 		Historico historico = criarHistoricoExclusao(comanda, usuarioLogado);
-		historico.setTexto("Lançamento do serviço " + entity.getServico().getNome() + " no valor de R$" + entity.getValor() + " foi excluído.");
+		historico.setTexto("Lanï¿½amento do serviï¿½o " + entity.getServico().getNome() + " no valor de R$" + entity.getValor() + " foi excluï¿½do.");
 		comanda.getServicos().remove(entity);
 		persist(comanda, usuarioLogado);
 		genericDao.persist(historico);
@@ -520,7 +522,7 @@ public class ComandaService {
 			return;
 		}
 		Historico historico = criarHistoricoExclusao(comanda, usuarioLogado);
-		historico.setTexto("Lançamento do produto " + entity.getProduto().getNome() + " no valor de R$" + entity.getValor() + " foi excluído.");
+		historico.setTexto("Lanï¿½amento do produto " + entity.getProduto().getNome() + " no valor de R$" + entity.getValor() + " foi excluï¿½do.");
 		comanda.getProdutos().remove(entity);
 		persist(comanda, usuarioLogado);
 		genericDao.persist(historico);
@@ -540,7 +542,7 @@ public class ComandaService {
 		}
 		servico.getProdutosUtilizados().remove(produto);
 		Historico historico = criarHistoricoExclusao(servico.getComanda(), usuarioLogado);
-		historico.setTexto("Lançamento do serviço " + produto.getProduto().getNome() + " no valor de R$" + produto.getValor() + " foi excluído.");
+		historico.setTexto("Lanï¿½amento do serviï¿½o " + produto.getProduto().getNome() + " no valor de R$" + produto.getValor() + " foi excluï¿½do.");
 		genericDao.persist(servico);
 		genericDao.persist(historico);
 	}

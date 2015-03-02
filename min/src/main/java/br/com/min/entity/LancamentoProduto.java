@@ -24,6 +24,7 @@ public class LancamentoProduto {
 	private Boolean lancado;
 	private Double valor;
 	private Boolean revenda;
+	private Double custo;
 	
 	public Long getId() {
 		return id;
@@ -101,5 +102,11 @@ public class LancamentoProduto {
 	}
 	public void setRevenda(Boolean revenda) {
 		this.revenda = revenda;
+	}
+	public Double getCusto() {
+		return custo;
+	}
+	public void setCusto(Double custo) {
+		this.custo = custo;
 	}
 }

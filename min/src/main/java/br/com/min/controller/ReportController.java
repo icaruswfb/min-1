@@ -33,6 +33,7 @@ import br.com.min.controller.vo.ClientesPorMesCadastroVO;
 import br.com.min.controller.vo.ClientesPorVisitasVO;
 import br.com.min.controller.vo.ComandasRPS;
 import br.com.min.controller.vo.ComissoesPorFuncionarioVO;
+import br.com.min.controller.vo.CustosProdutoVO;
 import br.com.min.controller.vo.ServicoPorCategoriaReportVO;
 import br.com.min.controller.vo.ServicoReportVO;
 import br.com.min.controller.vo.TotaisPorFormaPagamentoVO;
@@ -43,18 +44,21 @@ import br.com.min.entity.Comanda;
 import br.com.min.entity.FluxoPagamento;
 import br.com.min.entity.FormaPagamento;
 import br.com.min.entity.LancamentoComissao;
+import br.com.min.entity.LancamentoEstoque;
 import br.com.min.entity.LancamentoProduto;
 import br.com.min.entity.LancamentoServico;
 import br.com.min.entity.Pagamento;
 import br.com.min.entity.Pessoa;
 import br.com.min.entity.Role;
 import br.com.min.entity.TipoComissao;
+import br.com.min.entity.TipoLancamentoEstoque;
 import br.com.min.entity.TipoServico;
 import br.com.min.entity.Usuario;
 import br.com.min.service.ComandaService;
 import br.com.min.service.ComissaoService;
 import br.com.min.service.PagamentoService;
 import br.com.min.service.PessoaService;
+import br.com.min.service.ProdutoService;
 import br.com.min.service.ServicoService;
 import br.com.min.utils.ReportUtils;
 import br.com.min.utils.Utils;
@@ -75,6 +79,8 @@ public class ReportController {
 	private PagamentoService pagamentoService;
 	@Autowired
 	private ServicoService servicoService;
+	@Autowired
+	private ProdutoService produtoService;
 	
 	@RequestMapping(value="/caixa", method=RequestMethod.GET)
 	public ModelAndView listarCaixa(HttpServletRequest request){
@@ -125,6 +131,8 @@ public class ReportController {
 		List<Comanda> comandas = (List<Comanda>)mv.getModel().get("comandas");
 		Double totalRevenda = 0d;
 		Double totalProdutos = 0d;
+		Double custoTotalRevenda = 0d;
+		Double custoTotalProdutos = 0d;
 		Double totalDescontos = 0d;
 		Double totalServicos = 0d;
 		List<TotalPorTipoServicoVO> totais = new ArrayList<>();
@@ -173,8 +181,18 @@ public class ReportController {
 							vo.setTotal(vo.getTotal() + produto.getValor());
 						}
 					}
+					if(produto.getCusto() == null){
+						custoTotalRevenda += produto.getProduto().getCustoUnitario() * produto.getQuantidadeUtilizada();
+					}else{
+						custoTotalRevenda += produto.getCusto(); 
+					}
 				}else{
 					totalProdutos += produto.getValor();
+					if(produto.getCusto() == null){
+						custoTotalProdutos += produto.getProduto().getCustoUnitario() * produto.getQuantidadeUtilizada();
+					}else{
+						custoTotalProdutos += produto.getCusto(); 
+					}
 				}
 			}
 			totalDescontos += comanda.getDesconto();
@@ -184,6 +202,10 @@ public class ReportController {
 		mv.addObject("totalDescontos", totalDescontos);
 		mv.addObject("totalProdutos", totalProdutos);
 		mv.addObject("totalRevenda", totalRevenda);
+		
+		mv.addObject("custoTotalRevenda", custoTotalRevenda);
+		mv.addObject("custoTotalProdutos", custoTotalProdutos);
+		
 		mv.addObject("totalServicos", totalServicos);
 		mv.addObject("totaisTipoServico", totais);
 	}
@@ -283,7 +305,7 @@ public class ReportController {
 				pagamento.setFluxoPagamento(FluxoPagamento.SAIDA);
 				pagamento.setFormaPagamento(FormaPagamento.Dinheiro);
 				pagamento.setParcelamento(1);
-				pagamento.setObservacao("Comissão para " + funcionario.getNome() + " de " + dataInicio + " até " + dataFim);
+				pagamento.setObservacao("Comissï¿½o para " + funcionario.getNome() + " de " + dataInicio + " atï¿½ " + dataFim);
 				pagamento.setValor(valorTotal);
 				pagamentoService.persist(pagamento);
 			}
@@ -360,7 +382,7 @@ public class ReportController {
 			mv.addObject("dataFim", fim);
 			return mv;
 		}
-		throw new RuntimeException("Sem permissão para vizualizar o fluxo financeiro");
+		throw new RuntimeException("Sem permissï¿½o para vizualizar o fluxo financeiro");
 	}
 	
 	private ModelAndView listarComissoes(Date inicio, Date fim, HttpServletRequest request){
@@ -791,6 +813,17 @@ public class ReportController {
 		mv.addObject("clientesPorVisitas", clientesPorVisitas);
 		
 		return mv;
+	}
+	
+	@RequestMapping(value="/custosProduto", method=RequestMethod.GET)
+	@ResponseBody
+	public CustosProdutoVO getCustosProduto(){
+		List<LancamentoEstoque> lancamentos = produtoService.findLancamentoByTipo(TipoLancamentoEstoque.ENTRADA);
+		CustosProdutoVO vo = new CustosProdutoVO();
+		for(LancamentoEstoque lancamento : lancamentos ){
+			vo.setCustoTotalProdutos( vo.getCustoTotalProdutos() + (lancamento.getQuantidade() * lancamento.getProduto().getCustoUnitario()) );
+		}
+		return vo;
 	}
 	
 }

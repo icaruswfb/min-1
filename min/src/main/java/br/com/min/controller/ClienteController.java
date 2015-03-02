@@ -558,15 +558,18 @@ public class ClienteController {
 				produto.setComanda(null);
 				if(produto.getVendedor() != null){
 					produto.getVendedor().setUsuario(null);
+					produto.getVendedor().setComissao(null);
 				}
 			}
 			for(LancamentoServico servico : comanda.getServicos()){
 				servico.setComanda(null);
 				if(servico.getFuncionario() != null){
 					servico.getFuncionario().setUsuario(null);
+					servico.getFuncionario().setComissao(null);
 				}
 				if(servico.getAssistente() != null){
 					servico.getAssistente().setUsuario(null);
+					servico.getAssistente().setComissao(null);
 				}
 			}
 			comanda.setEstoque(null);

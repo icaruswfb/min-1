@@ -117,4 +117,8 @@ public class ProdutoService {
 		entity.setNome(pesquisa);
 		return dao.find(entity);
 	}
+
+	public List<LancamentoEstoque> findLancamentoByTipo(TipoLancamentoEstoque entrada) {
+		return dao.findLancamentoByTipo(entrada);
+	}
 }
