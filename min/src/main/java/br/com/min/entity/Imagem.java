@@ -6,10 +6,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 @Entity
-public class Imagem {
+public class Imagem extends BaseEntity {
 
 	@Id
 	@GeneratedValue
@@ -17,7 +18,7 @@ public class Imagem {
 	@Lob()
 	@Column(length=16000000)
 	@JsonIgnore
-	@com.fasterxml.jackson.annotation.JsonIgnore
+	@org.codehaus.jackson.annotate.JsonIgnore
 	private byte[] imagem;
 	
 	public Long getId() {

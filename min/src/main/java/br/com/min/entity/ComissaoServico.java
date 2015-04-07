@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class ComissaoServico {
+public class ComissaoServico extends BaseEntity {
 
 	@Id
 	@GeneratedValue

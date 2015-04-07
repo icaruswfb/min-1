@@ -13,13 +13,10 @@ import org.springframework.stereotype.Repository;
 import br.com.min.entity.Kit;
 
 @Repository
-public class KitDAO {
+public class KitDAO extends BaseDAO<Kit> {
 
-	@Autowired
-	private SessionFactory sessionFactory;
-	
 	public List<Kit> find(Kit kit){
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(Kit.class);
 		if(kit != null){
 			if(kit.getId() != null){

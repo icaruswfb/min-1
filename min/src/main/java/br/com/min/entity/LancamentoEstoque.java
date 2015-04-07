@@ -12,7 +12,7 @@ import javax.persistence.ManyToOne;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-public class LancamentoEstoque {
+public class LancamentoEstoque extends BaseEntity {
 
 	@Id
 	@GeneratedValue
@@ -22,6 +22,8 @@ public class LancamentoEstoque {
 	private Long quantidade;
 	private Date dataCriacao;
 	@ManyToOne(optional=true)
+	@JsonIgnore
+	@org.codehaus.jackson.annotate.JsonIgnore
 	private Comanda comanda;
 	@Enumerated(EnumType.STRING)
 	private TipoLancamentoEstoque tipo;

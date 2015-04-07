@@ -33,6 +33,7 @@ import org.springframework.web.servlet.ModelAndView;
 import br.com.min.controller.vo.ClientesPorAnoCadastroVO;
 import br.com.min.controller.vo.ClientesPorMesCadastroVO;
 import br.com.min.controller.vo.ClientesPorVisitasVO;
+import br.com.min.controller.vo.ComandasClienteReportVO;
 import br.com.min.controller.vo.ComandasRPS;
 import br.com.min.controller.vo.ComissoesPorFuncionarioVO;
 import br.com.min.controller.vo.CustosProdutoVO;
@@ -259,11 +260,6 @@ public class ReportController {
 				Date fim = Utils.dateFormat.parse(dataFim);
 				Pessoa funcionario = pessoaService.findById(funcionarioId);
 				List<LancamentoComissao> comissoes = comissaoServico.findByPeriodo(inicio, fim, funcionario);
-				for(LancamentoComissao comissao : comissoes){
-					limparComandaJSON(comissao.getComanda());
-					comissao.getFuncionario().setUsuario(null);
-					comissao.getFuncionario().setImagem(null);
-				}
 				return comissoes;
 			} catch (ParseException e) {
 				throw new RuntimeException(e);
@@ -345,18 +341,6 @@ public class ReportController {
 		}catch(Exception e){
 			FileUtils.deleteQuietly(file);
 		}
-	}
-	
-	private Comanda limparComandaJSON(Comanda comanda){
-		if(comanda != null){
-			comanda.setProdutos(null);
-			comanda.setServicos(null);
-			comanda.setEstoque(null);
-			comanda.setCriador(null);
-			comanda.setPagamentos(null);
-			comanda.setComissoes(null);
-		}
-		return comanda;
 	}
 	
 	@RequestMapping(value="/fluxoFinanceiro/data")
@@ -760,118 +744,11 @@ public class ReportController {
 	
 	@RequestMapping("/clientes")
 	public ModelAndView relatorioClientes(){
-		List<Pessoa> clientes = pessoaService.listarClientes();
-		
-		List<ClientesPorAnoCadastroVO> clientesPorAno = new ArrayList<ClientesPorAnoCadastroVO>();
-		List<ClientesPorVisitasVO> clientesPorVisitas = new ArrayList<ClientesPorVisitasVO>();
-		for(Pessoa cliente : clientes){
-			List<Comanda> comandas = comandaService.listComandasCliente(cliente);
-			if( ! comandas.isEmpty() ){
-				Comanda primeiraComanda = comandas.get(0);
-				Calendar dataAbertura = Calendar.getInstance();
-				dataAbertura.setTime(primeiraComanda.getAbertura());
-				
-				ClientesPorAnoCadastroVO ano = null;
-				for(ClientesPorAnoCadastroVO porAno : clientesPorAno){
-					if(porAno.getAno().equals(dataAbertura.get(Calendar.YEAR))){
-						ano = porAno;
-						break;
-					}
-				}
-				if(ano == null){
-					ano = new ClientesPorAnoCadastroVO();
-					ano.setAno(dataAbertura.get(Calendar.YEAR));
-					clientesPorAno.add(ano);
-				}
-				ano.setTotal(ano.getTotal() + 1);
-				
-				
-				ClientesPorMesCadastroVO mes = null;
-				for(ClientesPorMesCadastroVO porMes : ano.getClientesPorMes()){
-					if(porMes.getMes().equals(dataAbertura.get(Calendar.MONTH))){
-						mes = porMes;
-						break;
-					}
-				}
-				if(mes == null){
-					mes = new ClientesPorMesCadastroVO();
-					mes.setMes(dataAbertura.get(Calendar.MONTH));
-					ano.getClientesPorMes().add(mes);
-				}
-				mes.setQuantidade(mes.getQuantidade() + 1);
-				if(comandas.size() > 1){
-					mes.setRetornos(mes.getRetornos() + 1);
-				}
-				
-				ClientesPorVisitasVO visitas = null;
-				for(ClientesPorVisitasVO porVisitas : clientesPorVisitas){
-					if(porVisitas.getVisitas().equals(comandas.size())){
-						visitas = porVisitas;
-						break;
-					}
-				}
-				if(visitas == null){
-					visitas = new ClientesPorVisitasVO();
-					visitas.setVisitas(comandas.size());
-					clientesPorVisitas.add(visitas);
-				}
-				boolean countedManicure = false;
-				boolean countedCabelo = false;
-				boolean countedMaquiagem = false;
-				boolean countedEstetica = false;
-				boolean countedOutros = false;
-				for(Comanda comanda : comandas){
-					for(LancamentoServico servico : comanda.getServicos()){
-						if( TipoServico.CABELO_ID.equals( servico.getServico().getTipoServico().getId() ) 
-								&& ! countedCabelo){
-							visitas.setCabelo( visitas.getCabelo() + 1);
-							countedCabelo = true;
-							continue;
-						}
-						if( TipoServico.UNHA_ID.equals( servico.getServico().getTipoServico().getId() )  
-								&& ! countedManicure){
-							visitas.setManicure( visitas.getManicure() + 1);
-							countedManicure = true;
-							continue;
-						}
-						if( TipoServico.MAQUIAGEM_ID.equals( servico.getServico().getTipoServico().getId() )  
-								&& ! countedMaquiagem){
-							visitas.setMaquiagem( visitas.getMaquiagem() + 1);
-							countedMaquiagem = true;
-							continue;
-						}
-						if( TipoServico.ESTETICA_ID.equals( servico.getServico().getTipoServico().getId() ) 
-								&& ! countedEstetica){
-							visitas.setEstetica( visitas.getEstetica() + 1);
-							countedEstetica = true;
-							continue;
-						}
-						if( TipoServico.OUTROS_ID.equals( servico.getServico().getTipoServico().getId() ) 
-								&& ! countedOutros){
-							visitas.setOutros( visitas.getOutros() + 1);
-							countedOutros = true;
-							continue;
-						}
-					}
-				}
-				visitas.setClientes(visitas.getClientes() + 1);
-			}
-		}
-
-		BeanComparator beanComparator = new BeanComparator("ano");
-		Collections.sort(clientesPorAno, beanComparator);
-		
-		beanComparator = new BeanComparator("mes");
-		for(ClientesPorAnoCadastroVO ano : clientesPorAno){
-			Collections.sort(ano.getClientesPorMes(), beanComparator);
-		}
-		
-		beanComparator = new BeanComparator("visitas");
-		Collections.sort(clientesPorVisitas, beanComparator);
+		ComandasClienteReportVO result = comandaService.relatorioCliente();
 		
 		ModelAndView mv = new ModelAndView("clientesReport");
-		mv.addObject("clientesPorAno", clientesPorAno);
-		mv.addObject("clientesPorVisitas", clientesPorVisitas);
+		mv.addObject("clientesPorAno", result.getClientesPorAno());
+		mv.addObject("clientesPorVisitas", result.getClientesPorVisitas());
 		
 		return mv;
 	}

@@ -14,13 +14,13 @@ import br.com.min.entity.Usuario;
 import br.com.min.utils.Utils;
 
 @Repository
-public class UsuarioDAO {
+public class UsuarioDAO extends BaseDAO<Usuario> {
 
 	@Autowired
 	private SessionFactory sessionFactory;
 	
 	public Usuario persist(Usuario usuario, boolean encryptPassword){
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		if(encryptPassword){
 			String encryptedPassword = Utils.encriyt(usuario.getSenha());
 			usuario.setSenha(encryptedPassword);
@@ -31,7 +31,7 @@ public class UsuarioDAO {
 	}
 	
 	public Usuario autenticar(String login, String senha){
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(Usuario.class);
 		criteria.add(Restrictions.eq("login", login));
 		Usuario usuario = (Usuario) criteria.uniqueResult();
@@ -45,7 +45,7 @@ public class UsuarioDAO {
 	}
 
 	public Usuario findById(Long id) {
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(Usuario.class);
 		criteria.add(Restrictions.eq("id", id));
 		Usuario usuario = (Usuario) criteria.uniqueResult();
@@ -53,7 +53,7 @@ public class UsuarioDAO {
 	}
 
 	public Usuario findByLogin(String login) {
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(Usuario.class);
 		criteria.add(Restrictions.eq("login", login));
 		Usuario usuario = (Usuario) criteria.uniqueResult();
@@ -61,7 +61,7 @@ public class UsuarioDAO {
 	}
 
 	public List<Usuario> findByRole(Role role) {
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(Usuario.class);
 		criteria.add(Restrictions.eq("role", role));
 		return criteria.list();

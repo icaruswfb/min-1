@@ -47,11 +47,7 @@ public class AgendaController {
 		mv.addObject("dataStr", Utils.dateFormat.format(hoje));
 		return mv;
 	}
-	
-	private void limparPessoaJSON(Pessoa pessoa){
-		pessoa.setUsuario(null);
-	}
-	
+
 	private ModelAndView criarViewAgenda(HttpServletRequest request){
 		ModelAndView mv = new ModelAndView("agenda");
 		List<Pessoa> pessoas = pessoaService.listarClientes();
@@ -86,14 +82,7 @@ public class AgendaController {
 					HttpServletRequest request){
 		Horario horario  = criarHorarioPesquisa(dia, mes, ano, null, request);
 		List<Horario> horarios = horarioService.findHorario(horario);
-		limparHorariosJSON(horarios);
 		return horarios;
-	}
-	
-	private void limparHorariosJSON(List<Horario> horarios){
-		for(Horario horario : horarios){
-			limparPessoaJSON(horario.getFuncionario());
-		}
 	}
 	
 	@RequestMapping(value="cliente/{id}/{dia}/{mes}/{ano}", method=RequestMethod.GET)
@@ -105,7 +94,6 @@ public class AgendaController {
 					HttpServletRequest request){
 		Horario horario  = criarHorarioPesquisa(dia, mes, ano, clienteId, request);
 		List<Horario> horarios = horarioService.findHorario(horario);
-		limparHorariosJSON(horarios);
 		return horarios;
 	}
 	
@@ -202,7 +190,7 @@ public class AgendaController {
 		}
 		dataTerminoCalendar.set(Calendar.DAY_OF_YEAR, dataInicioCalendar.get(Calendar.DAY_OF_YEAR));
 		if(dataTerminoCalendar.before(dataInicioCalendar)){
-			throw new RuntimeException("O horário termina antes do início");
+			throw new RuntimeException("O horï¿½rio termina antes do inï¿½cio");
 		}
 		dataTermino = dataTerminoCalendar.getTime();
 		
@@ -230,7 +218,7 @@ public class AgendaController {
 					 novoCliente.setFuncionario(false);
 					 novoCliente = pessoaService.persist(novoCliente);
 					 horario.setCliente(novoCliente);
-					 horario.setObservacao("É preciso completar o cadastro deste cliente. " + horario.getObservacao());
+					 horario.setObservacao("ï¿½ preciso completar o cadastro deste cliente. " + horario.getObservacao());
 					 result = "refresh";
 				 }
 				 horario.getServicos().addAll(findServicos(servicosId));
@@ -252,7 +240,7 @@ public class AgendaController {
 		if(search != null && !search.isEmpty()){
 			for(Horario h : search){
 				if(!h.getId().equals(horario.getId())){
-					throw new HorarioOcupadoException("Horário já ocupado");
+					throw new HorarioOcupadoException("Horï¿½rio jï¿½ ocupado");
 				}
 			}
 		}

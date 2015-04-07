@@ -7,8 +7,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
-public class LancamentoProduto {
+public class LancamentoProduto extends BaseEntity {
 
 	@Id
 	@GeneratedValue
@@ -18,6 +20,8 @@ public class LancamentoProduto {
 	private Long quantidadeUtilizada;
 	private Date dataCriacao;
 	@ManyToOne
+	@JsonIgnore
+	@org.codehaus.jackson.annotate.JsonIgnore
 	private Comanda comanda;
 	@ManyToOne
 	private Pessoa vendedor;

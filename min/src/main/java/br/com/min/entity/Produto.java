@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class Produto {
+public class Produto extends BaseEntity {
 
 	@Id
 	@GeneratedValue

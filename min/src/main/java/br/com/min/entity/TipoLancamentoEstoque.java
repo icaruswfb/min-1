@@ -9,7 +9,7 @@ public enum TipoLancamentoEstoque {
 	},
 	SAIDA {
 		public String getDescricao() {
-			return "Saída";
+			return "SaÃ­da";
 		}
 	};
 	

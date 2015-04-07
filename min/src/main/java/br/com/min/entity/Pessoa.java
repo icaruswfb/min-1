@@ -1,6 +1,5 @@
 package br.com.min.entity;
 
-import java.io.Serializable;
 import java.text.ParseException;
 import java.util.Date;
 
@@ -13,11 +12,13 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import br.com.min.utils.Utils;
 
 
 @Entity
-public class Pessoa implements Serializable{
+public class Pessoa extends BaseEntity{
 	
 	/**
 	 * 
@@ -150,6 +151,8 @@ public class Pessoa implements Serializable{
 		this.imagem = imagem;
 	}
 	@OneToOne(mappedBy="pessoa", cascade=CascadeType.ALL, orphanRemoval=true)
+	@JsonIgnore
+	@org.codehaus.jackson.annotate.JsonIgnore
 	public Usuario getUsuario() {
 		return usuario;
 	}

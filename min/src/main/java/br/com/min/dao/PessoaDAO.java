@@ -8,25 +8,20 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import br.com.min.entity.Funcao;
 import br.com.min.entity.Pessoa;
 
 @Repository
-public class PessoaDAO {
-	
-	@Autowired
-	private SessionFactory sessionFactory;
+public class PessoaDAO extends BaseDAO<Pessoa> {
 	
 	public List<Pessoa> search(List<String> words){
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(Pessoa.class);
 
 		criteria = criteria.add(Restrictions.isNull("deleted"));
@@ -55,7 +50,7 @@ public class PessoaDAO {
 	}
 	
 	public List<Pessoa> findPessoa(Pessoa entity, Funcao... funcoesExcluidas){
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(Pessoa.class);
 		if(entity != null){
 			List<Criterion> orPredicates = new ArrayList<>();
@@ -126,12 +121,11 @@ public class PessoaDAO {
 	}
 	
 	public void delete(Pessoa pessoa){
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		pessoa = findPessoa(pessoa).get(0);
 		pessoa.setDeleted(new Date());
 		session.merge(pessoa);
 		session.flush();
-		session.close();
 	}
 	
 }

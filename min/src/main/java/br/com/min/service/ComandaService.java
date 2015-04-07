@@ -1,6 +1,8 @@
 package br.com.min.service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -8,15 +10,22 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.beanutils.BeanComparator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.min.controller.vo.ClientesPorAnoCadastroVO;
+import br.com.min.controller.vo.ClientesPorMesCadastroVO;
+import br.com.min.controller.vo.ClientesPorVisitasVO;
+import br.com.min.controller.vo.ComandasClienteReportVO;
 import br.com.min.dao.ComandaDAO;
 import br.com.min.dao.ComissaoDAO;
 import br.com.min.dao.GenericDAO;
 import br.com.min.dao.HistoricoDAO;
+import br.com.min.dao.PessoaDAO;
 import br.com.min.dao.ProdutoDAO;
+import br.com.min.dao.ServicoDAO;
 import br.com.min.entity.Comanda;
 import br.com.min.entity.Comissao;
 import br.com.min.entity.Historico;
@@ -29,13 +38,14 @@ import br.com.min.entity.Pagamento;
 import br.com.min.entity.Pessoa;
 import br.com.min.entity.Produto;
 import br.com.min.entity.ProdutoQuantidade;
+import br.com.min.entity.Servico;
 import br.com.min.entity.TipoComissao;
 import br.com.min.entity.TipoLancamentoEstoque;
 import br.com.min.entity.TipoServico;
 import br.com.min.utils.Utils;
 
 @Service
-public class ComandaService {
+public class ComandaService extends BaseService<Comanda, ComandaDAO>{
 	
 	@Autowired
 	private ComandaDAO dao;
@@ -49,7 +59,10 @@ public class ComandaService {
 	private ProdutoService produtoService;
 	@Autowired
 	private ComissaoDAO comissaDao;
-
+	@Autowired
+	private PessoaDAO pessoaDao;
+	@Autowired
+	private ServicoDAO servicoDao;
 	@Transactional
 	public Comanda persist(Comanda entity, Pessoa usuarioLogado){
 		return persist(entity, false, usuarioLogado);
@@ -61,6 +74,7 @@ public class ComandaService {
 	}
 	
 	public Comanda addServico(LancamentoServico servico, Comanda comanda, Pessoa usuarioLogado){
+		servico.setComanda(comanda);
 		comanda.getServicos().add(servico);
 		comanda = persist(comanda, usuarioLogado);
 		
@@ -72,7 +86,7 @@ public class ComandaService {
 		historico.setCriador(usuarioLogado);
 		historico.setTextoPequeno(Utils.dateTimeFormat.format(historico.getData()) + " - por "+usuarioLogado.getNome());
 		genericDao.persist(historico);
-		return comanda;
+		return cleanResult(comanda);
 	}
 	
 	public Comanda addKit(Kit kit, Comanda comanda, Pessoa usuarioLogado){
@@ -89,7 +103,7 @@ public class ComandaService {
 			crearHistoricoLancamentoProduto(comanda, lancamentoProduto, usuarioLogado);
 		}
 		comanda = persist(comanda, usuarioLogado);
-		return comanda;
+		return cleanResult(comanda);
 	}
 	
 	public Comanda addProduto(LancamentoProduto lancamentoProduto,
@@ -101,7 +115,7 @@ public class ComandaService {
 		
 		crearHistoricoLancamentoProduto(comanda, lancamentoProduto, usuarioLogado);
 		
-		return comanda;
+		return cleanResult(comanda);
 	}
 
 	private void crearHistoricoLancamentoProduto(Comanda comanda, LancamentoProduto lancamentoProduto, Pessoa usuarioLogado){
@@ -132,7 +146,7 @@ public class ComandaService {
 		if(isFechamento){
 			calcularComissoes(entity);
 		}
-		return entity;
+		return cleanResult(entity);
 	}
 	
 	public Double findTotalCobradoPorCliente(Long clienteId){
@@ -150,8 +164,22 @@ public class ComandaService {
 		return result;
 	}
 	
+	public Comanda abrirComanda(Long clienteId, Pessoa criador){
+		Comanda comanda = dao.findComandaAberta(clienteId);
+		if(comanda == null){
+			comanda = new Comanda();
+			Pessoa cliente = pessoaDao.findById(clienteId);
+			comanda.setCliente(cliente);
+			comanda.setAbertura(new Date());
+			comanda.setCredito(getCreditoCliente(clienteId));
+			
+			comanda = persist(comanda, criador);
+		}
+		return comanda;
+	}
+	
 	public Comanda findComandaAberta(Long clienteId){
-		return dao.findComandaAberta(clienteId);
+		return cleanResult(dao.findComandaAberta(clienteId));
 	}
 	
 	public Long findUltimaAtualizacao(Long comandaId){
@@ -378,7 +406,9 @@ public class ComandaService {
 				}
 			}
 		}
-		comanda.setEstoque(toAdd);
+		if( ! toAdd.isEmpty()){
+			comanda.setEstoque(toAdd);
+		}
 		
 		return produtosParaAtualizar;
 	}
@@ -426,28 +456,28 @@ public class ComandaService {
 	
 	@Transactional
 	public List<Comanda> find(Comanda entity, boolean fechadas){
-		return dao.find(entity, fechadas);
+		return cleanResult(dao.find(entity, fechadas));
 	}
 	@Transactional
 	public List<Comanda> find(Comanda entity){
-		return dao.find(entity, null);
+		return cleanResult(dao.find(entity, null));
 	}
 	
 	public List<Comanda> findFechamento(){
-		return dao.findFechamento(new Date(), new Date());
+		return cleanResult(dao.findFechamento(new Date(), new Date()));
 	}
 
 	public List<Comanda> findFechamento(Date dataInicio, Date dataFim){
-		return dao.findFechamento(dataInicio, dataFim);
+		return cleanResult(dao.findFechamento(dataInicio, dataFim));
 	}
 	
 	public List<Comanda> listar(){
 		Comanda entity = new Comanda();
-		return dao.find(entity, null);
+		return cleanResult(dao.find(entity, null));
 	}
 	
 	public List<Comanda> listarPorPeriodo(Date inicio, Date fim, boolean toExport){
-		return dao.find(inicio, fim, toExport);
+		return cleanResult(dao.find(inicio, fim, toExport));
 	}
 	
 	public Comanda findById(Long id){
@@ -457,7 +487,7 @@ public class ComandaService {
 		if(result.isEmpty()){
 			return null;
 		}else{
-			return result.get(0);
+			return cleanResult(result.get(0));
 		}
 	}
 
@@ -559,7 +589,149 @@ public class ComandaService {
 	}
 	
 	public List<Comanda> listComandasCliente(Pessoa cliente){
-		return dao.listComandasCliente(cliente);
+		return cleanResult(dao.listComandasCliente(cliente));
+	}
+	
+	public ComandasClienteReportVO relatorioCliente(){
+		ComandasClienteReportVO result = new ComandasClienteReportVO();
+		List<ClientesPorAnoCadastroVO> clientesPorAno = result.getClientesPorAno();
+		List<ClientesPorVisitasVO> clientesPorVisitas = result.getClientesPorVisitas();
+
+		Pessoa pessoa = new Pessoa();
+		pessoa.setFuncionario(false);
+		List<Pessoa> clientes = pessoaDao.findPessoa(pessoa);
+		
+		for(Pessoa cliente : clientes){
+			List<Comanda> comandas = getDAO().listComandasCliente(cliente);
+			if( ! comandas.isEmpty() ){
+				Comanda primeiraComanda = comandas.get(0);
+				Calendar dataAbertura = Calendar.getInstance();
+				dataAbertura.setTime(primeiraComanda.getAbertura());
+				
+				ClientesPorAnoCadastroVO ano = null;
+				for(ClientesPorAnoCadastroVO porAno : clientesPorAno){
+					if(porAno.getAno().equals(dataAbertura.get(Calendar.YEAR))){
+						ano = porAno;
+						break;
+					}
+				}
+				if(ano == null){
+					ano = new ClientesPorAnoCadastroVO();
+					ano.setAno(dataAbertura.get(Calendar.YEAR));
+					clientesPorAno.add(ano);
+				}
+				ano.setTotal(ano.getTotal() + 1);
+				
+				
+				ClientesPorMesCadastroVO mes = null;
+				for(ClientesPorMesCadastroVO porMes : ano.getClientesPorMes()){
+					if(porMes.getMes().equals(dataAbertura.get(Calendar.MONTH))){
+						mes = porMes;
+						break;
+					}
+				}
+				if(mes == null){
+					mes = new ClientesPorMesCadastroVO();
+					mes.setMes(dataAbertura.get(Calendar.MONTH));
+					ano.getClientesPorMes().add(mes);
+				}
+				mes.setQuantidade(mes.getQuantidade() + 1);
+				if(comandas.size() > 1){
+					mes.setRetornos(mes.getRetornos() + 1);
+				}
+				
+				ClientesPorVisitasVO visitas = null;
+				for(ClientesPorVisitasVO porVisitas : clientesPorVisitas){
+					if(porVisitas.getVisitas().equals(comandas.size())){
+						visitas = porVisitas;
+						break;
+					}
+				}
+				if(visitas == null){
+					visitas = new ClientesPorVisitasVO();
+					visitas.setVisitas(comandas.size());
+					clientesPorVisitas.add(visitas);
+				}
+				boolean countedManicure = false;
+				boolean countedCabelo = false;
+				boolean countedMaquiagem = false;
+				boolean countedEstetica = false;
+				boolean countedOutros = false;
+				for(Comanda comanda : comandas){
+					for(LancamentoServico servico : comanda.getServicos()){
+						if( TipoServico.CABELO_ID.equals( servico.getServico().getTipoServico().getId() ) 
+								&& ! countedCabelo){
+							visitas.setCabelo( visitas.getCabelo() + 1);
+							countedCabelo = true;
+							continue;
+						}
+						if( TipoServico.UNHA_ID.equals( servico.getServico().getTipoServico().getId() )  
+								&& ! countedManicure){
+							visitas.setManicure( visitas.getManicure() + 1);
+							countedManicure = true;
+							continue;
+						}
+						if( TipoServico.MAQUIAGEM_ID.equals( servico.getServico().getTipoServico().getId() )  
+								&& ! countedMaquiagem){
+							visitas.setMaquiagem( visitas.getMaquiagem() + 1);
+							countedMaquiagem = true;
+							continue;
+						}
+						if( TipoServico.ESTETICA_ID.equals( servico.getServico().getTipoServico().getId() ) 
+								&& ! countedEstetica){
+							visitas.setEstetica( visitas.getEstetica() + 1);
+							countedEstetica = true;
+							continue;
+						}
+						if( TipoServico.OUTROS_ID.equals( servico.getServico().getTipoServico().getId() ) 
+								&& ! countedOutros){
+							visitas.setOutros( visitas.getOutros() + 1);
+							countedOutros = true;
+							continue;
+						}
+					}
+				}
+				visitas.setClientes(visitas.getClientes() + 1);
+			}
+		}
+
+		BeanComparator beanComparator = new BeanComparator("ano");
+		Collections.sort(clientesPorAno, beanComparator);
+		
+		beanComparator = new BeanComparator("mes");
+		for(ClientesPorAnoCadastroVO ano : clientesPorAno){
+			Collections.sort(ano.getClientesPorMes(), beanComparator);
+		}
+		
+		beanComparator = new BeanComparator("visitas");
+		Collections.sort(clientesPorVisitas, beanComparator);
+		
+		return result;
+	}
+	
+	public LancamentoServico criarLancamentoServico(Long servicoId, Long funcionarioId, Long assistenteId, Long clienteId){
+		LancamentoServico lancamentoServico = new LancamentoServico();
+		Pessoa funcionario = pessoaDao.findById(funcionarioId);
+		Pessoa assistente = null;
+		if(assistenteId != null){
+			assistente = pessoaDao.findById(assistenteId);
+		}
+		Servico servico = servicoDao.findById(servicoId);
+		
+		lancamentoServico.setAssistente(assistente);
+		lancamentoServico.setDataCriacao(new Date());
+		lancamentoServico.setFuncionario(funcionario);
+		lancamentoServico.setServico(servico);
+		lancamentoServico.setValor(servico.getPreco());
+	
+		return lancamentoServico;
+	}
+	
+	public Comanda addServico(Long servicoId, Long funcionarioId, Long assistenteId, Long clienteId, Pessoa criador){
+		Comanda comanda = dao.findComandaAberta(clienteId);
+		LancamentoServico lancamentoServico = criarLancamentoServico(servicoId, funcionarioId, assistenteId, clienteId);
+		comanda = addServico(lancamentoServico, comanda, criador);
+		return comanda;
 	}
 	
 }

@@ -1,29 +1,11 @@
 package br.com.min.dao;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import br.com.min.entity.BaseEntity;
+
 @Repository
-public class GenericDAO {
+public class GenericDAO extends BaseDAO<BaseEntity> {
 
-	@Autowired
-	private SessionFactory sessionFactory;
-	
-	public Object persist(Object entity){
-		Session session = sessionFactory.openSession();
-		entity = session.merge(entity);
-		session.flush();
-		session.close();
-		return entity;
-	}
-
-	public void delete(Object entity) {
-		Session session = sessionFactory.openSession();
-		session.delete(entity);
-		session.flush();
-		session.close();
-	}
 	
 }

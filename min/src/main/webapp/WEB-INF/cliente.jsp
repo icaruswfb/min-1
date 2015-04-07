@@ -110,8 +110,10 @@
                         </div>
                     </div>
                     <a data-toggle="modal" href="#modalWider" style="display: none;" class="btn btn-sm">Modal - Wider</a>
-            
-            
+            		
+            		<div id="pacotes" class="pacotes">
+            			
+            		</div>
             
 					<div id="comandas" class="">
 						
@@ -428,6 +430,7 @@
 	</section>
 
 	<jsp:include page="template/scripts.jsp"></jsp:include>
+	<script src="<spring:url value='/js/pacote.js' />"></script>
 	
 	<script type="text/javascript">
 		$("#clientes-menu").addClass("active");
@@ -453,6 +456,7 @@
              	</c:forEach>
              	Cliente.mostrarParcelamento();
 				Cliente.abrirAgendaCliente();
+				Pacote.renderPacotesAbertos();
             </c:if>
 		});
 	</script>

@@ -46,7 +46,6 @@ public class TarefaController {
 	public @ResponseBody List<Tarefa> listarUltimas(HttpServletRequest request){
 		Usuario logado = Utils.getUsuarioLogado(request);
 		List<Tarefa> tarefas = tarefaService.listarUltimas(logado.getPessoa(), 5);
-		limparTarefasJSON(tarefas);
 		return tarefas;
 	}
 	
@@ -66,7 +65,6 @@ public class TarefaController {
 		fim.add(Calendar.WEEK_OF_YEAR, 1);
 		
 		List<Tarefa> tarefas = tarefaService.listarTarefasAgendadasEntre(logado.getPessoa().getId(), inicio.getTime(), fim.getTime());
-		limparTarefasJSON(tarefas);
 		return tarefas;
 	}
 	
@@ -74,7 +72,6 @@ public class TarefaController {
 	public @ResponseBody List<Tarefa> listarTodas(HttpServletRequest request){
 		Usuario logado = Utils.getUsuarioLogado(request);
 		List<Tarefa> tarefas = tarefaService.listarTarefasDoFuncionario(logado.getPessoa().getId());
-		limparTarefasJSON(tarefas);
 		return tarefas;
 	}
 	
@@ -108,7 +105,6 @@ public class TarefaController {
 	public @ResponseBody List<Tarefa> pesquisar(String pesquisa, HttpServletRequest request){
 		Usuario logado = Utils.getUsuarioLogado(request);
 		List<Tarefa> tarefas = tarefaService.pesquisar(pesquisa, logado.getPessoa()); 
-		limparTarefasJSON(tarefas);
 		return tarefas;
 	}
 	
@@ -140,37 +136,7 @@ public class TarefaController {
 		}
 		
 		tarefa = tarefaService.persist(tarefa);
-		limparTarefaJSON(tarefa);		
 		return tarefa;
 	}
 
-	private void limparTarefasJSON(List<Tarefa> tarefas){
-		for(Tarefa tarefa : tarefas){
-			limparTarefaJSON(tarefa);
-		}
-	}
-	
-	private void limparTarefaJSON(Tarefa tarefa){
-		if( tarefa.getFuncionario() != null ){
-			tarefa.getFuncionario().setUsuario(null);
-			tarefa.getFuncionario().setComissao(null);
-			if(tarefa.getFuncionario().getImagem() != null){
-				tarefa.getFuncionario().getImagem().setImagem(null);
-			}
-		}
-		if( tarefa.getCliente() != null ){
-			tarefa.getCliente().setUsuario(null);
-			if(tarefa.getCliente().getImagem() != null){
-				tarefa.getCliente().getImagem().setImagem(null);
-			}
-		}
-		if( tarefa.getCriador() != null ){
-			tarefa.getCriador().setUsuario(null);
-			tarefa.getCriador().setComissao(null);
-			if(tarefa.getCriador().getImagem() != null){
-				tarefa.getCriador().getImagem().setImagem(null);
-			}
-		}
-	}
-	
 }

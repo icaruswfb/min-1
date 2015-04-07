@@ -10,7 +10,7 @@ public enum SituacaoEstoque {
 			return "success";
 		}
 		public String getTexto(){
-			return "O estoque est· acima dos nÌveis crÌticos.";
+			return "O estoque est√© acima dos n√≠veis cr√≠ticos.";
 		}
 		public String getNome(){
 			return "Boa";
@@ -24,7 +24,7 @@ public enum SituacaoEstoque {
 			return "warning";
 		}
 		public String getTexto(){
-			return "O estoque est· abaixo da quantidade mÌnima aceit·vel.";
+			return "O estoque est√° abaixo da quantidade m√≠nima aceit√°vel.";
 		}
 		public String getNome(){
 			return "Alerta";
@@ -38,10 +38,10 @@ public enum SituacaoEstoque {
 			return "danger";
 		}
 		public String getTexto(){
-			return "O estoque est· muito abaixo da quantidade mÌnima aceit·vel.";
+			return "O estoque est√° muito abaixo da quantidade m√≠nima aceit√°vel.";
 		}
 		public String getNome(){
-			return "CrÌtica";
+			return "Cr√≠tica";
 		}
 	};
 	

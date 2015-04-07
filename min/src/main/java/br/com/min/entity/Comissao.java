@@ -12,7 +12,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 @Entity
-public class Comissao {
+public class Comissao extends BaseEntity {
 
 	@Id
 	@GeneratedValue

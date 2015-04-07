@@ -117,7 +117,7 @@ public enum FormaPagamento {
 			return false;
 		}
 		public String getNome() {
-			return "Crédito";
+			return "CrÃ©dito";
 		}
 		public boolean isCartaoCredito() {
 			return false;

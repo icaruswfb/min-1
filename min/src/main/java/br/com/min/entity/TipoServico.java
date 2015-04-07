@@ -5,7 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
-public class TipoServico {
+public class TipoServico extends BaseEntity {
 	
 	public static final Long CABELO_ID = 1L;
 	public static final Long UNHA_ID = 2L;

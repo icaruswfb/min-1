@@ -10,7 +10,7 @@ import br.com.min.dao.KitDAO;
 import br.com.min.entity.Kit;
 
 @Service
-public class KitService {
+public class KitService extends BaseService<Kit, KitDAO> {
 
 	@Autowired
 	private KitDAO dao;
@@ -28,12 +28,12 @@ public class KitService {
 		if(result.isEmpty()){
 			return null;
 		}else{
-			return result.get(0);
+			return cleanResult(result.get(0));
 		}
 	}
 	
 	public List<Kit> listar(){
-		return dao.find(null);
+		return cleanResult(dao.find(null));
 	}
 	
 	public void delete(Long id){

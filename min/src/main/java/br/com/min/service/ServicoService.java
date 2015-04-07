@@ -12,7 +12,7 @@ import br.com.min.entity.Servico;
 import br.com.min.entity.TipoServico;
 
 @Service
-public class ServicoService {
+public class ServicoService extends BaseService<Servico, ServicoDAO> {
 	
 	@Autowired
 	private ServicoDAO dao;
@@ -26,12 +26,12 @@ public class ServicoService {
 	
 	@Transactional
 	public List<Servico> findServico(Servico servico){
-		return dao.findServico(servico);
+		return cleanResult(dao.findServico(servico));
 	}
 	
 	public List<Servico> listar(){
 		Servico servico = new Servico();
-		return dao.findServico(servico);
+		return cleanResult(dao.findServico(servico));
 	}
 	
 	public Servico findById(Long id){
@@ -41,7 +41,7 @@ public class ServicoService {
 		if(result.isEmpty()){
 			return null;
 		}else{
-			return result.get(0);
+			return cleanResult(result.get(0));
 		}
 	}
 	

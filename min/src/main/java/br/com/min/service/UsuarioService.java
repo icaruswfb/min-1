@@ -10,7 +10,7 @@ import br.com.min.entity.Role;
 import br.com.min.entity.Usuario;
 
 @Service
-public class UsuarioService {
+public class UsuarioService extends BaseService<Usuario, UsuarioDAO> {
 
 	@Autowired
 	private UsuarioDAO dao;
@@ -19,14 +19,14 @@ public class UsuarioService {
 		return dao.autenticar(login, senha);
 	}
 	public Usuario findById(Long id){
-		return dao.findById(id);
+		return cleanResult(dao.findById(id));
 	}
 	public List<Usuario> findByRole(Role role){
-		return dao.findByRole(role);
+		return cleanResult(dao.findByRole(role));
 	}
 	
 	public Usuario findById(String login){
-		return dao.findByLogin(login);
+		return cleanResult(dao.findByLogin(login));
 	}
 	
 	public Usuario persist(Usuario usuario){

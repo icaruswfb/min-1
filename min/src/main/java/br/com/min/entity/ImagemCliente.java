@@ -7,7 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
 @Entity
-public class ImagemCliente {
+public class ImagemCliente extends BaseEntity {
 
 	@Id
 	private Long id;

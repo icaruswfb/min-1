@@ -1,5 +1,7 @@
 package br.com.min.dao;
 
+import javax.transaction.Transactional;
+
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -11,20 +13,18 @@ import org.springframework.stereotype.Repository;
 import br.com.min.entity.Imagem;
 
 @Repository
-public class ImagemDAO {
+public class ImagemDAO extends BaseDAO<Imagem> {
 
-	@Autowired
-	private SessionFactory sessionFactory;
-	
+	@Transactional
 	public Imagem findById(Long id){
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(Imagem.class);
 		criteria.add(Restrictions.eq("id", id));
 		return (Imagem) criteria.uniqueResult();
 	}
 	
 	public void deletarNaoUtilizados(){
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Query query = session.createSQLQuery("delete from imagem where id not in(select imagem_id from pessoa where imagem_id is not null);");
 		query.executeUpdate();
 	}

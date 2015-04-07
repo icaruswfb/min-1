@@ -23,7 +23,7 @@ import br.com.min.entity.Pagamento;
 import br.com.min.entity.Pessoa;
 
 @Repository
-public class ComandaDAO extends BaseDAO{
+public class ComandaDAO extends BaseDAO<Comanda>{
 	
 	public Pagamento pagar(Pagamento pagamento){
 		Session session = getSession();

@@ -18,13 +18,10 @@ import org.springframework.stereotype.Repository;
 import br.com.min.entity.Horario;
 
 @Repository
-public class HorarioDAO {
-	
-	@Autowired
-	private SessionFactory sessionFactory;
+public class HorarioDAO extends BaseDAO<Horario> {
 	
 	public List<Horario> findHorario(Horario horario){
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(Horario.class);
 		if(horario != null){
 			List<Criterion> orPredicates = new ArrayList<>();

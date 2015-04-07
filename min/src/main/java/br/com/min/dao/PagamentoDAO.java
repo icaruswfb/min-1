@@ -14,14 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class PagamentoDAO
+public class PagamentoDAO extends BaseDAO<Pagamento>
 {
-  @Autowired
-  private SessionFactory sessionFactory;
   
   public List<Pagamento> findPagamentos(Date inicio, Date fim, FluxoPagamento fluxo)
   {
-    Session session = this.sessionFactory.openSession();
+    Session session = this.getSession();
     Criteria criteria = session.createCriteria(Pagamento.class);
     
     Calendar dataInicio = Calendar.getInstance();

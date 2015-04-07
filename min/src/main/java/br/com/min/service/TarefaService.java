@@ -1,6 +1,5 @@
 package br.com.min.service;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,7 +14,7 @@ import br.com.min.entity.Pessoa;
 import br.com.min.entity.Tarefa;
 
 @Service
-public class TarefaService {
+public class TarefaService extends BaseService<Tarefa, TarefaDAO> {
 
 	@Autowired
 	private TarefaDAO dao;
@@ -68,26 +67,34 @@ public class TarefaService {
 	
 	public List<Tarefa> listarTarefasDoFuncionario(Long funcionarioId){
 		Tarefa tarefa = criarQuery(funcionarioId, null, null);
-		return dao.find(tarefa);
+		List<Tarefa> result = dao.find(tarefa);
+		cleanResult(result);
+		return result;
 	}
 	
 	public List<Tarefa> listarTarefasDoDia(Long funcionarioId, Date dia){
 		Tarefa tarefa = criarQuery(funcionarioId, dia, null);
-		return dao.find(tarefa);
+		List<Tarefa> result = dao.find(tarefa);
+		cleanResult(result);
+		return result;
 	}
 	
 	public List<Tarefa> listarUltimas(Pessoa pessoa, Integer quantidade){
-		return dao.listarUltimas(pessoa, quantidade);
+		List<Tarefa> result = dao.listarUltimas(pessoa, quantidade);
+		cleanResult(result);
+		return result;
 	}
 	
 	public List<Tarefa> listarTarefasCriadasAPartirDe(Long funcionarioId, Date data){
 		Tarefa tarefa = criarQuery(funcionarioId, null, data);
-		return dao.find(tarefa);
+		List<Tarefa> result = dao.find(tarefa);
+		cleanResult(result);
+		return result;
 	}
 	
 	public List<Tarefa> listarTarefasAgendadasEntre(Long funcionarioId, Date inicio, Date fim){
 		Tarefa tarefa = criarQuery(funcionarioId, null, null);
-		return dao.find(tarefa, inicio, fim);
+		return cleanResult(dao.find(tarefa, inicio, fim));
 	}
 	
 	private Tarefa criarQuery(Long funcionarioId, Date agendamento, Date criacao){
@@ -111,7 +118,7 @@ public class TarefaService {
 	}
 
 	public List<Tarefa> pesquisar(String pesquisa, Pessoa pessoa) {
-		return dao.pesquisar(pesquisa, pessoa);
+		return cleanResult(dao.pesquisar(pesquisa, pessoa));
 	}
 
 	public Integer contarNaoLidas(Pessoa pessoa) {

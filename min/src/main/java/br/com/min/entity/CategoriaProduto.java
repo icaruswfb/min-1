@@ -9,7 +9,7 @@ public enum CategoriaProduto {
 	},
 	SALAO {
 		public String getDescricao() {
-			return "Sal„o";
+			return "Sal√£o";
 		}
 	};
 	

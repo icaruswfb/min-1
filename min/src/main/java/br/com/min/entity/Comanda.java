@@ -12,8 +12,10 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
-public class Comanda {
+public class Comanda extends BaseEntity {
 
 	@Id
 	@GeneratedValue
@@ -31,6 +33,8 @@ public class Comanda {
 	@OneToMany(mappedBy="comanda", cascade=CascadeType.ALL, orphanRemoval=true)
 	private List<LancamentoEstoque> estoque = new ArrayList<LancamentoEstoque>();
 	@OneToMany(mappedBy="comanda", cascade=CascadeType.ALL, orphanRemoval=true)
+	@JsonIgnore
+	@org.codehaus.jackson.annotate.JsonIgnore
 	private List<LancamentoComissao> comissoes = new ArrayList<>();
 	private Double valorTotal;
 	private Double desconto;

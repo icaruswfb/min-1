@@ -10,7 +10,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 @Entity
-public class Usuario {
+public class Usuario extends BaseEntity {
 
 	@Id
 	@GeneratedValue

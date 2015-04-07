@@ -11,13 +11,17 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
-public class LancamentoServico {
+public class LancamentoServico extends BaseEntity {
 
 	@Id
 	@GeneratedValue
 	private Long id;
 	@ManyToOne()
+	@JsonIgnore
+	@org.codehaus.jackson.annotate.JsonIgnore
 	private Comanda comanda;
 	@ManyToOne
 	private Pessoa funcionario;
@@ -29,6 +33,10 @@ public class LancamentoServico {
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
 	private List<LancamentoProduto> produtosUtilizados = new ArrayList<LancamentoProduto>();
 	private Double valor;
+	@JsonIgnore
+	@org.codehaus.jackson.annotate.JsonIgnore
+	@ManyToOne
+	private Pacote pacote;
 	
 	public Long getId() {
 		return id;
@@ -100,5 +108,11 @@ public class LancamentoServico {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
+	}
+	public Pacote getPacote() {
+		return pacote;
+	}
+	public void setPacote(Pacote pacote) {
+		this.pacote = pacote;
 	}
 }

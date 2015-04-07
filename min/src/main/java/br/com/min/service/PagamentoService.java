@@ -12,7 +12,7 @@ import br.com.min.entity.FluxoPagamento;
 import br.com.min.entity.Pagamento;
 
 @Service
-public class PagamentoService {
+public class PagamentoService extends BaseService<Pagamento, PagamentoDAO> {
 
 	@Autowired
 	private PagamentoDAO dao;
@@ -25,10 +25,10 @@ public class PagamentoService {
 	}
 	
 	public List<Pagamento> find(Date inicio, Date fim){
-		return dao.findPagamentos(inicio, fim, null);
+		return cleanResult(dao.findPagamentos(inicio, fim, null));
 	}
 
 	public List<Pagamento> find(Date inicio, Date fim, FluxoPagamento fluxo){
-		return dao.findPagamentos(inicio, fim, fluxo);
+		return cleanResult(dao.findPagamentos(inicio, fim, fluxo));
 	}
 }

@@ -1,6 +1,5 @@
 package br.com.min.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,7 @@ import br.com.min.entity.Pessoa;
 import br.com.min.utils.Utils;
 
 @Service
-public class PessoaService {
+public class PessoaService extends BaseService<Pessoa, PessoaDAO> {
 	
 	@Autowired
 	private PessoaDAO dao;
@@ -39,24 +38,24 @@ public class PessoaService {
 	
 	public List<Pessoa> search(String query){
 		List<String> words = Utils.createListQueryFromString(query);
-		return dao.search(words);
+		return cleanResult(dao.search(words));
 	}
 	
 	@Transactional
 	public List<Pessoa> findPessoa(Pessoa pessoa, Funcao... funcoesExcluidas){
-		return dao.findPessoa(pessoa, funcoesExcluidas);
+		return cleanResult(dao.findPessoa(pessoa, funcoesExcluidas));
 	}
 	
 	public List<Pessoa> listarClientes(){
 		Pessoa pessoa = new Pessoa();
 		pessoa.setFuncionario(false);
-		return dao.findPessoa(pessoa);
+		return cleanResult(dao.findPessoa(pessoa));
 	}
 	
 	public List<Pessoa> listarFuncionarios(){
 		Pessoa pessoa = new Pessoa();
 		pessoa.setFuncionario(true);
-		return dao.findPessoa(pessoa);
+		return cleanResult(dao.findPessoa(pessoa));
 	}
 	
 	public Pessoa findById(Long id){
@@ -66,7 +65,7 @@ public class PessoaService {
 		if(result.isEmpty()){
 			return null;
 		}else{
-			return result.get(0);
+			return cleanResult(result.get(0));
 		}
 	}
 

@@ -18,13 +18,10 @@ import br.com.min.entity.Servico;
 import br.com.min.entity.TipoServico;
 
 @Repository
-public class ServicoDAO {
-
-	@Autowired
-	private SessionFactory sessionFactory;
+public class ServicoDAO extends BaseDAO<Servico> {
 
 	public List<Servico> findServico(Servico servico){
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(Servico.class);
 		if(servico != null){
 			List<Criterion> predicates = new ArrayList<>();
@@ -45,7 +42,7 @@ public class ServicoDAO {
 	}
 	
 	public List<TipoServico> listarTiposServicos(){
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(TipoServico.class);
 		
 		List<TipoServico> tiposServicos = criteria.list();
@@ -53,7 +50,7 @@ public class ServicoDAO {
 	}
 
 	public TipoServico findTipoServicoById(Long id) {
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(TipoServico.class);
 		criteria.add(Restrictions.eq("id", id));
 		

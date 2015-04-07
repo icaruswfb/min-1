@@ -6,9 +6,7 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import br.com.min.entity.LancamentoComissao;
@@ -16,11 +14,8 @@ import br.com.min.entity.Pessoa;
 import br.com.min.entity.TipoComissao;
 
 @Repository
-public class ComissaoDAO {
+public class ComissaoDAO extends BaseDAO<LancamentoComissao> {
 
-	@Autowired
-	private SessionFactory sessionFactory;
-	
 	public List<LancamentoComissao> findByPeriodo(Date periodoInicio, Date periodoFim, Pessoa funcionario){		
 		Calendar inicio = Calendar.getInstance();
 		inicio.setTime(periodoInicio);
@@ -36,7 +31,7 @@ public class ComissaoDAO {
 		fim.set(Calendar.SECOND, 59);
 		fim.set(Calendar.MILLISECOND, 999);
 		
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(LancamentoComissao.class);
 		if(funcionario != null){
 			criteria.add(Restrictions.eq("funcionario", funcionario));
@@ -65,7 +60,7 @@ public class ComissaoDAO {
 		fim.set(Calendar.SECOND, 59);
 		fim.set(Calendar.MILLISECOND, 999);
 		
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(LancamentoComissao.class);
 		if(vendedor != null){
 			criteria.add(Restrictions.isNotNull("funcionario"));
@@ -82,12 +77,11 @@ public class ComissaoDAO {
 	}
 
 	public LancamentoComissao findById(Long id) {
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(LancamentoComissao.class);
 		criteria.add(Restrictions.eq("id", id));
 		
 		LancamentoComissao result = (LancamentoComissao) criteria.uniqueResult();
-		session.close();
 		return result;
 	}
 	

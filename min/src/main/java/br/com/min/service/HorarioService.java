@@ -10,13 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.min.dao.GenericDAO;
 import br.com.min.dao.HistoricoDAO;
 import br.com.min.dao.HorarioDAO;
-import br.com.min.dao.PessoaDAO;
 import br.com.min.entity.Historico;
 import br.com.min.entity.Horario;
 import br.com.min.utils.Utils;
 
 @Service
-public class HorarioService {
+public class HorarioService extends BaseService<Horario, HorarioDAO> {
 	
 	@Autowired
 	private HorarioDAO dao;
@@ -37,7 +36,7 @@ public class HorarioService {
 		StringBuffer texto = new StringBuffer();
 		texto.append("Agendamento para dia ").append(Utils.dateFormat.format(horario.getInicio()))
 					.append(" das ").append(Utils.timeFormat.format(horario.getInicio()))
-					.append(" até as ").append(Utils.timeFormat.format(horario.getTermino()))
+					.append(" atÃ© as ").append(Utils.timeFormat.format(horario.getTermino()))
 					.append(" ").append(horario.getServicos().toString());
 		historico.setTexto(texto.toString());
 		
@@ -46,12 +45,12 @@ public class HorarioService {
 	
 	@Transactional
 	public List<Horario> findHorario(Horario horario){
-		return dao.findHorario(horario);
+		return cleanResult(dao.findHorario(horario));
 	}
 	
 	public List<Horario> listar(){
 		Horario horario = new Horario();
-		return dao.findHorario(horario);
+		return cleanResult(dao.findHorario(horario));
 	}
 	
 	public Horario findById(Long id){
@@ -91,7 +90,7 @@ public class HorarioService {
 		StringBuffer texto = new StringBuffer();
 		texto.append("Cancelamento do agendamento para dia ").append(Utils.dateFormat.format(horario.getInicio()))
 					.append(" das ").append(Utils.timeFormat.format(horario.getInicio()))
-					.append(" até as ").append(Utils.timeFormat.format(horario.getTermino()));
+					.append(" atï¿½ as ").append(Utils.timeFormat.format(horario.getTermino()));
 		historico.setTexto(texto.toString());
 		
 		genericDao.persist(historico);

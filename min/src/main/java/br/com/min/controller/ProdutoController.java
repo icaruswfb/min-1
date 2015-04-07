@@ -192,13 +192,6 @@ public class ProdutoController {
 			}else if(TipoLancamentoEstoque.SAIDA.equals(lancamento.getTipo())){
 				quantidade -= lancamento.getQuantidade();
 			}
-			if(lancamento.getComanda() != null){
-				lancamento.getComanda().setEstoque(null);
-				lancamento.getComanda().setPagamentos(null);
-				lancamento.getComanda().setProdutos(null);
-				lancamento.getComanda().setServicos(null);
-				lancamento.getComanda().setComissoes(null);
-			}
 		}
 		vo.setLancamentos(lancamentos);
 		vo.setQuantidade(quantidade);

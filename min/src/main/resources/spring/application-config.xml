@@ -17,7 +17,9 @@
 						   http://www.springframework.org/schema/tx
 						   http://www.springframework.org/schema/tx/spring-tx.xsd">
 
-	<context:component-scan base-package="br.com.min" />
+	<context:component-scan base-package="br.com.min" >
+	        <context:exclude-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
+	</context:component-scan>
 
 	<context:annotation-config />
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">

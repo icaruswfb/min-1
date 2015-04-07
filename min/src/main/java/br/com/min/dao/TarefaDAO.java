@@ -22,11 +22,8 @@ import br.com.min.entity.Pessoa;
 import br.com.min.entity.Tarefa;
 
 @Repository
-public class TarefaDAO {
+public class TarefaDAO extends BaseDAO<Tarefa> {
 
-	@Autowired
-	private SessionFactory sessionFactory;
-	
 	public List<Tarefa> find(Tarefa tarefa, Date agendamentoInicio, Date agendamentoFim){
 		Criteria criteria = criarCriteriaBasica(tarefa);
 		
@@ -46,7 +43,7 @@ public class TarefaDAO {
 	}
 	
 	public Tarefa findById(Long id){
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(Tarefa.class);
 		
 		criteria.add(Restrictions.eq("id", id));
@@ -79,7 +76,7 @@ public class TarefaDAO {
 	}
 	
 	private Criteria criarCriteriaBasica(Tarefa tarefa){
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(Tarefa.class);
 		
 		if(tarefa.getId() != null){
@@ -105,7 +102,7 @@ public class TarefaDAO {
 	}
 	
 	public List<Tarefa> listarUltimas(Pessoa pessoa, int maxResult){
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(Tarefa.class);
 
 		if(pessoa != null){
@@ -119,7 +116,7 @@ public class TarefaDAO {
 	}
 
 	public List<Tarefa> pesquisar(String pesquisa, Pessoa pessoa) {
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(Tarefa.class);
 
 		if(pessoa != null){
@@ -150,7 +147,7 @@ public class TarefaDAO {
 	}
 
 	public Integer contarNaoLidas(Pessoa pessoa) {
-		Session session = sessionFactory.openSession();
+		Session session = getSession();
 		Criteria criteria = session.createCriteria(Tarefa.class);
 
 		if(pessoa != null){

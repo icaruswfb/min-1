@@ -1,6 +1,5 @@
 package br.com.min.entity;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -14,7 +13,7 @@ import javax.persistence.ManyToOne;
 
 
 @Entity
-public class Horario implements Serializable{
+public class Horario extends BaseEntity{
 
 	@Id
 	@GeneratedValue

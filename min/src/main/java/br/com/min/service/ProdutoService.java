@@ -16,7 +16,7 @@ import br.com.min.entity.SituacaoEstoque;
 import br.com.min.entity.TipoLancamentoEstoque;
 
 @Service
-public class ProdutoService {
+public class ProdutoService extends BaseService<Produto, ProdutoDAO> {
 	
 	@Autowired
 	private ProdutoDAO dao;
@@ -30,12 +30,14 @@ public class ProdutoService {
 	
 	@Transactional
 	public List<Produto> find(Produto entity){
-		return dao.find(entity);
+		return cleanResult(dao.find(entity));
 	}
-	
+
+	@Transactional
 	public List<Produto> listar(){
 		Produto entity = new Produto();
-		return dao.find(entity);
+		List<Produto> result = cleanResult(dao.find(entity));
+		return result;
 	}
 	
 	public Produto findById(Long id){
@@ -45,7 +47,7 @@ public class ProdutoService {
 		if(result.isEmpty()){
 			return null;
 		}else{
-			return result.get(0);
+			return cleanResult(result.get(0));
 		}
 	}
 
@@ -115,7 +117,7 @@ public class ProdutoService {
 		Produto entity = new Produto();
 		entity.setCategoria(categoriaProduto);
 		entity.setNome(pesquisa);
-		return dao.find(entity);
+		return cleanResult(dao.find(entity));
 	}
 
 	public List<LancamentoEstoque> findLancamentoByTipo(TipoLancamentoEstoque entrada) {

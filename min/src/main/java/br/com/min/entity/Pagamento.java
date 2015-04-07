@@ -9,8 +9,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
-public class Pagamento {
+public class Pagamento extends BaseEntity {
 
 	@Id
 	@GeneratedValue
@@ -22,6 +24,8 @@ public class Pagamento {
 	private Integer parcelamento;
 	private Integer parcela;
 	@ManyToOne
+	@JsonIgnore
+	@org.codehaus.jackson.annotate.JsonIgnore
 	private Comanda comanda;
 	@Enumerated(EnumType.STRING)
 	private FluxoPagamento fluxoPagamento;

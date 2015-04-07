@@ -10,7 +10,7 @@ import br.com.min.entity.Historico;
 import br.com.min.entity.Pessoa;
 
 @Service
-public class HistoricoService {
+public class HistoricoService extends BaseService<Historico, HistoricoDAO> {
 
 	@Autowired
 	private HistoricoDAO historicoDao;
@@ -19,13 +19,13 @@ public class HistoricoService {
 		Historico historico = new Historico();
 		historico.setCliente(new Pessoa());
 		historico.getCliente().setId(clienteId);
-		return historicoDao.findHistorico(historico);
+		return cleanResult(historicoDao.findHistorico(historico));
 	}
 	
 	public List<Historico> findByFuncionarioId(Long funcionarioId){
 		Historico historico = new Historico();
 		historico.setFuncionario(new Pessoa());
 		historico.getFuncionario().setId(funcionarioId);
-		return historicoDao.findHistorico(historico);
+		return cleanResult(historicoDao.findHistorico(historico));
 	}
 }

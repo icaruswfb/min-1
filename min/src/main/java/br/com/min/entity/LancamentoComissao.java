@@ -9,8 +9,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
-public class LancamentoComissao {
+public class LancamentoComissao extends BaseEntity {
 
 	@Id
 	@GeneratedValue
@@ -86,6 +88,7 @@ public class LancamentoComissao {
 	}
 	
 	public String toString(){
+		super.toString();
 		return getPercentual() + "% de " + getValorVenda();
 	}
 	public Date getDataPagamento() {
